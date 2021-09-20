@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="des-item">
     <router-view/>
   </div>
 </template>
@@ -7,7 +7,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class App extends Vue {
+export default class DesItem extends Vue {
 }
 </script>
 <style lang="less">
