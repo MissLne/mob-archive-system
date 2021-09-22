@@ -3,26 +3,85 @@
     <DesHead />
     <DesSearch />
     <myTool />
-    <img :src="url" alt="">
-    <div></div>
+    <div v-for="(item, index) in desItem" :key="index">
+      <DesItem v-if="desItem" :desItem="item" />
+    </div>
+    <DesBtn @changePage="changePage($event)" />
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import DesHead from "@/components/des-com/des-head.vue";
-import DesSearch from "@/components/des-com/des-search.vue";
-import myTool from "@/components/des-com/myTool.vue";
-import axios from "axios";
+import DesHead from "@/components/des-com/index/des-head.vue";
+import DesSearch from "@/components/des-com/index/des-search.vue";
+import myTool from "@/components/des-com/index/myTool.vue";
+import DesItem from "@/components/des-com/index/des-item.vue";
+import DesBtn from "@/components/des-com/index/des-btn.vue";
 
+interface dataType {
+  size: number | undefined;
+  current: number | undefined;
+  type: number;
+  retentionPeriod: number;
+  status: number;
+}
 @Component({
   components: {
     DesHead,
     DesSearch,
     myTool,
+    DesItem,
+    DesBtn,
   },
 })
 export default class Description extends Vue {
-  private url: any = ""
+  private desItem: [] = [];
+  public getListData: dataType = {
+    size: 10,
+    current: 1,
+    type: 2,
+    retentionPeriod: 1,
+    status: 0,
+  };
+  getList(): void {
+    (this as any).$request
+      .post("/api/api/dossier/getPartDossierList", this.getListData)
+      .then((res: any) => {
+        let result = res.data.data.records;
+        result.map((item: any, index: number) => {
+          if (item.hasOwnProperty("fileToken")) {
+            (this as any).$service
+              .get(`/api/api/file/download/${item.fileToken}`, {
+                responseType: "arraybuffer",
+              })
+              .then((data: any) => {
+                item.fileToken =
+                  "data:image/png;base64," +
+                  btoa(
+                    new Uint8Array(data.data).reduce(
+                      (data, byte) => data + String.fromCharCode(byte),
+                      ""
+                    )
+                  );
+              });
+          }
+        });
+        this.desItem = result;
+      });
+  }
+  changePage(event: any): void {
+    console.log(event);
+    if (event && this.getListData.current) {
+      if (event.type === "prePage" && this.getListData.current >= 1) {
+        this.getListData.current--
+        this.getList()
+      } else if(event.type === "nextPage") {
+        this.getListData.current++
+        this.getList()
+      } else {
+        return
+      }
+    }
+  }
   created() {
     // (this as any).$request.post("/api/api/user/login",{
     //   account: "12345678",
@@ -30,35 +89,10 @@ export default class Description extends Vue {
     // })
     // .then((res: any) => {
     //   localStorage.setItem('token',res.data.data.token)
-
     // })
-    (this as any).$request
-      .post("/api/api/dossier/getPartDossierList", {
-        type: 1,
-        retentionPeriod: 1,
-        status: 0,
-      })
-      .then((res: any) => {
-        console.log(res.data.data.records[0].fileToken);
-        // (this as any).urll = `https://test-archive.server.topviewclub.cn/api/${res.data.data.records[0].fileToken}`;
-
-        (this as any).$service
-          .get(`/api/api/file/download/${res.data.data.records[0].fileToken}`,{
-            responseType: 'arraybuffer',
-          })
-          .then((data: any) => {
-             (this as any).url = 'data:image/png;base64,' + btoa(new Uint8Array(data.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
-             console.log((this as any).url);
-             
-            // (this as any).urll = imgUrl
-          });
-      });
+    this.getList();
   }
 }
 </script>
 <style lang="scss">
- img {
-   width: 500px;
-   height: 500px;
- }
 </style>
