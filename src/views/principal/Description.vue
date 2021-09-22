@@ -35,6 +35,10 @@ interface dataType {
 })
 export default class Description extends Vue {
   private desItem: [] = [];
+  public pageData: any = {
+    current: 1,
+    total: 0
+  }
   public getListData: dataType = {
     size: 10,
     current: 1,
@@ -83,13 +87,13 @@ export default class Description extends Vue {
     }
   }
   created() {
-    // (this as any).$request.post("/api/api/user/login",{
-    //   account: "12345678",
-    //   password: "123"
-    // })
-    // .then((res: any) => {
-    //   localStorage.setItem('token',res.data.data.token)
-    // })
+    (this as any).$request.post("/api/api/user/login",{
+      account: "12345678",
+      password: "123"
+    })
+    .then((res: any) => {
+      localStorage.setItem('token',res.data.data.token)
+    })
     this.getList();
   }
 }
