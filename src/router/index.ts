@@ -29,10 +29,16 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
+    path: '/editApply',
+    name: 'editApply',
+    redirect: '/description',
+    component: () => import('@/views/other/applyPage/edit-apply.vue'),
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/Login.vue'),
-  }
+  },
 ]
 
 const router = new VueRouter({

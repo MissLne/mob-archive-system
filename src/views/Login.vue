@@ -107,7 +107,7 @@ export default class Login extends Vue {
       }
       else {
         const msg = (res.message as string).split('，')[1];
-        const index = msg[0] === '账' ? 'un' : 'pw';
+        const index = msg[0] === '账' ? 'pw' : 'un';
         this.states[index].value = '';
         this.states[index].isWrong = true;
         this.states[index].msg = msg;
