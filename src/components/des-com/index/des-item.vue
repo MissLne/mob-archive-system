@@ -21,7 +21,7 @@ export default class DesItem extends Vue {
   @Prop({}) private desItem!: object;
 
   created() {
-    console.log(this.desItem);
+    // console.log(this.desItem);
   }
 }
 </script>

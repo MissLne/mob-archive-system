@@ -31,8 +31,12 @@ const routes: Array<RouteConfig> = [
   {
     path: '/editApply',
     name: 'editApply',
-    redirect: '/description',
     component: () => import('@/views/other/applyPage/edit-apply.vue'),
+  },
+  {
+    path: '/addApply',
+    name: 'addApply',
+    component: () => import('@/views/other/applyPage/add-apply.vue'),
   }
 ]
 

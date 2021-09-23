@@ -8,9 +8,7 @@
     </div>
     <div>
       <div>{{ applyItem.status }}</div>
-
-      <router-link :to="{ name: 'editApply', params: { id: 1 } }" >查看</router-link>
-      <!-- <div>查看</div> -->
+      <router-link :to="{ name: 'editApply', params: { id: applyItem.id } }" >查看</router-link>
     </div>
     ________
     <br />
@@ -59,7 +57,6 @@ export default class ApplyItem extends Vue {
     for (let i = 0; i < this.item.length; i++) {
       this.item[i].content = this.applyItem[this.item[i].type];
     }
-    console.log(this.item);
   }
   created() {
     this.initData();

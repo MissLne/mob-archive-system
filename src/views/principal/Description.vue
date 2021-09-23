@@ -73,7 +73,6 @@ export default class Description extends Vue {
       });
   }
   changePage(event: any): void {
-    console.log(event);
     if (event && this.getListData.current) {
       if (event.type === "prePage" && this.getListData.current >= 1) {
         this.getListData.current--
@@ -93,6 +92,8 @@ export default class Description extends Vue {
     })
     .then((res: any) => {
       localStorage.setItem('token',res.data.data.token)
+      localStorage.setItem('username',res.data.data.user.name)
+      localStorage.setItem('departmentId',res.data.data.user.departmentId)
     })
     this.getList();
   }

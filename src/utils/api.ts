@@ -1,8 +1,6 @@
 import axios from "./http";
 export class Request {
   get(url: string, data?: object) {
-    console.log(data);
-    
     return axios.get(url, {
       params: data
     })
