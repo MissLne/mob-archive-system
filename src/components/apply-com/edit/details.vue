@@ -8,7 +8,7 @@
     </div>
     <div>
       <router-link
-        :to="{ name: 'addApply',params: {type: '编辑',id: detailData.id}}"
+        :to="{ name: 'addApply', params: { type: '编辑', id: detailData.id } }"
         v-if="detailData.status === '申请'"
         >编辑</router-link
       >
@@ -19,16 +19,37 @@
         撤回
       </div>
     </div>
-    <div v-if="detailData.status === '完成'"></div>
+    <div v-if="detailData.status === '完成'">
+      <div>
+        <p>审批状态</p>
+        <div>{{agreeData.status}}</div>
+      </div>
+      <div>
+        <p>审批人</p>
+        <p>{{agreeData.name}}</p>
+      </div>
+      <div>
+        <p>审批日期</p>
+        <p>{{agreeData.createTime}}</p>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
+import { StepRenderSlots } from "element-ui/types/step";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 interface ItemTyle {
   text: string;
   content: string;
   type: string;
+  [key: string]: any;
+}
+
+interface ItemData {
+  name: string;
+  status: string | number;
+  createTime: string;
   [key: string]: any;
 }
 @Component
@@ -71,11 +92,33 @@ export default class Details extends Vue {
       type: "applyTime",
     },
   ];
+  private agreeData: ItemData = {
+    name: "",
+    status: 0,
+    createTime: "",
+  };
   initData() {
+    
+
     for (let i = 0; i < this.item.length; i++) {
       this.item[i].content = this.detailData[this.item[i].type];
     }
+    if (this.detailData.status === "完成") {
+      let data = new Map([
+        [0, "同意"],
+        [1, "拒绝"],
+        [2, "转交"],
+      ]);
+      this.detailData.useReviewListBoList[0].status = data.get(
+        this.detailData.useReviewListBoList[0].status
+      );
+      for (let key in this.agreeData) {
+        this.agreeData[key] = this.detailData.useReviewListBoList[0][key];
+      }
+    }
+    console.log(this.detailData.useReviewListBoList[0]);
     
+    console.log(this.agreeData);
   }
   btnClick(str: string) {
     this.$emit("btnClick", { type: str });

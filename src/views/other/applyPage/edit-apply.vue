@@ -9,7 +9,7 @@ import Details from "@/components/apply-com/edit/details.vue";
 
 @Component({
   components: {
-    Details,
+    Details
   },
 })
 export default class editApply extends Vue {
@@ -34,7 +34,7 @@ export default class editApply extends Vue {
       });
   }
   btnClick(event: any) {
-    console.log(event);
+    console.log(event)
     let todo = new Map([
       ["撤回",() => {
         (this as any).$request.post("/api/api/use/recallUseApply",
