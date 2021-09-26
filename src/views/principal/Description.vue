@@ -1,6 +1,6 @@
 <template>
   <div id="description">
-    <DesHead />
+    <DesHead :headData="headData" :popArr="popArr" @handleClick="handleClick($event)" />
     <DesSearch />
     <myTool />
     <div v-for="(item, index) in desItem" :key="index">
@@ -35,10 +35,21 @@ interface dataType {
 })
 export default class Description extends Vue {
   private desItem: [] = [];
+  public popArr: string[] = ["案卷详情","选择"]
+  public headData: any = {
+    title: "著录中",
+    leftUrl: "3",
+    rightUrl: "",
+    leftPic: true,
+    rightPic: false,
+    leftText: "",
+    rightText: "选择",
+    isShow: false,
+  };
   public pageData: any = {
     current: 1,
-    total: 0
-  }
+    total: 0,
+  };
   public getListData: dataType = {
     size: 10,
     current: 1,
@@ -46,13 +57,46 @@ export default class Description extends Vue {
     retentionPeriod: 1,
     status: 0,
   };
+  handleClick(event: any) {
+    let obj = {};
+    if (event.clickType === "right") {
+      if (this.headData.rightText === "选择") {
+        obj = {
+          leftPic: false,
+          leftText: "取消",
+          rightText: "全选",
+        };
+        this.headData = Object.assign(this.headData, obj);
+        return;
+      }
+    } else {
+      if (this.headData.leftText === "取消") {
+        obj = {
+          leftPic: true,
+          rightPic: false,
+          rightText: "选择",
+          leftText: "",
+        };
+        this.headData = Object.assign(this.headData, obj);
+        return;
+      }
+
+      if (this.headData.leftUrl == "4") {
+        this.headData.leftUrl = "3";
+      } else {
+        this.headData.leftUrl = "4";
+      }
+    }
+  }
   getList(): void {
     (this as any).$request
       .post("/api/api/dossier/getPartDossierList", this.getListData)
       .then((res: any) => {
         let result = res.data.data.records;
+        console.log();
+
         result.map((item: any, index: number) => {
-          if (item.hasOwnProperty("fileToken")) {
+          if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             (this as any).$service
               .get(`/api/api/file/download/${item.fileToken}`, {
                 responseType: "arraybuffer",
@@ -75,29 +119,34 @@ export default class Description extends Vue {
   changePage(event: any): void {
     if (event && this.getListData.current) {
       if (event.type === "prePage" && this.getListData.current >= 1) {
-        this.getListData.current--
-        this.getList()
-      } else if(event.type === "nextPage") {
-        this.getListData.current++
-        this.getList()
+        this.getListData.current--;
+        this.getList();
+      } else if (event.type === "nextPage") {
+        this.getListData.current++;
+        this.getList();
       } else {
-        return
+        return;
       }
     }
   }
   created() {
-    (this as any).$request.post("/api/api/user/login",{
-      account: "12345678",
-      password: "123"
-    })
-    .then((res: any) => {
-      localStorage.setItem('token',res.data.data.token)
-      localStorage.setItem('username',res.data.data.user.name)
-      localStorage.setItem('departmentId',res.data.data.user.departmentId)
-    })
+    (this as any).$request
+      .post("/api/api/user/login", {
+        account: "12345678",
+        password: "123",
+      })
+      .then((res: any) => {
+        localStorage.setItem("token", res.data.data.token);
+        localStorage.setItem("username", res.data.data.user.name);
+        localStorage.setItem("departmentId", res.data.data.user.departmentId);
+      });
     this.getList();
   }
 }
 </script>
 <style lang="scss">
+#description {
+  
+  background: #E9F1FE;
+}
 </style>
