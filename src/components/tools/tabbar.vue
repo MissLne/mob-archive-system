@@ -59,6 +59,9 @@ export default class Tabbar extends Vue {
   }
   changePage(event: any) {
     this.$emit('changePage',{go: event})
+    for (let i = 0; i < this.barData.length; i++) {
+      this.barData[i].imageUrl = this.iUrl[event][i];
+    }
   }
 }
 </script>
