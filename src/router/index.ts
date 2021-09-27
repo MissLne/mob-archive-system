@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
 
@@ -36,8 +35,26 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/login',
-    name: 'Login',
+    name: 'login',
     component: () => import('@/views/Login.vue'),
+  },
+  {
+    path: '/collect-files',
+    name: 'collect',
+    redirect: '/collect-files/list',
+    component: () => import('@/views/temp-arch/TempArch.vue'),
+    children: [
+      {
+        path: 'list',
+        name: 'collect-list',
+        component: () => import('@/views/temp-arch/TempArchList.vue')
+      },
+      {
+        path: 'detail',
+        name: 'collect-detail',
+        component: () => import('@/views/temp-arch/TempArchDetail.vue')
+      }
+    ]
   },
 ]
 

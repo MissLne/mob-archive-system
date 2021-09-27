@@ -41,6 +41,7 @@
         :src="complete ? require('@/assets/login/log-in-bright.png') : require('@/assets/login/log-in-gray.png')"
         @click="onClick"
       />
+      <router-link to="/collect-files">校史征集-></router-link>
     </div>
   </div>
 </template>
@@ -88,8 +89,10 @@ export default class Login extends Vue {
     state.isActive = false;
     if (state.isEmpty) state.isWrong = true;
   }
+
   // 登录按钮
   private onClick(): void {
+    localStorage.removeItem('token')
     if (!this.complete) return;
     (this as any).$service.post('/api/api/user/login', {
         account: this.states.un.value,
@@ -117,7 +120,7 @@ export default class Login extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   #login {
     overflow: auto;
     width: 100vw;
