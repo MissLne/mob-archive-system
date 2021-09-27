@@ -20,6 +20,6 @@ export default class DesBtn extends Vue {
   }
 }
 </script>
-<style lang="less">
+<style lang="scss">
 
 </style>

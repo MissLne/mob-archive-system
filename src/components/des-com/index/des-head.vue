@@ -58,14 +58,18 @@ export default class DesHead extends Vue {
   font-size: 36px;
   padding: 35px 33px 0 33px;
   color: #fff;
-  background: linear-gradient(to bottom, #7aaffa 0%, #8fc1ff 100%);
+  background: linear-gradient(to bottom, #7aaffa 0%, #8cbffe 100%);
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  > div:nth-of-type(3) {
+    justify-content: flex-end;
+  }
   > div:nth-of-type(1),
   div:nth-of-type(3) {
     height: 80px;
+    width: 80px;
     display: flex;
     align-items: center;
     font-size: 26px;
@@ -102,12 +106,12 @@ export default class DesHead extends Vue {
     }
   }
   @keyframes isShow {
-      from {
-        height: 0;
-      }
-      to {
-       height: 173px;
-      }
+    from {
+      opacity: 0;
     }
+    to {
+      opacity: 1;
+    }
+  }
 }
 </style>

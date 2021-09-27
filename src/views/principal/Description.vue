@@ -2,7 +2,7 @@
   <div id="description">
     <DesHead :headData="headData" :popArr="popArr" @handleClick="handleClick($event)" />
     <DesSearch />
-    <myTool />
+    <myTool :count="count"/>
     <div v-for="(item, index) in desItem" :key="index">
       <DesItem v-if="desItem" :desItem="item" />
     </div>
@@ -36,6 +36,7 @@ interface dataType {
 export default class Description extends Vue {
   private desItem: [] = [];
   public popArr: string[] = ["案卷详情","选择"]
+  public count: number = 0
   public headData: any = {
     title: "著录中",
     leftUrl: "3",
@@ -93,8 +94,7 @@ export default class Description extends Vue {
       .post("/api/api/dossier/getPartDossierList", this.getListData)
       .then((res: any) => {
         let result = res.data.data.records;
-        console.log();
-
+        this.count = res.data.data.total
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             (this as any).$service

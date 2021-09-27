@@ -1,44 +1,34 @@
 <template>
   <div class="home">
     <div>
-      <router-view/>
+      <router-view />
     </div>
-    <div>
-      <router-link v-for="(item, index) in barData" :key="index" :to="item.itemLink" tag="div" class="tabbar">
-        <p>{{item.itemName}}</p>
-      </router-link>
-    </div>
+    <Tabbar :type="type" @changePage="changePage($event)"/>
+    
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import Tabbar from "@/components/tools/tabbar.vue"
 
-class Item {
-  itemName: string = ""
-  itemLink: string | object = ""
-}
+
 
 @Component({
   components: {
+    Tabbar
   },
 })
 export default class Home extends Vue {
-  private barData: Array<Item> = [
-    {
-      itemName: "著录中",
-      itemLink: "description"
-    },
-    {
-      itemName: "借阅申请",
-      itemLink: "apply"
-    },
-    {
-      itemName: "我的档案",
-      itemLink: "me"
-    }
-  ]
-  
+  private type: number | string = 0
+  created() {
+    this.type = localStorage.getItem('tabbarT') || 0
+  }
+  changePage(event: any) {
+    localStorage.setItem('tabbarT',event.go)
+    this.type = event.go
+    // this.$router.go(0)
+  }
 }
 </script>
 <style lang="scss">
@@ -49,8 +39,6 @@ export default class Home extends Vue {
   justify-content: space-between;
   align-items: center;
   flex-direction: column;
-  .tabbar {
-    background: #f00;
-  }
+  
 }
 </style>
