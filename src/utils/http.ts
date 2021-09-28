@@ -26,7 +26,7 @@ service.interceptors.response.use(
     let errMsg = ''
     if (err && err.response.status) {
       switch (err.response.status) {
-        case 401:
+        case 420:
           errMsg = '登录状态失效，请重新登录'
           localStorage.removeItem('token')
           break

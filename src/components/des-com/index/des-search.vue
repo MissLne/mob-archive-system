@@ -14,6 +14,12 @@ export default class DesSearch extends Vue {}
 </script>
 <style lang="scss">
 #des-search {
+  width: 750px;
+  height: 77px;
+  z-index: 99;
+  position: fixed;
+  top: 124px;
+  left: 0;
   background: linear-gradient(to bottom, #8cbffe 0%, #8fc1ff 100%);
   div {
     background: #c6dfff;
@@ -38,15 +44,15 @@ export default class DesSearch extends Vue {}
       width: 300px;
     }
     input::-webkit-input-placeholder {
-      color: rgba(255, 255, 255,.5);
+      color: rgba(255, 255, 255, 0.5);
     }
 
     input:-moz-placeholder {
-      color: rgba(255, 255, 255,.5);
+      color: rgba(255, 255, 255, 0.5);
     }
 
     input::-moz-placeholder {
-      color: rgba(255, 255, 255,.5);
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }

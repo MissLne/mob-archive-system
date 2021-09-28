@@ -2,11 +2,14 @@
   <div id="description">
     <DesHead :headData="headData" :popArr="popArr" @handleClick="handleClick($event)" />
     <DesSearch />
-    <myTool :count="count"/>
-    <div v-for="(item, index) in desItem" :key="index">
+    <myTool :count="count" @selectHandle="selectHandle($event)"/>
+    <div class="slots"></div>
+    <div v-for="(item, index) in desItem" :key="index" class="box">
       <DesItem v-if="desItem" :desItem="item" />
     </div>
-    <DesBtn @changePage="changePage($event)" />
+    <DesBtn @changePage="changePage($event)" :totalPage="pageData" v-if="pageData.total"/>
+    <div class="slots2"></div>
+    <img src="@/assets/index/upload.png" class="upload"/>
   </div>
 </template>
 <script lang="ts">
@@ -58,6 +61,10 @@ export default class Description extends Vue {
     retentionPeriod: 1,
     status: 0,
   };
+  selectHandle(event: any) {
+    this.getListData.type = event.index
+    this.getList()
+  }
   handleClick(event: any) {
     let obj = {};
     if (event.clickType === "right") {
@@ -91,10 +98,10 @@ export default class Description extends Vue {
   }
   getList(): void {
     (this as any).$request
-      .post("/api/api/dossier/getPartDossierList", this.getListData)
+      .post("/api/api/dossier/getPartDossierList", {...this.getListData,keyWord: "qq"})
       .then((res: any) => {
         let result = res.data.data.records;
-        this.count = res.data.data.total
+        this.pageData.total = this.count = res.data.data.total
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             (this as any).$service
@@ -118,11 +125,13 @@ export default class Description extends Vue {
   }
   changePage(event: any): void {
     if (event && this.getListData.current) {
-      if (event.type === "prePage" && this.getListData.current >= 1) {
+      if (event.type === "prePage" && this.getListData.current > 1) {
         this.getListData.current--;
+        this.pageData.current--
         this.getList();
-      } else if (event.type === "nextPage") {
+      } else if (event.type === "nextPage" && this.pageData.current < Math.ceil(this.pageData.total/10)) {
         this.getListData.current++;
+        this.pageData.current++
         this.getList();
       } else {
         return;
@@ -146,7 +155,25 @@ export default class Description extends Vue {
 </script>
 <style lang="scss">
 #description {
-  
+  .slots {
+    height: 271px;
+  }
+  .slots2 {
+    height: 90px;
+  }
+  .box {
+    width: 750px;
+  }
+  width: 100vw;
+  min-height: calc(100vh);
   background: #E9F1FE;
+  .upload {
+    width: 82px;
+    height: 82px;
+    position: fixed;
+    right: 30px;
+    bottom: 100px;
+    z-index: 99;
+  }
 }
 </style>

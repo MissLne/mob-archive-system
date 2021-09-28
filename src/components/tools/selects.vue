@@ -6,7 +6,7 @@
       <img src="@/assets/head/pulldown@2x.png" :style="{'transform':isShowR? 'rotate(180deg)' : ''}"/>
     </div>
     <div class="list" v-if="isShowList" :class="{ close: isClose }">
-      <div v-for="(item, index) in listData.list" :key="index" >{{ item }}</div>
+      <div v-for="(item, index) in listData.list" :key="index" @click="handleClick(index)">{{ item }}</div>
     </div>
   </div>
 </template>
@@ -37,6 +37,11 @@ export default class Selects extends Vue {
     }
     this.isShowR = !this.isShowR
     this.isShowList = !this.isShowList;
+  }
+  handleClick(event: number) {
+    this.$emit('handleClickS',{num: event})
+    this.listData.title = this.listData.list[event]
+    this.showList()
   }
 }
 </script>
