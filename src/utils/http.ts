@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 import { Message } from 'element-ui'
+import router from '@/router/index'
 
 
 const service = axios.create({
@@ -29,6 +30,7 @@ service.interceptors.response.use(
         case 420:
           errMsg = '登录状态失效，请重新登录'
           localStorage.removeItem('token')
+          router.push({name: 'login'})
           break
         case 403:
           errMsg = '拒绝访问'
