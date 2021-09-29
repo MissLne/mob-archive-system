@@ -30,7 +30,7 @@ export default class Tool extends Vue {
 <style lang="scss">
 #tool {
   position: fixed;
-  top: 201px;
+  top: 222px;
   left: 0;
   background: #8fc1ff;
   height: 70px;

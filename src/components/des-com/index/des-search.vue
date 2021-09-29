@@ -2,7 +2,7 @@
   <div id="des-search">
     <div>
       <img src="@/assets/head/search@2x.png" />
-      <input placeholder="请输入题名搜索" />
+      <input :placeholder="searchText" />
     </div>
   </div>
 </template>
@@ -10,12 +10,15 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
-export default class DesSearch extends Vue {}
+export default class DesSearch extends Vue {
+  @Prop({}) private searchText!: string
+}
 </script>
 <style lang="scss">
 #des-search {
   width: 750px;
   height: 77px;
+  padding-bottom: 21px;
   z-index: 99;
   position: fixed;
   top: 124px;

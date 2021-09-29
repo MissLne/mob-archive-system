@@ -1,7 +1,7 @@
 <template>
   <div id="description">
     <DesHead :headData="headData" :popArr="popArr" @handleClick="handleClick($event)" />
-    <DesSearch />
+    <DesSearch :searchText="searchText"/>
     <myTool :count="count" @selectHandle="selectHandle($event)"/>
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
@@ -37,6 +37,7 @@ interface dataType {
   },
 })
 export default class Description extends Vue {
+  private searchText: string = "请输入题名搜索"
   private desItem: [] = [];
   public popArr: string[] = ["案卷详情","选择"]
   public count: number = 0
@@ -156,7 +157,7 @@ export default class Description extends Vue {
 <style lang="scss">
 #description {
   .slots {
-    height: 271px;
+    height: 295px;
   }
   .slots2 {
     height: 90px;
