@@ -1,19 +1,33 @@
 <template>
   <div id="editApply">
+    <DesHead :headData="headData" />
+    <div class="slots"></div>
     <Details v-if="detailData" :detailData="detailData" @btnClick="btnClick($event)"/>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Details from "@/components/apply-com/edit/details.vue";
+import DesHead from "@/components/des-com/index/des-head.vue";
 
 @Component({
   components: {
-    Details
+    Details,
+    DesHead
   },
 })
 export default class editApply extends Vue {
   public detailData: any = "";
+  public headData: any = {
+    title: "详情",
+    leftUrl: "1",
+    rightUrl: "",
+    leftPic: true,
+    rightPic: false,
+    leftText: "",
+    rightText: "",
+    isShow: false,
+  };
   created() {
     this.getDetail();
   }
@@ -30,8 +44,14 @@ export default class editApply extends Vue {
           [3, "拒绝"],
           [4, "完成"],
         ]);
+        console.log(this.detailData);
+        
         this.detailData.status = data.get(this.detailData.status);
       });
+      this.$request.get("/api/api/use/getMyUseResultByUseApplyId",this.$route.params)
+      .then((res: any) => {
+        console.log(res);
+      })
   }
   btnClick(event: any) {
     console.log(event)
@@ -59,5 +79,13 @@ export default class editApply extends Vue {
   }
 }
 </script>
-<style lang="less">
+<style lang="scss">
+#editApply {
+  .slots {
+    height: 124px;
+  }
+  width: 100vw;
+  min-height: 100vh;
+  background: #E5EDFD;
+}
 </style>

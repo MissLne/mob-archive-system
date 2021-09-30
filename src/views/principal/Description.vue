@@ -99,7 +99,7 @@ export default class Description extends Vue {
   }
   getList(): void {
     (this as any).$request
-      .post("/api/api/dossier/getPartDossierList", {...this.getListData,keyWord: "qq"})
+      .post("/api/api/dossier/getPartDossierList", {...this.getListData})
       .then((res: any) => {
         let result = res.data.data.records;
         this.pageData.total = this.count = res.data.data.total
