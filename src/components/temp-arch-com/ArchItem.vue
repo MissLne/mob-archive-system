@@ -6,18 +6,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import fileutils from '@/utils/fileutils'
 
 @Component
 export default class ArchItem extends Vue {
   @Prop() itemData!: ArchItemData;
   private picSrc: string = '';
+
+  @Emit('onClick')
   onClick() {
-    this.$emit('onClick');
+    // this.$emit('onClick');
   }
   created() {
-    fileutils.downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
+    console.log(this.itemData.picSrc)
+    setTimeout(() => console.log(this.itemData.picSrc), 1000)
+    if (this.itemData.picSrc) this.picSrc = this.itemData.picSrc;
+    else if (this.itemData.thumbnailFileToken && this.itemData.thumbnailFileType)
+      fileutils.downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
       .then((res: any) => {
         this.picSrc = res;
       })

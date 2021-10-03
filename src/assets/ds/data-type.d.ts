@@ -18,4 +18,6 @@ interface ArchItemData {
   retentionPeriod: number,
   departmentId:	number,
   fondsIdentifierId: number,
+  
+  picSrc?: string;
 }
