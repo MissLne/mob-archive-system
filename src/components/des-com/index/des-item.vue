@@ -9,7 +9,11 @@
     </div>
     <div class="btn">
       <div @click="showDetail">详细</div>
-      <div>查看</div>
+       <router-link
+       tag="div"
+        :to="{ name: 'myDes', params: { id: desItem.id } }"
+        >查看</router-link
+      >
     </div>
     <div class="details" v-if="isShow" :class="{ close: isClose }"></div>
   </div>
@@ -22,9 +26,10 @@ export default class DesItem extends Vue {
   @Prop({}) private desItem!: object;
   private isShow: boolean = false;
   private isClose: boolean = false;
+  private noname: number = 0
   private url = require("@/assets/index/anjuan.png");
+  
   created() {
-    console.log(this.desItem);
   }
   showDetail() {
     if (this.isShow) {
@@ -33,7 +38,7 @@ export default class DesItem extends Vue {
         this.isShow = !this.isShow;
         this.isClose = false;
       }, 500);
-      return
+      return;
     }
     this.isShow = !this.isShow;
   }
@@ -41,6 +46,7 @@ export default class DesItem extends Vue {
 </script>
 <style lang="scss">
 #des-item {
+  
   position: relative;
   width: 690px;
   height: 267px;
