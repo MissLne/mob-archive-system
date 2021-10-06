@@ -2,7 +2,7 @@
   <div id="des-search">
     <div>
       <img src="@/assets/head/search@2x.png" />
-      <input placeholder="请输入题名搜索" />
+      <input :placeholder="searchText" />
     </div>
   </div>
 </template>
@@ -10,10 +10,19 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
-export default class DesSearch extends Vue {}
+export default class DesSearch extends Vue {
+  @Prop({}) private searchText!: string
+}
 </script>
 <style lang="scss">
 #des-search {
+  width: 750px;
+  height: 77px;
+  padding-bottom: 21px;
+  z-index: 99;
+  position: fixed;
+  top: 124px;
+  left: 0;
   background: linear-gradient(to bottom, #8cbffe 0%, #8fc1ff 100%);
   div {
     background: #c6dfff;
@@ -38,15 +47,15 @@ export default class DesSearch extends Vue {}
       width: 300px;
     }
     input::-webkit-input-placeholder {
-      color: rgba(255, 255, 255,.5);
+      color: rgba(255, 255, 255, 0.5);
     }
 
     input:-moz-placeholder {
-      color: rgba(255, 255, 255,.5);
+      color: rgba(255, 255, 255, 0.5);
     }
 
     input::-moz-placeholder {
-      color: rgba(255, 255, 255,.5);
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }

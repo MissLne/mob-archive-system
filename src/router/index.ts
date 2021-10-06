@@ -83,6 +83,11 @@ const routes: Array<RouteConfig> = [
       },
     ]
   },
+  {
+    path: '/myDes',
+    name: 'myDes',
+    component: () => import('@/views/other/desPage/myDes.vue'),
+  }
 ]
 
 const router = new VueRouter({

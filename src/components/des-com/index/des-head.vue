@@ -1,16 +1,18 @@
 <template>
   <div id="des-head">
-    <div class="sideBar" @click="leftClick">
-      <div v-if="!headData.leftPic">{{ headData.leftText }}</div>
-      <img :src="pics[headData.leftUrl]" v-if="headData.leftPic" />
-    </div>
-    <div class="title">{{ headData.title }}</div>
-    <div class="choice" @click="rightClick">
-      <div v-if="!headData.rightPic">{{ headData.rightText }}</div>
-      <img :src="pics[headData.rightUrl]" v-if="headData.rightPic" />
-    </div>
-    <div class="popUp" v-if="headData.isShow">
-      <div v-for="(item, index) in popArr" :key="index">{{ item }}</div>
+    <div class="des">
+      <div class="sideBar" @click="leftClick">
+        <div v-if="!headData.leftPic">{{ headData.leftText }}</div>
+        <img :src="pics[headData.leftUrl]" v-if="headData.leftPic" />
+      </div>
+      <div class="title">{{ headData.title }}</div>
+      <div class="choice" @click="rightClick">
+        <div v-if="!headData.rightPic">{{ headData.rightText }}</div>
+        <img :src="pics[headData.rightUrl]" v-if="headData.rightPic" />
+      </div>
+      <div class="popUp" v-if="headData.isShow">
+        <div v-for="(item, index) in popArr" :key="index">{{ item }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -52,6 +54,14 @@ export default class DesHead extends Vue {
 </script>
 <style lang="scss">
 #des-head {
+  z-index: 99;
+  width: 750px;
+  height: 124px;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.des {
   position: relative;
   width: 750px;
   height: 124px;

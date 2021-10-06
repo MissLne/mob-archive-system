@@ -1,6 +1,6 @@
 <template>
   <div id="tool">
-    <Selects :listData="listData"/>
+    <Selects :listData="listData" @handleClickS="handleClickS($event)"/>
     <div class="right">共个{{count}}档案</div>
   </div>
 </template>
@@ -20,12 +20,18 @@ export default class Tool extends Vue {
   @Prop({}) private count!: number
   public listData: Item = {
     title: "显示全部",
-    list: ["显示文件","显示案卷"]
+    list: ["显示案卷","显示文件"]
+  }
+  handleClickS(event: any) {
+    this.$emit('selectHandle',{index: event.num})
   }
 }
 </script>
 <style lang="scss">
 #tool {
+  position: fixed;
+  top: 222px;
+  left: 0;
   background: #8fc1ff;
   height: 70px;
   width: 750px;
