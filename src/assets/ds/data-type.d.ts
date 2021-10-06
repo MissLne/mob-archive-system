@@ -19,5 +19,22 @@ interface ArchItemData {
   departmentId:	number,
   fondsIdentifierId: number,
   
-  picSrc?: string;
+  picSrc?: string,
+}
+
+interface UploadFileData {
+  contentType: string,
+
+  fileId: number,
+  fileToken: string,
+
+  thumbnailContentType: string,
+  thumbnailFileId: number,
+  thumbnailFileToken: string,
+
+  zippedImageFileId: number,
+  zippedImageFileToken: string,
+
+  picSrc?: string,
+  fileName?: string,
 }

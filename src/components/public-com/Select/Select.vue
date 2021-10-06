@@ -7,13 +7,18 @@
     @click="onWrapperClick"
   >
     <div class="mask" v-show="isSpread" @click.stop="isSpread = false"></div>
+
+    <div v-if="!myData" class="no-data-box">暂无数据</div>
+
     <transition name="spread">
-      <div class="select-inner" v-show="isSpread">
+      <div v-if="myData" v-show="isSpread" class="select-inner">
         <!-- 动画是通过max-height实现，如果最外层Select没有一直显示的话，动画会直接结束！因此isSpread=true -->
         <SelectInner
           :myData="myData"
           :isSpread="true"
           :recursionTimes="0"
+          :optionVariableName="optionVariableName"
+          :optionVariableKey="optionVariableKey"
           @click.native.stop="catchBubble"
         />
       </div>
@@ -33,8 +38,11 @@ import SelectInner from './SelectInner.vue';
 export default class Select extends Vue {
   @Model('catchBubble') selectedString!: string;
   @Prop() myData!: Array<any> | null;
+  @Prop() optionVariableName!: string;
+  @Prop() optionVariableKey!: string;
   private isSpread: boolean = false;
   private isOverflow: boolean = false;
+  
   onWrapperClick() {
     this.isSpread = !this.isSpread;
     const ele = this.$refs['select-wrapper'];
@@ -75,6 +83,12 @@ export default class Select extends Vue {
       width: 100vw;
       height: 100vh;
       // background-color: rgba(255, 255, 255, 0.3);
+    }
+    .no-data-box {
+      position: absolute;
+      top: 23px;
+      left: 23px;
+      color: rgba(102, 102, 102, 1);
     }
     .pulldown-icon {
       position: absolute;

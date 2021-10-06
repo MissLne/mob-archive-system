@@ -71,6 +71,7 @@ export default class Input extends Vue {
   .input-wrap {
     $width: 430px;
     $height: 73px;
+    $holder-color: rgba(102, 102, 102, 1);
     z-index: 1;
     position: relative;
     width: $width;
@@ -83,7 +84,7 @@ export default class Input extends Vue {
       border-bottom: 3px solid #E1E1E1;
       padding: 0;
       background-color: transparent;
-      color: #999;
+      color: $holder-color;
       line-height: $height;
       transition: border-color 0.15s ease-in, color 0.25s ease-in;
       &.username {
@@ -103,7 +104,7 @@ export default class Input extends Vue {
       position: absolute;
       bottom: 23px;
       // left: 50%;
-      color: #999;
+      color: $holder-color;
       // transform: translateX(-50%);
       transition: opacity 0.35s ease-out;
     }

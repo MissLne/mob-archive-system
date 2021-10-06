@@ -1,10 +1,13 @@
 <template>
   <div id="collect-files-detail">
+    <!-- <DesHead/> -->
     <div class="container">
       <div class="input-box">
         <div class="preview-box">
           <span class="preview-title">预览</span>
-          <img src="" alt="" class="preview-img">
+          <div class="preview-img-box">
+            <img :src="detailData.picSrc" alt="" class="preview-img">
+          </div>
         </div>
         <h3 class="title">基础信息</h3>
         <ul class="inf-list">
@@ -17,21 +20,16 @@
                 :required="item.required"
                 :msg="item.msg"
               />
-              <img
+              <!-- 人脸识别的图标 -->
+              <!-- <img
                 v-if="item.title === '人物'"
                 class="face-recognition-icon"
                 :src="canRecognize
                   ? require('@/assets/temp-arch/face-recognition.png')
                   : require('@/assets/temp-arch/manual-input.png')"
                 @click="onRecognizing"
-              >
+              > -->
             </div>
-            <!-- <input
-              v-if="item.type === 'text' || item.type === 'date'"
-              v-model.lazy="item.value"
-              class="item-input"
-              :type="item.type ? item.type : text"
-            > -->
             <div
               v-else-if="item.type === 'select'"
               style="z-index: 2;"
@@ -41,7 +39,23 @@
                 {{item.value}}
                 <img src="@/assets/head/pulldown@2x.png" class="select-pulldown-icon">
               </span>
-              <Select v-model="item.value" class="selector" :myData="collectFilesType"/>
+              
+              <Select
+                v-if="item.title === '类别'"
+                v-model="item.value"
+                class="selector"
+                :myData="collectFilesType"
+                :optionVariableName="'typeName'"
+                :optionVariableKey="'id'"
+              />
+              <Select
+                v-else
+                v-model="item.value"
+                class="selector"
+                :myData="departmentNameTree"
+                :optionVariableName="'departmentName'"
+                :optionVariableKey="'id'"
+              />
             </div>
           </li>
         </ul>
@@ -62,24 +76,22 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import Select from '@/components/public-com/Select/Select.vue'
 import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
+import DesHead from '@/components/des-com/index/des-head.vue';
 
 @Component({
   components: {
     Select,
-    Input
+    Input,
+    DesHead,
   }
 })
 export default class CollectFilesDetail extends Vue {
-  @Prop() detailData: any;
+  @Prop() detailData!: UploadFileData;
   @Prop() collectFilesType: any;
+  @Prop() departmentNameTree: any;
   get isComplete() {
     return this.inputsProps.topic.value !== '' && this.inputsProps.categoryId.value !== '';
   }
-  
-  created() {
-    console.log(this.collectFilesType)
-  }
-
   private readonly inputsProps = {
     topic: { title: '名称', required: true, msg: '请输入姓名', type: 'text', value: '' },
     people: { title: '人物', required: false, type: 'text', value: '' },
@@ -87,12 +99,18 @@ export default class CollectFilesDetail extends Vue {
     time: { title: '时间', required: false, type: 'date', value: '' },
     place: { title: '地点', required: false, type: 'text', value: '' },
     categoryId: { title: '类别', required: true, type: 'select', value: '' },
-    departmentId: { title: '部门', required: false, type: 'text', value: '' },
+    departmentId: { title: '部门', required: false, type: 'select', value: '' },
     comment: { title: '备注', required: false, type: 'text', value: '' },
     sourse: { title: '来源', required: false, type: 'text', value: '' },
   }
 
-  private canRecognize: boolean = false;
+  created() {
+    console.log(this.collectFilesType);
+    if (this.detailData.fileName)
+      this.inputsProps.topic.value = this.detailData.fileName;
+  }
+
+  /* private canRecognize: boolean = false;
   onRecognizing() {
     if (this.canRecognize) {
       console.log('when recognize', this.detailData)
@@ -114,7 +132,7 @@ export default class CollectFilesDetail extends Vue {
   @Emit('passFaceData')
   passFaceData(faceData: any) {
     return faceData;
-  }
+  } */
   private submit() {
     if (!this.isComplete) return;
     this.$service.post('/api/api/face/faceInformationEntry', {
@@ -169,10 +187,17 @@ export default class CollectFilesDetail extends Vue {
           .preview-title {
             line-height: $preview-box-height;
           }
-          .preview-img {
+          .preview-img-box {
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
             width: 186px;
             height: $preview-box-height;
+            .preview-img {
+              height: 100%;
+            }
           }
+          
         }
         .inf-list {
           margin-right: 53px;
@@ -196,9 +221,10 @@ export default class CollectFilesDetail extends Vue {
               .select-result {
                 position: absolute;
                 width: 430px;
+                background-color: #fff; // 为了子元素的mix-blend-mode
+                color: rgba(102, 102, 102, 1);
                 height: $item-height;
                 line-height: $item-height;
-                background-color: #fff; // 为了子元素的mix-blend-mode
                 .select-pulldown-icon {
                   position: absolute;
                   top: 30px;
@@ -212,7 +238,7 @@ export default class CollectFilesDetail extends Vue {
                 z-index: 2;
               }
             }
-            .item-box {
+            /* .item-box {
               position: relative;
               .face-recognition-icon {
                 z-index: 2;
@@ -222,7 +248,7 @@ export default class CollectFilesDetail extends Vue {
                 width: 35px;
                 height: 35px;
               }
-            }
+            } */
           }
         }
       }

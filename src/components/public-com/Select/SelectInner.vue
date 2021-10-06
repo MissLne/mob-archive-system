@@ -1,13 +1,13 @@
 <template>
   <ul class="select" v-show="isSpread">
-    <li v-for="(item, index) in itemList" :key="item.categoryCode" class="option-box">
+    <li v-for="(item, index) in itemList" :key="item[optionVariableKey]" class="option-box">
       <div
         class="content"
         :style="{ 'padding-left': 0.75 + recursionTimes * 0.5 + 'rem' }"
       >
         <!-- 换成最外层监听了，原来在content里 -->
         <!-- @click="onOptionClick(index, item, $event)" -->
-        {{item.typeName}}
+        {{item[optionVariableName]}}
       </div>
       <div v-if="item.children">
         <label class="pulldown-icon-wrap" @click="onSpreadIconClick(index)">
@@ -21,6 +21,8 @@
           :myData="item.children"
           :isSpread="isChildrenSpread[index]"
           :recursionTimes = "recursionTimes + 1"
+          :optionVariableName="optionVariableName"
+          :optionVariableKey="optionVariableKey"
         />
       </div>
     </li>
@@ -36,6 +38,8 @@ export default class SelectInner extends Vue {
   @Prop() typeName!: string;
   @Prop() isSpread!: boolean;
   @Prop() recursionTimes!: number;
+  @Prop() optionVariableName!: string;
+  @Prop() optionVariableKey!: string;
   private isChildrenSpread: Array<boolean> | null = null;
   get itemList() {
     return this.myData || null

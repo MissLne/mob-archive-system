@@ -47,7 +47,7 @@ export default class ArchList extends Vue {
   checkItem(index: number) {
     // 如果直接修改数组内元素无效，官方文档响应式原理！
     this.$set(this.checkList, index, !this.checkList[index]);
-    console.log(this.checkList)
+    // console.log(this.checkList)
   }
   stopSelect() {
     this.isChecking = false;
