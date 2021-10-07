@@ -1,16 +1,21 @@
 <template>
   <div v-if="listData" id="arch-list">
     <button @click="onChecking">{{isChecking ? '全选' : '选择'}}</button>
-    <button @click="stopSelect">取消选择模式</button>
     <ul class="list">
       <li v-for="(item, index) in listData" :key="item.id" class="list-item">
-        <ArchItem :itemData="item"  @onClick="passClickIndex(index)"/>
+        <ArchItem :itemData="item"  @onClick="passClickIndex([index])"/>
         <!-- 选择时的遮罩层 -->
         <label class="check-mask" @click="checkItem(index)" v-show="isChecking">
           <i class="check-circle" :class="{ 'checked-circle': checkList[index] }">✓</i>
         </label>        
       </li>
     </ul>
+    <transition name="btns-move">
+      <div v-show="isChecking" class="btns-box">
+        <button class="cancel-btn" @click="stopSelect">取消</button>
+        <button class="edit-btn" @click="startEdit">编辑</button>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -52,12 +57,17 @@ export default class ArchList extends Vue {
   stopSelect() {
     this.isChecking = false;
   }
-
+  startEdit() {
+    let checkedIndex: Array<number> = [];
+    this.checkList.forEach((value, index) => {
+      if (value) checkedIndex.push(index);
+    });
+    this.passClickIndex(checkedIndex)
+  }
   /* 告诉父组件点击了哪个元素 */
   @Emit('passClickIndex')
-  passClickIndex(index: number) {
-    // this.$emit('passClickIndex', index);
-    return index;
+  passClickIndex(indexList: Array<number>) {
+    return indexList;
   }
 }
 </script>
@@ -98,5 +108,50 @@ export default class ArchList extends Vue {
         }
       }
     }
+    .btns-box {
+      position: fixed;
+      bottom: 29px;
+      left: 115px;
+      display: flex;
+      justify-content: space-between;
+      width: 520px;
+      .cancel-btn,
+      .edit-btn {
+        width: 162px;
+        height: 75px;
+        border: none;
+        font-size: 42px;
+        text-align: center;
+        line-height: 75px;
+      }
+      .cancel-btn {
+        background: #FFFFFF;
+        color: #85B8FD;
+        box-shadow: 0px 3px 7px 0px rgba(143, 143, 143, 0.35);
+        border-radius: 8px;
+      }
+      .edit-btn {
+        background: #85B8FD;
+        color: #FFFFFF;
+        box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
+        border-radius: 8px;
+      }
+      // 动画
+      &.btns-move-enter,
+      &.btns-move-leave-to {
+        transform: translateY(150px);
+      }
+      &.btns-move-enter-active {
+        transition: transform 0.35s ease-out;
+      }
+      &.btns-move-leave-active {
+        transition: transform 0.25s ease-in;
+      }
+      &.btns-move-enter-to,
+      &.btns-move-left {
+        transform: translateY(0px);
+      }
+    }
+    
   }
 </style>

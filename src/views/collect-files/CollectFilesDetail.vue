@@ -1,6 +1,6 @@
 <template>
   <div id="collect-files-detail">
-    <!-- <DesHead/> -->
+    <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="container">
       <div class="input-box">
         <div class="preview-box">
@@ -64,9 +64,14 @@
         <button
           class="submit"
           :style="{ 'background-color': isComplete ? '#8EBEFE' : '#D2E6FE'}"
-          @click="submit"
+          @click="trySubmit"
         >提交</button>
       </div>
+      <Alerts
+        v-show="alertsData.isAlerts"
+        :title="alertsData.title"
+        @sureDelete="alertsData.sureHandle"
+      />
     </div>
   </div>
 </template>
@@ -77,12 +82,15 @@ import Select from '@/components/public-com/Select/Select.vue'
 import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
+import Alerts from '@/components/tools/alerts.vue';
+import Msg from '@/components/public-com/MsgBox/Msg';
 
 @Component({
   components: {
     Select,
     Input,
     DesHead,
+    Alerts
   }
 })
 export default class CollectFilesDetail extends Vue {
@@ -105,7 +113,7 @@ export default class CollectFilesDetail extends Vue {
   }
 
   created() {
-    console.log(this.collectFilesType);
+    console.log(this.detailData)
     if (this.detailData.fileName)
       this.inputsProps.topic.value = this.detailData.fileName;
   }
@@ -133,9 +141,53 @@ export default class CollectFilesDetail extends Vue {
   passFaceData(faceData: any) {
     return faceData;
   } */
-  private submit() {
+  
+  // 提示框
+  private alertsData = {
+    isAlerts: false,
+    title: '',
+    sureHandle: function(){},
+    alerts(title: string) {
+      this.isAlerts = true;  
+      this.title = title;
+    }
+  }
+  // 头部数据与点击事件
+  public headData: any = {
+    title: '详情',
+    leftPic: true,
+    leftUrl: "1",
+    leftText: "",
+    rightPic: false,
+    rightUrl: "",
+    rightText: "",
+    isShow: false,
+  }
+  public headClick({clickType}: any) {
+    if (clickType === 'left') {
+      this.alertsData.alerts('未提交的信息将会丢失');
+      this.alertsData.sureHandle = function() {
+        console.log(123);
+        this.isAlerts = false;
+      }
+    }
+  }
+
+  // 提交部分
+  trySubmit() {
     if (!this.isComplete) return;
-    this.$service.post('/api/api/face/faceInformationEntry', {
+    this.alertsData.alerts('是否确认提交');
+    this.alertsData.sureHandle = function() {
+      console.log(123);
+    }
+  }
+  sureSubmit({type}: any) {
+    this.alertsData.isAlerts = false;
+    if (type === 'sure') this.submit();
+  }
+  private submit() {
+    const fullFileData = {
+      // "id": "资料文件的id（新增情况下不需要填写）",
       topic: this.inputsProps.topic.value,
       people: this.inputsProps.people.value,
       event: this.inputsProps.event.value,
@@ -145,18 +197,28 @@ export default class CollectFilesDetail extends Vue {
       departmentId: this.inputsProps.departmentId.value,
       comment: this.inputsProps.comment.value,
       sourse: this.inputsProps.sourse.value,
-      "id": "资料文件的id（新增情况下不需要填写）",
-      "fileId": "文件id",
-      "thumbnailFileId": "缩略图id",
-      "zippedFileId": "压缩图id",
-      "source": "本资料文件的来源",
-      "attachmentIds": "附件（有传的话，要求传进来的要求是最新版本）"
-    })
-    .then(({data}: any) => {
-      console.log('success!success!success!')
-    })
+      "fileId": this.detailData.fileId,
+      "thumbnailFileId": this.detailData.thumbnailFileId,
+      "zippedFileId": this.detailData.zippedImageFileId,
+      // "attachmentIds": "附件（有传的话，要求传进来的要求是最新版本）"
+    }
+    this.$service.post('/api/api/collectedFile/addCollectedFile', fullFileData)
+      .then(({data}: any) => {
+        console.log('success!success!success!', data)
+        if (data.code === 200) {
+          this.nextDetail();
+        }
+        else
+          throw Error('保存失败');
+      })
+      .catch((err: Error) => {
+        MsgBox.error(err.message);
+      })
   }
-  
+  @Emit('nextDetail')
+  nextDetail() {
+    console.log('xxxx')
+  }
 }
 </script>
 
