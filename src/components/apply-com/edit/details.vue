@@ -66,6 +66,7 @@ interface ItemData {
 @Component
 export default class Details extends Vue {
   @Prop({}) private detailData!: any;
+  
   private item: Array<ItemTyle> = [
     {
       text: "申请编号",

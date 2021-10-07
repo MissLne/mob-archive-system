@@ -157,7 +157,8 @@ export default class Description extends Vue {
         for(let i = 0;i < result.length;i++) {
           this.idList.push(result[i].id)
         }
-        this.pageData.total = this.count = res.data.data.total;
+        this.count = res.data.data.total;
+        this.pageData.total = Math.ceil(this.count / 10)
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             (this as any).$service

@@ -24,7 +24,7 @@ export default class DesBtn extends Vue {
   created() {
     console.log(this.totalPage.total);
 
-    this.page = Math.ceil(this.totalPage.total / 10);
+    this.page = this.totalPage.total
   }
   prePage(): void {
     this.$emit("changePage", { type: "prePage" });

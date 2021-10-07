@@ -2,18 +2,21 @@
   <div id="editApply">
     <DesHead :headData="headData" />
     <div class="slots"></div>
-    <Details v-if="detailData" :detailData="detailData" @btnClick="btnClick($event)"/>
+    <Details v-if="detailData" :detailData="detailData" @btnClick="btnClick($event)" />
+    <FileData :fileData="fileData" v-if="fileData"/>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Details from "@/components/apply-com/edit/details.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
+import FileData from "@/components/apply-com/edit/fileData.vue"
 
 @Component({
   components: {
     Details,
-    DesHead
+    DesHead,
+    FileData
   },
 })
 export default class editApply extends Vue {
@@ -28,6 +31,7 @@ export default class editApply extends Vue {
     rightText: "",
     isShow: false,
   };
+  public fileData: any[] = []
   created() {
     this.getDetail();
   }
@@ -35,6 +39,8 @@ export default class editApply extends Vue {
     (this as any).$request
       .get("/api/api/use/getUseApplyDetail", this.$route.params)
       .then((res: any) => {
+        console.log(this.$route.params,res.data.data);
+        
         this.detailData = Object.assign(res.data.data,this.$route.params);
         
         let data = new Map([
@@ -50,7 +56,28 @@ export default class editApply extends Vue {
       });
       this.$request.get("/api/api/use/getMyUseResultByUseApplyId",this.$route.params)
       .then((res: any) => {
-        console.log(res);
+        let result = res.data.data
+        result.map((item: any, index: number) => {
+          if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
+            this.$service
+              .get(`/api/api/file/download/${item.fileToken}`, {
+                responseType: "arraybuffer",
+              })
+              .then((data: any) => {
+                item.fileToken =
+                  "data:image/png;base64," +
+                  btoa(
+                    new Uint8Array(data.data).reduce(
+                      (data, byte) => data + String.fromCharCode(byte),
+                      ""
+                    )
+                  );
+              });
+          }
+        });
+        this.fileData = result
+        console.log(this.fileData);
+        
       })
   }
   btnClick(event: any) {
