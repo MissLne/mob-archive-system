@@ -1,156 +1,44 @@
 <template>
-  <div id="collect-files">
-    <keep-alive include="CollectFilesUpload">
-      <router-view
-        :detailData="detailDataList[0]"
-        :collectFilesType="collectFilesType"
-        :departmentNameTree="departmentNameTree"
-        @passDetailData="passDetailData"
-        @nextDetail="nextDetail"
-      ></router-view>
-    </keep-alive>
+  <div id="collect-files-upload">
+    <DesHead :headData="headData" @handleClick="headClick"/>
+    <div class="slots"></div><!-- 占header的位置 -->
+    
+    <!-- <button @click="testMsgBox">测试</button> -->
+    <ArchList
+      ref="archList"
+      :listData="listData"
+      @passClickIndex="passDetailData"
+      @stopSelect="stopSelect"
+    />
+    <UploadBtn :disabled="disabledUpload" @uploadFiles="onUploadFiles"/>
+    <div v-if="!listData.length" class="uploadHint">点我上传 →</div>
+
+    <Alerts
+      v-show="alertsData.isAlerts"
+      :title="alertsData.title"
+      @sureDelete="sureHandle"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Emit } from 'vue-property-decorator'
+import UploadBtn from '@/components/public-com/UploadBtn.vue';
+import ArchList from '@/components/public-com/ArchList.vue';
+import MsgBox from '@/components/public-com/MsgBox/Msg';
+import fileutils from '@/utils/fileutils';
+import DesHead from '@/components/des-com/index/des-head.vue';
+import Alerts from '@/components/tools/alerts.vue';
 
-@Component
-export default class CollectFiles extends Vue {
-  private detailDataList: Array<any> = [];
-  private collectFilesType: any = null;
-  private departmentNameTree: any = null;
-  initSelectData() {
-    if (!this.collectFilesType)
-      this.$service.get('/api/api/type/getCollectedFileType')
-        .then(({data: res}: any) => {
-          console.log('getCollectedFileType', res)
-          if (res.success && res.code === 200)
-            this.collectFilesType = res.data.children
-        })
-    if (!this.departmentNameTree)
-      this.$service.get('/api/api/department/getAllDepartmentNameTree')
-        .then(({data: res}: any) => {
-          console.log('getAllDepartmentNameTree', res)
-          if (res.success && res.code === 200)
-            this.departmentNameTree = res.data.children
-        })
+@Component({
+  components: {
+    UploadBtn,
+    ArchList,
+    DesHead,
+    Alerts
   }
-  passDetailData(data: UploadFileData[]) {
-    this.initSelectData();
-    this.detailDataList = data;
-    this.$router.push({ name: 'collectFilesDetail' });
-  }
-  nextDetail() {
-    console.log(this.detailDataList.length)
-    if (this.detailDataList.length === 1)
-      this.$router.replace({name: 'collectFilesUpload'})
-    else
-      this.detailDataList.splice(0, 1);
-  }
-  testData =  {
-        "id": -1,
-        "categoryCode": null,
-        "typeName": "root",
-        "categoryType": 1,
-        "children": [
-            {
-                "id": 25,
-                "categoryCode": "23",
-                "typeName": "校史",
-                "categoryType": 1,
-                "children": [
-                    {
-                        "id": 29,
-                        "categoryCode": "33",
-                        "typeName": "计院史",
-                        "categoryType": 1,
-                        "children": [
-                            {
-                                "id": 32,
-                                "categoryCode": "49",
-                                "typeName": "计科",
-                                "categoryType": 1,
-                                "children": null
-                            },
-                            {
-                                "id": 33,
-                                "categoryCode": "41",
-                                "typeName": "软工",
-                                "categoryType": 1,
-                                "children": null
-                            },
-                            {
-                                "id": 34,
-                                "categoryCode": "42",
-                                "typeName": "网工",
-                                "categoryType": 1,
-                                "children": null
-                            },
-                            {
-                                "id": 312312,
-                                "categoryCode": "43135",
-                                "typeName": "什么工",
-                                "categoryType": 1,
-                                "children": null
-                            },
-                            {
-                                "id": 3123212,
-                                "categoryCode": "4313512",
-                                "typeName": "为什么工",
-                                "categoryType": 1,
-                                "children": null
-                            }
-                        ]
-                    },
-                    {
-                        "id": 30,
-                        "categoryCode": "34",
-                        "typeName": "自院史",
-                        "categoryType": 1,
-                        "children": [
-                          {
-                              "id": 300,
-                              "categoryCode": "41",
-                              "typeName": "自然真美",
-                              "categoryType": 1,
-                              "children": null
-                          },
-                          {
-                              "id": 301,
-                              "categoryCode": "42",
-                              "typeName": "自动化也是",
-                              "categoryType": 1,
-                              "children": null
-                          }
-                        ]
-                    },
-                    {
-                        "id": 31,
-                        "categoryCode": "35",
-                        "typeName": "信院史",
-                        "categoryType": 1,
-                        "children": null
-                    }
-                ]
-            },
-            {
-                "id": 35,
-                "categoryCode": "36",
-                "typeName": "秃头史",
-                "categoryType": 1,
-                "children": [
-                    {
-                        "id": 36,
-                        "categoryCode": "37",
-                        "typeName": "tu秃了",
-                        "categoryType": 1,
-                        "children": null
-                    }
-                ]
-            }
-        ]
-  }
+})
+export default class CollectFilesUpload extends Vue {
   testdetailData = {
     contentType: "image/jpg",
     fileId: 41864,
@@ -163,16 +51,130 @@ export default class CollectFiles extends Vue {
     zippedImageFileId: 41866,
     zippedImageFileToken: null,
   }
+  testMsgBox() {
+    this.listData.splice(0, 0, {...this.testdetailData, fileName: '123.123' + new Date().getMilliseconds()})
+    MsgBox.success('aijfoiasjfdio', true);
+    MsgBox.changeStatus('123');
+    MsgBox.closeBox();
+  }
+  // 提示框
+  private alertsData = {
+    isAlerts: false,
+    title: '',
+    alerts(title: string) {
+      this.isAlerts = true;  
+      this.title = title;
+    },
+    close() {
+      this.isAlerts = false;
+    }
+  }
+  private sureHandle = ({type}: any) => {};
+  // 头部数据
+  public headData = {
+    title: '校史征集',
+    leftPic: true,
+    leftUrl: "1",
+    leftText: "",
+    rightPic: false,
+    rightUrl: "",
+    rightText: "选择",
+    isShow: false,
+  }
+  public headClick({clickType}: any) {
+    if (clickType === 'left') {
+      this.alertsData.alerts('未提交的信息将会丢失');
+      this.sureHandle = ({type}: any) => {
+        if (type === 'sure')
+          this.$router.push({name: 'login'})
+        else
+          this.alertsData.close()
+      }
+    }
+    else {
+      (this.$refs.archList as ArchList).onChecking()
+      this.headData.rightText = '全选'
+    }
+  }
+  public stopSelect() {
+    this.headData.rightText = '选择'
+  }
+  // 上传文件后返回的数据
+  private listData: Array<any> = [];
+  private disabledUpload: boolean = false;
+  private onUploadFiles (file: File) {
+    const formData = new FormData();
+    formData.append('multipartFile', file);
+
+    MsgBox.success('文件上传中...', true)
+    this.disabledUpload = true;
+
+    this.$service.post('/api/api/file/visitorUpload', formData, {
+      headers: { 'content-type': 'multipart/form-data' }
+    })
+    .then(({data: res}: any) => {
+      if (res.code === 200) {
+        console.log('上传成功', res);
+        MsgBox.changeStatus('上传成功');
+        
+        const data: UploadFileData = res.data;
+        this.listData.splice(0, 0, data);
+
+        console.log(data.fileName)
+        // this.$set(data, 'fileName', file.name)
+        this.$set(this.listData[0], 'fileName', file.name)
+        console.log(data.fileName)
+
+        fileutils.setPicSrc(data, file);
+      }
+      else
+        throw Error(res.message);
+    })
+    .catch((err: Error) => {
+      console.log('上传失败', err.message)
+      // MsgBox.changeStatus(err.message, false);
+      MsgBox.changeStatus('上传失败', false);
+    })
+    .finally(() => {
+      MsgBox.closeBox(1000);
+      this.disabledUpload = false;
+    })
+    /* this.fileList.unshift(file);
+    this.listData.unshift({});
+    this.passDetailData({
+      contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      fileId: 248710,
+      fileToken: "2021-09-30/ff16c86f-5e32-47d0-969c-6863ce23dcb5/20be1b91-6d09-4940-9288-439818e8763b.xlsx?token=a55aed8202d14290b8b74fb634874af1",
+      thumbnailContentType: null,
+      thumbnailFileId: null,
+      thumbnailFileToken: null,
+      zippedImageFileId: null,
+      zippedImageFileToken: null,
+    }) */
+  }
+
+  @Emit('passDetailData')
+  passDetailData(indexList: Array<number>) {
+    return indexList.map((value) => {
+      const temp = this.listData[value];
+      return this.listData[value];
+    });
+  }
 }
 </script>
 
 <style lang="scss">
-  #collect-files {
-    width: 100vw;
-    min-height: 100vh;
-    background-image: linear-gradient(180deg, #ECF2FE, #E9F1FE);
-  }
-  .slots {
-    height: 124px;
+  #collect-files-upload {
+    box-sizing: border-box;
+    padding: 20px 25px 0;
+    .uploadHint {
+      position: fixed;
+      left: 257px;
+      bottom: 72px;
+      color: rgba(0, 0, 0, 0.2);
+      font-size: 42px;
+      font-family: PingFang SC;
+      font-weight: bold;
+    }
   }
 </style>

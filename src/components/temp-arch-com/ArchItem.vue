@@ -1,26 +1,35 @@
 <template>
   <div class="arch-item" @click="onClick">
-    <img :src="picSrc" alt="" class="pic">
+    <img :src="itemData.picSrc" alt="" class="pic">
     <h3 class="title">{{itemData.fileName}}</h3>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import fileutils from '@/utils/fileutils'
 
 @Component
 export default class ArchItem extends Vue {
   @Prop() itemData!: ArchItemData;
-  private picSrc: string = '';
+
+  @Emit('onClick')
   onClick() {
-    this.$emit('onClick');
+    // this.$emit('onClick');
   }
   created() {
-    fileutils.downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
+    if (this.itemData.thumbnailFileToken && this.itemData.thumbnailFileType) { // 类型为图片，不是校史征集，后台返回缩略图token
+      fileutils.downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
       .then((res: any) => {
-        this.picSrc = res;
+        this.$set(this.itemData, 'picSrc', res);
       })
+    }
+    /* else if (this.itemData.picSrc) { // 类型为图片，是校史征集，输入itemData时，前端整了个picSrc
+      this.picSrc = this.itemData.picSrc;
+    }
+    else { // 类型不为图片，根据文件名后缀设置图片
+      this.setFileDataPic();
+    } */
   }
 }
 </script>
@@ -29,8 +38,8 @@ export default class ArchItem extends Vue {
   .arch-item {
     overflow: hidden;
     // 暂时想到的图片居中方案
-    /* display: flex;
-    justify-content: center; */
+    display: flex;
+    justify-content: center;
 
     width: 200px;
     height: 200px;

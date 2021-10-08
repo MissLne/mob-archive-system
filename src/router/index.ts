@@ -44,20 +44,43 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/collect-files',
-    name: 'collect',
-    redirect: '/collect-files/list',
-    component: () => import('@/views/temp-arch/TempArch.vue'),
+    name: 'collectFiles',
+    redirect: '/collect-files/upload',
+    component: () => import('@/views/collect-files/CollectFiles.vue'),
     children: [
       {
-        path: 'list',
-        name: 'collect-list',
-        component: () => import('@/views/temp-arch/TempArchList.vue')
+        path: 'upload',
+        name: 'collectFilesUpload',
+        component: () => import('@/views/collect-files/CollectFilesUpload.vue'),
       },
       {
         path: 'detail',
-        name: 'collect-detail',
-        component: () => import('@/views/temp-arch/TempArchDetail.vue')
+        name: 'collectFilesDetail',
+        component: () => import('@/views/collect-files/CollectFilesDetail.vue'),
+      },
+      {
+        path: 'face-recognition',
+        name: 'faceRecognition',
+        component: () => import('@/views/collect-files/FaceRecognition.vue'),
       }
+    ]
+  },
+  {
+    path: '/temp-arch',
+    name: 'tempArch',
+    redirect: '/temp-arch/upload',
+    component: () => import('@/views/temp-arch/TempArch.vue'),
+    children: [
+      {
+        path: 'upload',
+        name: 'tempArchUpload',
+        component: () => import('@/views/temp-arch/TempArchUpload.vue'),
+      },
+      {
+        path: 'detail',
+        name: 'tempArchDetail',
+        component: () => import('@/views/temp-arch/TempArchDetail.vue'),
+      },
     ]
   },
   {

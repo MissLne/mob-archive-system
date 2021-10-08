@@ -1,6 +1,6 @@
 <template>
   <div id="temp-arch-detail">
-    <button @click="getData">载入</button>
+    <!-- <button @click="getData">载入</button> -->
     <div class="container">
       <div class="preview-box">
         <span class="title">预览</span>
@@ -72,6 +72,13 @@ export default class TempArchDetail extends Vue {
   @Prop() fondsIdentifier!: any;
   @Prop() dossierType!: any;
   @Prop() departmentTree!: any;
+  /* beforeRouteUpdate(to: any, from: any, next: any) {
+    console.log('aofeoasiefnhio')
+    console.log(Object.getPrototypeOf(to))
+  } */
+  created() {
+    console.log('created', this.detailData)
+  }
   getData() {
     Promise.all([
         // 全宗号
@@ -141,6 +148,20 @@ export default class TempArchDetail extends Vue {
                                 "typeName": "网工",
                                 "categoryType": 1,
                                 "children": null
+                            },
+                            {
+                                "id": 312312,
+                                "categoryCode": "43135",
+                                "typeName": "什么工",
+                                "categoryType": 1,
+                                "children": null
+                            },
+                            {
+                                "id": 3123212,
+                                "categoryCode": "4313512",
+                                "typeName": "为什么工",
+                                "categoryType": 1,
+                                "children": null
                             }
                         ]
                     },
@@ -197,18 +218,17 @@ export default class TempArchDetail extends Vue {
 
 <style lang="scss">
   #temp-arch-detail {
+    width: 700px;
     height: 1208px;
     border-radius: 1px;
+    margin: auto;
     font-size: 28px;
     font-family: PingFang-SC-Regular;
     .container {
-      width: 700px;
       height: 100%;
       box-sizing: border-box;
       padding: 18px 0 31px 40px;
       background-color: #fff;
-      .preview-box {
-      }
       .inf-list {
         margin-right: 53px;
         .item {

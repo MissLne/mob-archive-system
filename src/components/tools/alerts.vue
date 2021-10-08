@@ -14,7 +14,14 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class Alerts extends Vue {
-  @Prop({}) private title!: string;
+  @Prop() private title!: string;
+  /* @Prop() private sureHandle!: () => void;
+  @Prop() private notHandle!: () => void;
+
+  created() {
+    if (this.sureHandle) this.sure = this.sureHandle;
+    if (this.notHandle) this.not = this.notHandle;
+  } */
 
   not() {
     this.$emit('sureDelete',{type: 'not'})
