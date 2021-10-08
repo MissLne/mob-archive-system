@@ -1,12 +1,23 @@
 <template>
   <div id="collect-files-upload">
-    <button @click="testMsgBox">测试</button>
+    <DesHead :headData="headData" @handleClick="headClick"/>
+    <div class="slots"></div><!-- 占header的位置 -->
+    
+    <!-- <button @click="testMsgBox">测试</button> -->
     <ArchList
+      ref="archList"
       :listData="listData"
       @passClickIndex="passDetailData"
+      @stopSelect="stopSelect"
     />
-    <UploadBtn @uploadFiles="onUploadFiles"/>
+    <UploadBtn :disabled="disabledUpload" @uploadFiles="onUploadFiles"/>
     <div v-if="!listData.length" class="uploadHint">点我上传 →</div>
+
+    <Alerts
+      v-show="alertsData.isAlerts"
+      :title="alertsData.title"
+      @sureDelete="sureHandle"
+    />
   </div>
 </template>
 
@@ -16,11 +27,15 @@ import UploadBtn from '@/components/public-com/UploadBtn.vue';
 import ArchList from '@/components/public-com/ArchList.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import fileutils from '@/utils/fileutils';
+import DesHead from '@/components/des-com/index/des-head.vue';
+import Alerts from '@/components/tools/alerts.vue';
 
 @Component({
   components: {
     UploadBtn,
-    ArchList
+    ArchList,
+    DesHead,
+    Alerts
   }
 })
 export default class CollectFilesUpload extends Vue {
@@ -42,10 +57,57 @@ export default class CollectFilesUpload extends Vue {
     MsgBox.changeStatus('123');
     MsgBox.closeBox();
   }
+  // 提示框
+  private alertsData = {
+    isAlerts: false,
+    title: '',
+    alerts(title: string) {
+      this.isAlerts = true;  
+      this.title = title;
+    },
+    close() {
+      this.isAlerts = false;
+    }
+  }
+  private sureHandle = ({type}: any) => {};
+  // 头部数据
+  public headData = {
+    title: '校史征集',
+    leftPic: true,
+    leftUrl: "1",
+    leftText: "",
+    rightPic: false,
+    rightUrl: "",
+    rightText: "选择",
+    isShow: false,
+  }
+  public headClick({clickType}: any) {
+    if (clickType === 'left') {
+      this.alertsData.alerts('未提交的信息将会丢失');
+      this.sureHandle = ({type}: any) => {
+        if (type === 'sure')
+          this.$router.push({name: 'login'})
+        else
+          this.alertsData.close()
+      }
+    }
+    else {
+      (this.$refs.archList as ArchList).onChecking()
+      this.headData.rightText = '全选'
+    }
+  }
+  public stopSelect() {
+    this.headData.rightText = '选择'
+  }
+  // 上传文件后返回的数据
   private listData: Array<any> = [];
+  private disabledUpload: boolean = false;
   private onUploadFiles (file: File) {
     const formData = new FormData();
     formData.append('multipartFile', file);
+
+    MsgBox.success('文件上传中...', true)
+    this.disabledUpload = true;
 
     this.$service.post('/api/api/file/visitorUpload', formData, {
       headers: { 'content-type': 'multipart/form-data' }
@@ -53,7 +115,7 @@ export default class CollectFilesUpload extends Vue {
     .then(({data: res}: any) => {
       if (res.code === 200) {
         console.log('上传成功', res);
-        MsgBox.success('上传成功');
+        MsgBox.changeStatus('上传成功');
         
         const data: UploadFileData = res.data;
         this.listData.splice(0, 0, data);
@@ -70,7 +132,12 @@ export default class CollectFilesUpload extends Vue {
     })
     .catch((err: Error) => {
       console.log('上传失败', err.message)
-      MsgBox.error(err.message)
+      // MsgBox.changeStatus(err.message, false);
+      MsgBox.changeStatus('上传失败', false);
+    })
+    .finally(() => {
+      MsgBox.closeBox(1000);
+      this.disabledUpload = false;
     })
     /* this.fileList.unshift(file);
     this.listData.unshift({});

@@ -39,7 +39,7 @@ export default class CollectFiles extends Vue {
   passDetailData(data: UploadFileData[]) {
     this.initSelectData();
     this.detailDataList = data;
-    this.$router.push({ name: 'collectFilesDetail', params: {test: new Date().getTime().toString()} });
+    this.$router.push({ name: 'collectFilesDetail' });
   }
   nextDetail() {
     console.log(this.detailDataList.length)
@@ -171,5 +171,8 @@ export default class CollectFiles extends Vue {
     width: 100vw;
     min-height: 100vh;
     background-image: linear-gradient(180deg, #ECF2FE, #E9F1FE);
+  }
+  .slots {
+    height: 124px;
   }
 </style>

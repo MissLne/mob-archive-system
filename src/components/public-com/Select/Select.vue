@@ -3,26 +3,27 @@
   <div
     ref="select-wrapper"
     class="select-wrapper"
-    :class="{ 'show-higher': isSpread && isOverflow }"
+    :style="{ 'z-index': isSpread ? 5 : 1 }"
+    :class="{ 'show-higher': myData && isSpread && isOverflow }"
     @click="onWrapperClick"
   >
-    <div class="mask" v-show="isSpread" @click.stop="isSpread = false"></div>
-
     <div v-if="!myData" class="no-data-box">暂无数据</div>
-
-    <transition name="spread">
-      <div v-if="myData" v-show="isSpread" class="select-inner">
-        <!-- 动画是通过max-height实现，如果最外层Select没有一直显示的话，动画会直接结束！因此isSpread=true -->
-        <SelectInner
-          :myData="myData"
-          :isSpread="true"
-          :recursionTimes="0"
-          :optionVariableName="optionVariableName"
-          :optionVariableKey="optionVariableKey"
-          @click.native.stop="catchBubble"
-        />
-      </div>
-    </transition>
+    <div v-else>
+      <div class="mask" v-show="isSpread" @click.stop="isSpread = false"></div>
+      <transition name="spread">
+        <div v-if="myData" v-show="isSpread" class="select-inner">
+          <!-- 动画是通过max-height实现，如果最外层Select没有一直显示的话，动画会直接结束！因此isSpread=true -->
+          <SelectInner
+            :myData="myData"
+            :isSpread="true"
+            :recursionTimes="0"
+            :optionVariableName="optionVariableName"
+            :optionVariableKey="optionVariableKey"
+            @click.native.stop="catchBubble"
+          />
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -67,16 +68,15 @@ export default class Select extends Vue {
 
 <style lang="scss">
   .select-wrapper {
-    z-index: 100;
     position: relative;
     left: -24px;
-    // top: -3px;
+    top: -3px; // 不加这个过渡动画失效
     width: 484px;
     font-size: 28px;
     height: 100%;
     transition: top 0.25s ease-out;
     .mask {
-      z-index: -1;
+      // z-index: -1; 由于书写顺序不需要z-index
       position: fixed;
       top: 0;
       left: 0;

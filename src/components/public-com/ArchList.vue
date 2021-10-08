@@ -1,6 +1,6 @@
 <template>
   <div v-if="listData" id="arch-list">
-    <button @click="onChecking">{{isChecking ? '全选' : '选择'}}</button>
+    <!-- <button @click="onChecking">{{isChecking ? '全选' : '选择'}}</button> -->
     <ul class="list">
       <li v-for="(item, index) in listData" :key="item.id" class="list-item">
         <ArchItem :itemData="item"  @onClick="passClickIndex([index])"/>
@@ -31,7 +31,7 @@ import ArchItem from '@/components/temp-arch-com/ArchItem.vue'
 export default class ArchList extends Vue {
   @Prop() listData!: Array<any>;
   private checkList: Array<boolean> = [];
-  private isChecking: boolean = false;
+  public isChecking: boolean = false;
 
   /* 选择文件部分 */
   onChecking() {
@@ -54,6 +54,7 @@ export default class ArchList extends Vue {
     this.$set(this.checkList, index, !this.checkList[index]);
     // console.log(this.checkList)
   }
+  @Emit('stopSelect')
   stopSelect() {
     this.isChecking = false;
   }
@@ -63,6 +64,7 @@ export default class ArchList extends Vue {
       if (value) checkedIndex.push(index);
     });
     this.passClickIndex(checkedIndex)
+    this.isChecking = false;
   }
   /* 告诉父组件点击了哪个元素 */
   @Emit('passClickIndex')

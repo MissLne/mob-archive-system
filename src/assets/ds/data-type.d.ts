@@ -37,4 +37,7 @@ interface UploadFileData {
 
   picSrc?: string,
   fileName?: string,
+
+  saveData?: any,
+  [key: string]: any,
 }

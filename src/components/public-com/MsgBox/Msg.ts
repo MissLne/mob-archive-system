@@ -6,7 +6,6 @@ const vm = new Vue({
 }).$mount();
 
 const box: any = vm.$children[0];
-// let handle: ReturnType<typeof setTimeout>;
 
 function showBox(manual: boolean) {
   document.body.appendChild(vm.$el)
@@ -18,7 +17,6 @@ function showBox(manual: boolean) {
  * @param delay 关闭弹窗的延迟，默认为0
  */
 function closeBox(delay: number = 0) {
-  console.log('close!')
   /* console.log('handle is', handle)
   if (handle) {
     box.$data.isShow = true;
@@ -28,9 +26,14 @@ function closeBox(delay: number = 0) {
   setTimeout(() => box.$data.isShow = false, 500 + delay)
   setTimeout(() => document.body.removeChild(vm.$el), 1000 + delay)
 }
-function changeStatus(msg?: string) {
-  box.$data.isSuccess = !box.$data.isSuccess;
-  if (msg) box.$data.showMsg = msg;
+/**
+ * 更改提示框信息（针对手动关闭的情况）
+ * @param msg 要更改的消息
+ * @param isSuccess 要更改的成败状态
+ */
+function changeStatus(msg: string, isSuccess?: boolean) {
+  box.$data.showMsg = msg;
+  if (isSuccess !== undefined) box.$data.isSuccess = isSuccess;
 }
 
 export default {

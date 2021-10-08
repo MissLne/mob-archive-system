@@ -1,15 +1,16 @@
 <template>
   <div id="upload">
-    <input type="file" class="select-files" @change="uploadFiles">
+    <input type="file" class="select-files" :disabled="disabled" @change="uploadFiles">
     <img src="@/assets/temp-arch/upload.png" alt="" class="icon">
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component
 export default class UploadBtn extends Vue {
+  @Prop({default: false}) disabled!: boolean;
   uploadFiles({target: {files}}: {target: HTMLInputElement}) {
     console.log('上传组件提醒您，您上传了：', files)
     if (files?.length)

@@ -31,6 +31,7 @@
     justify-content: center;
     align-items: center;
     position: fixed;
+    z-index: 100;
     bottom: 199px;
     left: 50%;
     width: 568px;

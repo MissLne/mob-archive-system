@@ -33,5 +33,33 @@ export default {
     }
     else
       console.log('fail to set picSrc');
+  },
+  recursionGetId(tree: Array<any>, keyValue: string, keyName: string, idName: string): any {
+    // console.log(tree, keyValue, keyName, idName)
+    let ans: any = undefined;
+    if (tree)
+      for (let i = 0; i < tree.length; ++i) {
+        const child = tree[i];
+        // console.log(child[keyName])
+        if (child[keyName] === keyValue) {
+          ans = child[idName];
+          // console.log(ans)
+          break;
+        }
+        else {
+          ans = this.recursionGetId(child.children, keyValue, keyName, idName);
+          if (ans) break;
+        }
+      }
+    return ans;
+  },
+  debonce(fn: Function, delay: number) {
+    let timer: any;
+    return function(this: any, ...args: Array<any>) {
+      const _this = this;
+      if (timer)
+        clearTimeout(timer);
+      timer = setTimeout(fn.bind(this, args), delay);
+    }
   }
 }

@@ -1,6 +1,8 @@
 <template>
   <div id="collect-files-detail">
     <DesHead :headData="headData" @handleClick="headClick"/>
+    <div class="slots"></div><!-- 占header的位置 -->
+
     <div class="container">
       <div class="input-box">
         <div class="preview-box">
@@ -32,7 +34,6 @@
             </div>
             <div
               v-else-if="item.type === 'select'"
-              style="z-index: 2;"
               class="item-input"
             >
               <span class="select-result">
@@ -43,7 +44,6 @@
               <Select
                 v-if="item.title === '类别'"
                 v-model="item.value"
-                class="selector"
                 :myData="collectFilesType"
                 :optionVariableName="'typeName'"
                 :optionVariableKey="'id'"
@@ -51,7 +51,6 @@
               <Select
                 v-else
                 v-model="item.value"
-                class="selector"
                 :myData="departmentNameTree"
                 :optionVariableName="'departmentName'"
                 :optionVariableKey="'id'"
@@ -62,15 +61,24 @@
       </div>
       <div class="submit-box">
         <button
+          v-if="!isSubmitted"
           class="submit"
           :style="{ 'background-color': isComplete ? '#8EBEFE' : '#D2E6FE'}"
           @click="trySubmit"
         >提交</button>
+        <button
+          v-else
+          class="submit"
+          style="background-color: #D2E6FE;"
+        >该资料已提交</button>
       </div>
+
+      <div v-if="isSubmitted" class="disabled-mask"></div>
+
       <Alerts
         v-show="alertsData.isAlerts"
         :title="alertsData.title"
-        @sureDelete="alertsData.sureHandle"
+        @sureDelete="sureHandle"
       />
     </div>
   </div>
@@ -83,7 +91,7 @@ import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import Alerts from '@/components/tools/alerts.vue';
-import Msg from '@/components/public-com/MsgBox/Msg';
+import fileutils from '@/utils/fileutils';
 
 @Component({
   components: {
@@ -111,10 +119,40 @@ export default class CollectFilesDetail extends Vue {
     comment: { title: '备注', required: false, type: 'text', value: '' },
     sourse: { title: '来源', required: false, type: 'text', value: '' },
   }
+  get inputsValue() {
+    return {
+      topic: this.inputsProps.topic,
+      people: this.inputsProps.people,
+      event: this.inputsProps.event,
+      time: this.inputsProps.time,
+      place: this.inputsProps.place,
+      categoryId: this.inputsProps.categoryId,
+      departmentId: this.inputsProps.departmentId,
+      comment: this.inputsProps.comment,
+      sourse: this.inputsProps.sourse,
+    }
+  }
+  set inputsValue(newValue) {
+    this.inputsProps.topic = newValue.topic;
+    this.inputsProps.people = newValue.people;
+    this.inputsProps.event = newValue.event;
+    this.inputsProps.time = newValue.time;
+    this.inputsProps.place = newValue.place;
+    this.inputsProps.categoryId = newValue.categoryId;
+    this.inputsProps.departmentId = newValue.departmentId;
+    this.inputsProps.comment = newValue.comment;
+    this.inputsProps.sourse = newValue.sourse;
+  }
 
+  private isSubmitted: boolean = false;
   created() {
-    console.log(this.detailData)
-    if (this.detailData.fileName)
+    console.log('detail-com is created!')
+    if (this.detailData.isSubmitted)
+      this.isSubmitted = true;
+
+    if (this.detailData.saveData)
+      this.inputsValue = this.detailData.saveData;
+    else if (this.detailData.fileName)
       this.inputsProps.topic.value = this.detailData.fileName;
   }
 
@@ -146,12 +184,15 @@ export default class CollectFilesDetail extends Vue {
   private alertsData = {
     isAlerts: false,
     title: '',
-    sureHandle: function(){},
     alerts(title: string) {
       this.isAlerts = true;  
       this.title = title;
+    },
+    close() {
+      this.isAlerts = false;
     }
   }
+  private sureHandle = ({type}: any) => {};
   // 头部数据与点击事件
   public headData: any = {
     title: '详情',
@@ -165,36 +206,43 @@ export default class CollectFilesDetail extends Vue {
   }
   public headClick({clickType}: any) {
     if (clickType === 'left') {
-      this.alertsData.alerts('未提交的信息将会丢失');
-      this.alertsData.sureHandle = function() {
-        console.log(123);
-        this.isAlerts = false;
-      }
+      // this.alertsData.alerts('未提交的信息将会丢失');
+      // this.sureHandle = ({type}: any) => {
+        // if (type === 'sure')
+      this.detailData.saveData = this.inputsValue;
+      this.$router.replace({name: 'collectFilesUpload'})
+        // this.alertsData.close()
+      // }
     }
   }
-
   // 提交部分
   trySubmit() {
-    if (!this.isComplete) return;
+    // if (!this.isComplete) return;
     this.alertsData.alerts('是否确认提交');
-    this.alertsData.sureHandle = function() {
-      console.log(123);
+    this.sureHandle = ({type}: any) => {
+      if (type === 'sure') this.submit()
+      this.alertsData.close()
     }
   }
-  sureSubmit({type}: any) {
-    this.alertsData.isAlerts = false;
-    if (type === 'sure') this.submit();
-  }
   private submit() {
-    const fullFileData = {
+    const fullFileData: any = {
       // "id": "资料文件的id（新增情况下不需要填写）",
       topic: this.inputsProps.topic.value,
       people: this.inputsProps.people.value,
       event: this.inputsProps.event.value,
-      time: this.inputsProps.time.value,
+      time: this.inputsProps.time.value 
+        && this.inputsProps.time.value.split('/').join('-') + 'T00:00:00',
       place: this.inputsProps.place.value,
-      categoryId: this.inputsProps.categoryId.value,
-      departmentId: this.inputsProps.departmentId.value,
+      categoryId:
+        Number.parseInt(
+          fileutils.recursionGetId(this.collectFilesType, this.inputsProps.categoryId.value, 'typeName', 'id')
+        ),
+        // this.inputsProps.categoryId.value,
+      departmentId:
+        Number.parseInt(
+          fileutils.recursionGetId(this.departmentNameTree, this.inputsProps.departmentId.value, 'departmentName', 'id')
+        ),
+        // this.inputsProps.departmentId.value,
       comment: this.inputsProps.comment.value,
       sourse: this.inputsProps.sourse.value,
       "fileId": this.detailData.fileId,
@@ -202,22 +250,40 @@ export default class CollectFilesDetail extends Vue {
       "zippedFileId": this.detailData.zippedImageFileId,
       // "attachmentIds": "附件（有传的话，要求传进来的要求是最新版本）"
     }
-    this.$service.post('/api/api/collectedFile/addCollectedFile', fullFileData)
+
+    let urlSuffix = 'addCollectedFile'
+    if (this.detailData.newFileId) {
+      urlSuffix = 'updateCollectedFile'
+      fullFileData.id = this.detailData.newFileId
+    }
+
+    const test: any = {};
+    for (const key in fullFileData) {
+      if (fullFileData[key] && fullFileData[key] !== '') test[key] = fullFileData[key];
+    }
+
+    this.$service.post(`/api/api/collectedFile/${urlSuffix}`, test)
       .then(({data}: any) => {
         console.log('success!success!success!', data)
         if (data.code === 200) {
           this.nextDetail();
+          this.detailData.isSubmitted = true;
+          this.detailData.saveData = this.inputsValue;
+          /**
+           * 此处如果返回id，将其赋给this.detailData.newFileId
+           */
+          MsgBox.success('提交成功');
         }
         else
-          throw Error('保存失败');
+          throw Error('提交失败');
       })
       .catch((err: Error) => {
-        MsgBox.error(err.message);
+        // MsgBox.error(err.message);
+        MsgBox.error('提交失败');
       })
   }
   @Emit('nextDetail')
   nextDetail() {
-    console.log('xxxx')
   }
 }
 </script>
@@ -225,7 +291,7 @@ export default class CollectFilesDetail extends Vue {
 <style lang="scss">
   #collect-files-detail {
     width: 700px;
-    height: 1208px;
+    height: 1335px;
     border-radius: 1px;
     margin: auto;
     font-size: 28px;
@@ -235,7 +301,7 @@ export default class CollectFilesDetail extends Vue {
       flex-direction: column;
       justify-content: space-between;
       width: 700px;
-      height: 100%;
+      height: 1208px;
       box-sizing: border-box;
       padding: 18px 0 29px 40px;
       background-color: #fff;
@@ -275,7 +341,6 @@ export default class CollectFilesDetail extends Vue {
               color: #FF0000;
             }
             .item-input {
-              z-index: 1;
               width: 430px;
               height: $item-height;
               border: none;
@@ -295,9 +360,6 @@ export default class CollectFilesDetail extends Vue {
                   height: 15px;
                   mix-blend-mode: difference;
                 }
-              }
-              .selector {
-                z-index: 2;
               }
             }
             /* .item-box {
@@ -327,6 +389,12 @@ export default class CollectFilesDetail extends Vue {
           transition: background-color 0.15s ease-out
         }
       }
+    }
+    .disabled-mask {
+      position: absolute;
+      z-index: 1000;
+      width: 100%;
+      height: 100%;
     }
   }
 </style>
