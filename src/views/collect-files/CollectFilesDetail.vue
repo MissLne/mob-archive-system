@@ -38,7 +38,7 @@
             >
               <span class="select-result">
                 {{item.value === '' ? '无' : item.value}}
-                <img src="@/assets/head/pulldown@2x.png" class="select-pulldown-icon">
+                <img src="@/assets/temp-arch/pulldown-gray@2x.png" class="select-pulldown-icon">
               </span>
               
               <Select
@@ -206,18 +206,13 @@ export default class CollectFilesDetail extends Vue {
   }
   public headClick({clickType}: any) {
     if (clickType === 'left') {
-      // this.alertsData.alerts('未提交的信息将会丢失');
-      // this.sureHandle = ({type}: any) => {
-        // if (type === 'sure')
       this.detailData.saveData = this.inputsValue;
       this.$router.replace({name: 'collectFilesUpload'})
-        // this.alertsData.close()
-      // }
     }
   }
   // 提交部分
   trySubmit() {
-    // if (!this.isComplete) return;
+    if (!this.isComplete) return;
     this.alertsData.alerts('是否确认提交');
     this.sureHandle = ({type}: any) => {
       if (type === 'sure') this.submit()
@@ -267,8 +262,10 @@ export default class CollectFilesDetail extends Vue {
         console.log('success!success!success!', data)
         if (data.code === 200) {
           this.nextDetail();
-          this.detailData.isSubmitted = true;
-          this.detailData.saveData = this.inputsValue;
+          // this.detailData.isSubmitted = true;
+          // this.detailData.saveData = this.inputsValue;
+          this.$set(this.detailData, 'isSubmitted', true);
+          this.$set(this.detailData, 'saveData', this.inputsValue);
           /**
            * 此处如果返回id，将其赋给this.detailData.newFileId
            */
@@ -348,7 +345,7 @@ export default class CollectFilesDetail extends Vue {
               .select-result {
                 position: absolute;
                 width: 430px;
-                background-color: #fff; // 为了子元素的mix-blend-mode
+                // background-color: #fff; // 为了子元素的mix-blend-mode
                 color: rgba(102, 102, 102, 1);
                 height: $item-height;
                 line-height: $item-height;
@@ -358,7 +355,7 @@ export default class CollectFilesDetail extends Vue {
                   right: 0;
                   width: 27px;
                   height: 15px;
-                  mix-blend-mode: difference;
+                  // mix-blend-mode: difference;
                 }
               }
             }
@@ -391,10 +388,12 @@ export default class CollectFilesDetail extends Vue {
       }
     }
     .disabled-mask {
-      position: absolute;
       z-index: 1000;
+      position: fixed;
+      top: 124px;
+      left: 0;
       width: 100%;
-      height: 100%;
+      height: calc(100% - 124px);
     }
   }
 </style>
