@@ -7,7 +7,11 @@ const vm = new Vue({
 
 const box: any = vm.$children[0];
 
+let handle1: number;
+let handle2: number;
+
 function showBox(manual: boolean) {
+  if (box.$data.isShow) return;
   document.body.appendChild(vm.$el)
   box.$data.isShow = true;
   if (!manual) closeBox(1000)
@@ -23,8 +27,12 @@ function closeBox(delay: number = 0) {
     clearInterval(handle);
   } */
   // box.$data.isShow = false
-  setTimeout(() => box.$data.isShow = false, 500 + delay)
-  setTimeout(() => document.body.removeChild(vm.$el), 1000 + delay)
+  if (handle1 || handle2) {
+    clearTimeout(handle1)
+    clearTimeout(handle2)
+  }
+  handle1 = setTimeout(() => box.$data.isShow = false, 500 + delay)
+  handle2 = setTimeout(() => document.body.removeChild(vm.$el), 1000 + delay)
 }
 /**
  * 更改提示框信息（针对手动关闭的情况）

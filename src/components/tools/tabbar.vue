@@ -17,7 +17,7 @@ class Item {
 }
 @Component
 export default class Tabbar extends Vue {
-  @Prop({}) private type!: number;
+  @Prop({default: 0}) private type!: number;
   private barData: Array<Item> = [
     {
       itemName: "著录中",

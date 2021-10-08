@@ -15,7 +15,7 @@
         <ul class="inf-list">
           <li v-for="item in inputsProps" :key="item.title" class="item">
             <span class="item-title" :class="{ 'required': item.required }">{{item.title}}</span>
-            <div v-if="item.type === 'text' || item.type === 'date'" class="item-box">
+            <div v-if="item.type === 'text' || item.type === 'date'">
               <Input
                 v-model="item.value"
                 :type="item.type"
@@ -37,7 +37,7 @@
               class="item-input"
             >
               <span class="select-result">
-                {{item.value}}
+                {{item.value === '' ? '无' : item.value}}
                 <img src="@/assets/head/pulldown@2x.png" class="select-pulldown-icon">
               </span>
               

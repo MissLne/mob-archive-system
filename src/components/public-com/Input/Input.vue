@@ -76,12 +76,14 @@ export default class Input extends Vue {
     position: relative;
     width: $width;
     height: $height;
+    box-sizing: border-box;
+    border-bottom: 3px solid #E1E1E1;
     margin-bottom: 3px;
     font-size: 28px;
     .input {
       width: 100%;
+      height: 100%;
       border: none;
-      border-bottom: 3px solid #E1E1E1;
       padding: 0;
       background-color: transparent;
       color: $holder-color;

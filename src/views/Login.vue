@@ -106,7 +106,7 @@ export default class Login extends Vue {
         localStorage.setItem('token', res.token);
         localStorage.setItem('username', res.user.name);
         localStorage.setItem('departmentId', res.user.departmentId);
-        this.$router.push({name: 'Home'})
+        this.$router.replace({name: 'Home'})
       }
       else {
         const msg = (res.message as string).split('，')[1];

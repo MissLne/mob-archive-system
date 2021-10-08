@@ -85,7 +85,7 @@ export default class DesHead extends Vue {
     font-size: 26px;
     img {
       width: 36px;
-      height: 23px;
+      // height: 23px;
     }
   }
   .popUp {
