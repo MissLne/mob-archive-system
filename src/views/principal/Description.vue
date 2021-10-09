@@ -248,8 +248,6 @@ export default class Description extends Vue {
         this.$request
           .post("/api/api/dossier/userDeleteDossier", {ids: [...desId]})
           .then((res: any) => {
-            console.log(res);
-            
             if (res.data.success === true) {
               MsgBox.success("删除成功");
               this.cancelSelect();

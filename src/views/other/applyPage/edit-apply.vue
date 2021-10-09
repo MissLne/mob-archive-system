@@ -1,5 +1,10 @@
 <template>
   <div id="editApply">
+    <Alerts
+      :title="alertTitle"
+      v-if="alertShow"
+      @sureDelete="sureDelete($event)"
+    />
     <DesHead :headData="headData" @handleClick="handleClick($event)" />
     <div class="slots"></div>
     <Details
@@ -15,16 +20,21 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Details from "@/components/apply-com/edit/details.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import FileData from "@/components/apply-com/edit/fileData.vue";
+import Alerts from "@/components/tools/alerts.vue";
+import MsgBox from "@/components/public-com/MsgBox/Msg";
 
 @Component({
   components: {
     Details,
     DesHead,
     FileData,
+    Alerts,
   },
 })
 export default class editApply extends Vue {
   public detailData: any = "";
+  private alertTitle: string = "";
+  private alertShow: boolean = false;
   public headData: any = {
     title: "详情",
     leftUrl: "1",
@@ -84,41 +94,65 @@ export default class editApply extends Vue {
         console.log(this.fileData);
       });
   }
+  sureDelete(event: any) {
+    if (event.type === "not") {
+      this.alertShow = false;
+    } else {
+      this.alertShow = false;
+      let todo = new Map([
+        [
+          "撤回",
+          () => {
+            (this as any).$request
+              .post(
+                "/api/api/use/recallUseApply",
+                // id: [`${this.$route.params.id}`]
+                [`${this.$route.params.id}`]
+              )
+              .then((res: any) => {
+                if (res.data.success === true) {
+                  this.$router.go(-1);
+                  MsgBox.success("撤回成功");
+                  return;
+                }
+                throw new Error();
+              })
+              .catch((err: any) => {
+                MsgBox.error("撤回失败");
+              });
+          },
+        ],
+        [
+          "删除",
+          () => {
+            (this as any).$request
+              .post("/api/api/use/deleteUseApply", [`${this.$route.params.id}`])
+              .then((res: any) => {
+                if (res.data.success === true) {
+                  this.$router.go(-1);
+                  MsgBox.success("删除成功");
+                  return;
+                }
+                throw new Error();
+              })
+              .catch((err: any) => {
+                MsgBox.error("删除失败");
+              });
+          },
+        ],
+      ]);
+      let action: any = todo.get(this.alertTitle.slice(2));
+      action.call(this);
+    }
+  }
   btnClick(event: any) {
-    console.log(event);
-    let todo = new Map([
-      [
-        "撤回",
-        () => {
-          (this as any).$request
-            .post(
-              "/api/api/use/recallUseApply",
-              // id: [`${this.$route.params.id}`]
-              [`${this.$route.params.id}`]
-            )
-            .then((res: any) => {
-              console.log(res);
-            });
-        },
-      ],
-      [
-        "删除",
-        () => {
-          (this as any).$request
-            .post("/api/api/use/deleteUseApply", [`${this.$route.params.id}`])
-            .then((res: any) => {
-              console.log(res);
-            });
-        },
-      ],
-    ]);
-    let action: any = todo.get(event.type);
-    action.call(this);
+    this.alertTitle = `确认${event.type}`;
+    this.alertShow = true;
   }
   handleClick(event: any) {
     let obj = {};
     if (event.clickType === "left") {
-      this.$router.push({name: 'apply'})
+      this.$router.push({ name: "apply" });
     }
   }
 }

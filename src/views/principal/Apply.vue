@@ -21,6 +21,7 @@
       v-if="alertShow"
       @sureDelete="sureDelete($event)"
     />
+    <img src="@/assets/apply/Addapplication.png" class="add-apply" @click="toAddPage"/>
     <div class="slots2"></div>
   </div>
 </template>
@@ -71,6 +72,9 @@ export default class Apply extends Vue {
           this.idList.push(this.itemData[i].id)
         }
       });
+  }
+  toAddPage() {
+    this.$router.push({name: 'addApply'})
   }
   changeStatus(arr: any[]) {
     let data = new Map([
@@ -172,6 +176,14 @@ export default class Apply extends Vue {
 </script>
 <style lang="scss">
 #apply {
+  .add-apply {
+    position: fixed;
+    width: 82px;
+    height: 82px;
+    bottom: 100px;
+    right: 42px;
+    z-index: 999;
+  }
   .select-btn {
     width: 519px;
     z-index: 999;

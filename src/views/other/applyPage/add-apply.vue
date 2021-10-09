@@ -33,6 +33,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import DesHead from "@/components/des-com/index/des-head.vue";
+import MsgBox from "@/components/public-com/MsgBox/Msg";
 
 interface write {
   applyContent: string;
@@ -111,7 +112,15 @@ export default class AddApply extends Vue {
                 ...this.addData,
               })
               .then((res: any) => {
-                console.log(res);
+                if (res.data.success === true) {
+                  this.$router.push({name: 'apply'});
+                  MsgBox.success("暂存成功");
+                  return;
+                }
+                throw new Error();
+              })
+              .catch((err: any) => {
+                MsgBox.error("暂存失败");
               });
           },
         ],
@@ -128,6 +137,17 @@ export default class AddApply extends Vue {
                 (this as any).$request.get("/api/api/use/submitUseApply", {
                   id: this.$route.params.id,
                 });
+              })
+              .then((res: any) => {
+                if (res.data.success === true) {
+                  this.$router.push({name: 'apply'});
+                  MsgBox.success("提交成功");
+                  return;
+                }
+                throw new Error();
+              })
+              .catch((err: any) => {
+                MsgBox.error("提交失败");
               });
           },
         ],
@@ -136,7 +156,19 @@ export default class AddApply extends Vue {
       action.call(this);
     } else {
       this.addData.status = num;
-      (this as any).$request.post("/api/api/use/useApply", this.addData);
+      (this as any).$request
+        .post("/api/api/use/useApply", this.addData)
+        .then((res: any) => {
+          if (res.data.success === true) {
+            this.$router.go(-1);
+            MsgBox.success("上传成功");
+            return;
+          }
+          throw new Error();
+        })
+        .catch((err: any) => {
+          MsgBox.error("上传失败");
+        });
     }
   }
 }

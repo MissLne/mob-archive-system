@@ -1,5 +1,6 @@
 <template>
   <div id="details">
+    
     <div class="itemDetail">
       <div v-for="(item, index) in item" :key="index">
         <div>{{ item.text }}</div>
@@ -49,6 +50,7 @@
 <script lang="ts">
 import { StepRenderSlots } from "element-ui/types/step";
 import { Component, Prop, Vue } from "vue-property-decorator";
+
 
 interface ItemTyle {
   text: string;
