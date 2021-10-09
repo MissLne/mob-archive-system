@@ -1,22 +1,26 @@
 <template>
   <div id="editApply">
-    <DesHead :headData="headData" />
+    <DesHead :headData="headData" @handleClick="handleClick($event)" />
     <div class="slots"></div>
-    <Details v-if="detailData" :detailData="detailData" @btnClick="btnClick($event)" />
-    <FileData :fileData="fileData" v-if="fileData"/>
+    <Details
+      v-if="detailData"
+      :detailData="detailData"
+      @btnClick="btnClick($event)"
+    />
+    <FileData :fileData="fileData" v-if="fileData.length" />
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Details from "@/components/apply-com/edit/details.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
-import FileData from "@/components/apply-com/edit/fileData.vue"
+import FileData from "@/components/apply-com/edit/fileData.vue";
 
 @Component({
   components: {
     Details,
     DesHead,
-    FileData
+    FileData,
   },
 })
 export default class editApply extends Vue {
@@ -31,7 +35,7 @@ export default class editApply extends Vue {
     rightText: "",
     isShow: false,
   };
-  public fileData: any[] = []
+  public fileData: any[] = [];
   created() {
     this.getDetail();
   }
@@ -39,10 +43,10 @@ export default class editApply extends Vue {
     (this as any).$request
       .get("/api/api/use/getUseApplyDetail", this.$route.params)
       .then((res: any) => {
-        console.log(this.$route.params,res.data.data);
-        
-        this.detailData = Object.assign(res.data.data,this.$route.params);
-        
+        console.log(this.$route.params, res.data.data);
+
+        this.detailData = Object.assign(res.data.data, this.$route.params);
+
         let data = new Map([
           [0, "申请"],
           [1, "审批"],
@@ -51,12 +55,13 @@ export default class editApply extends Vue {
           [4, "完成"],
         ]);
         console.log(this.detailData);
-        
+
         this.detailData.status = data.get(this.detailData.status);
       });
-      this.$request.get("/api/api/use/getMyUseResultByUseApplyId",this.$route.params)
+    this.$request
+      .get("/api/api/use/getMyUseResultByUseApplyId", this.$route.params)
       .then((res: any) => {
-        let result = res.data.data
+        let result = res.data.data;
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             this.$service
@@ -75,34 +80,46 @@ export default class editApply extends Vue {
               });
           }
         });
-        this.fileData = result
+        this.fileData = result;
         console.log(this.fileData);
-        
-      })
+      });
   }
   btnClick(event: any) {
-    console.log(event)
+    console.log(event);
     let todo = new Map([
-      ["撤回",() => {
-        (this as any).$request.post("/api/api/use/recallUseApply",
-          // id: [`${this.$route.params.id}`]
-          [`${this.$route.params.id}`]
-        )
-        .then((res: any) => {
-          console.log(res);
-        })
-      }],
-      ["删除",() => {
-        (this as any).$request.post("/api/api/use/deleteUseApply",
-          [`${this.$route.params.id}`]
-        )
-        .then((res: any) => {
-          console.log(res);
-        })
-      }]
-    ])
-    let action: any = todo.get(event.type)
-    action.call(this)
+      [
+        "撤回",
+        () => {
+          (this as any).$request
+            .post(
+              "/api/api/use/recallUseApply",
+              // id: [`${this.$route.params.id}`]
+              [`${this.$route.params.id}`]
+            )
+            .then((res: any) => {
+              console.log(res);
+            });
+        },
+      ],
+      [
+        "删除",
+        () => {
+          (this as any).$request
+            .post("/api/api/use/deleteUseApply", [`${this.$route.params.id}`])
+            .then((res: any) => {
+              console.log(res);
+            });
+        },
+      ],
+    ]);
+    let action: any = todo.get(event.type);
+    action.call(this);
+  }
+  handleClick(event: any) {
+    let obj = {};
+    if (event.clickType === "left") {
+      this.$router.push({name: 'apply'})
+    }
   }
 }
 </script>
@@ -113,6 +130,6 @@ export default class editApply extends Vue {
   }
   width: 100vw;
   min-height: 100vh;
-  background: #E5EDFD;
+  background: #e5edfd;
 }
 </style>

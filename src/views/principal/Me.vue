@@ -47,7 +47,7 @@ export default class Me extends Vue {
     leftPic: true,
     rightPic: false,
     leftText: "",
-    rightText: "选择",
+    rightText: "",
     isShow: false,
   };
   public pageData: any = {

@@ -43,7 +43,6 @@ export default class FileData extends Vue {
   public fileList: any[] = [];
   created() {
     this.page();
-    console.log(this.fileData,"+++++  ");
     
     // console.log(this.fileList);
     

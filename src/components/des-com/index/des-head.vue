@@ -10,8 +10,8 @@
         <div v-if="!headData.rightPic">{{ headData.rightText }}</div>
         <img :src="pics[headData.rightUrl]" v-if="headData.rightPic" />
       </div>
-      <div class="popUp" v-if="headData.isShow">
-        <div v-for="(item, index) in popArr" :key="index">{{ item }}</div>
+      <div class="popUp" v-if="headData.isShow" :class="{'isClose': isClose}">
+        <div v-for="(item, index) in popArr" :key="index" @click.prevent="popUpClick(index)">{{ item }}</div>
       </div>
     </div>
   </div>
@@ -37,6 +37,7 @@ interface strObj {
 export default class DesHead extends Vue {
   @Prop({}) private headData!: Information;
   @Prop({}) private popArr!: string[];
+  private isClose: boolean = false
   private pics: strObj = {
     1: require("@/assets/head/back@2x.png"), //返回
     2: require("@/assets/head/moreright@2x.png"), //右侧边栏
@@ -44,11 +45,21 @@ export default class DesHead extends Vue {
     4: require("@/assets/head/chacha@2x.png"), //叉号
   };
   created() {}
+  popUpClick(index: number) {
+    if(index === 1) this.rightClick(1)
+  }
   leftClick() {
     this.$emit("handleClick", { clickType: "left" });
   }
-  rightClick() {
-    this.$emit("handleClick", { clickType: "right" });
+  rightClick(e?: number) {
+    if(e && e === 1) this.$emit("handleClick", { clickType: "right",show: true });
+     if (this.headData.isShow) {
+       this.isClose = true;
+        setTimeout(() => {
+             this.isClose = false;
+        }, 400)
+      }
+    this.$emit("handleClick", { clickType: "right"});
   }
 }
 </script>
@@ -60,7 +71,15 @@ export default class DesHead extends Vue {
   position: fixed;
   top: 0;
   left: 0;
+  .title {
+  width: 270px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
+}
+
 .des {
   position: relative;
   width: 750px;
@@ -100,7 +119,7 @@ export default class DesHead extends Vue {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    animation: isShow 1s;
+    animation: isShow .5s;
     box-shadow: 4px 3px 7px 0px rgba(76, 108, 174, 0.59);
     div {
       font-size: 32px;
@@ -113,6 +132,17 @@ export default class DesHead extends Vue {
     }
     > div:nth-of-type(1) {
       border: none;
+    }
+  }
+  .isClose {
+    animation: close .5s;
+  }
+  @keyframes close {
+     from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
     }
   }
   @keyframes isShow {

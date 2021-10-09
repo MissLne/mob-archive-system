@@ -1,6 +1,10 @@
 <template>
   <div id="description">
-    <Alerts :title="'确认删除'" v-if="alertShow" @sureDelete="sureDelete($event)"/>
+    <Alerts
+      :title="'确认删除'"
+      v-if="alertShow"
+      @sureDelete="sureDelete($event)"
+    />
     <DesHead
       :headData="headData"
       :popArr="popArr"
@@ -38,7 +42,8 @@ import DesSearch from "@/components/des-com/index/des-search.vue";
 import myTool from "@/components/des-com/index/myTool.vue";
 import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
-import Alerts from "@/components/tools/alerts.vue"
+import Alerts from "@/components/tools/alerts.vue";
+import MsgBox from "@/components/public-com/MsgBox/Msg";
 
 interface dataType {
   size: number | undefined;
@@ -52,6 +57,11 @@ type CheckItem = {
   id: number;
   show: boolean;
 };
+
+type Id = {
+  id: number;
+  type: number;
+};
 @Component({
   components: {
     DesHead,
@@ -59,7 +69,7 @@ type CheckItem = {
     myTool,
     DesItem,
     DesBtn,
-    Alerts
+    Alerts,
   },
 })
 export default class Description extends Vue {
@@ -67,9 +77,9 @@ export default class Description extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
-  private alertShow: boolean = false
+  private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
-  private idList: Array<number> = []
+  private idList: Array<Id> = [];
   private isShow: boolean = false;
   private searchText: string = "请输入题名搜索";
   private desItem: [] = [];
@@ -106,11 +116,19 @@ export default class Description extends Vue {
       this.$set(this.checkList, index, type);
     });
   }
+  // scrollToTop() {
+  //   const that = this;
+  //   let scrollTop =
+  //     window.pageYOffset ||
+  //     document.documentElement.scrollTop ||
+  //     document.body.scrollTop;
+  //   that.scrollToTop = scrollTop;
+  // }
   handleClick(event: any) {
     let obj = {};
     if (event.clickType === "right") {
       if (this.headData.rightText === "选择") {
-        this.initSelect(false)
+        this.initSelect(false);
         this.isShow = true;
         obj = {
           leftPic: false,
@@ -120,10 +138,10 @@ export default class Description extends Vue {
         this.headData = Object.assign(this.headData, obj);
         return;
       }
-      this.initSelect(true)
+      this.initSelect(true);
     } else {
       if (this.headData.leftText === "取消") {
-        this.initSelect(false)
+        this.initSelect(false);
         return;
       }
 
@@ -153,12 +171,14 @@ export default class Description extends Vue {
       .post("/api/api/dossier/getPartDossierList", { ...this.getListData })
       .then((res: any) => {
         let result = res.data.data.records;
+        console.log(result);
+        this.idList = [];
         this.checkList = new Array(result.length).fill(false);
-        for(let i = 0;i < result.length;i++) {
-          this.idList.push(result[i].id)
+        for (let i = 0; i < result.length; i++) {
+          this.idList.push({ id: result[i].id, type: result[i].type });
         }
         this.count = res.data.data.total;
-        this.pageData.total = Math.ceil(this.count / 10)
+        this.pageData.total = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             (this as any).$service
@@ -181,6 +201,7 @@ export default class Description extends Vue {
       });
   }
   changePage(event: any): void {
+    document.body.scrollTo(0, 0);
     if (event && this.getListData.current) {
       if (event.type === "prePage" && this.getListData.current > 1) {
         this.getListData.current--;
@@ -199,17 +220,65 @@ export default class Description extends Vue {
     }
   }
   deleteItem() {
-    let deleteId: Array<number> = []
-    this.checkList.map((item,index) => {
-      if(item) deleteId.push(this.idList[index])
-    })
-    return deleteId
+    let desId: Array<number> = [];
+    let fileId: Array<number> = [];
+    this.checkList.map((item, index) => {
+      if (item) {
+        switch (this.idList[index].type) {
+          case 0:
+            desId.push(this.idList[index].id);
+            break;
+          case 1:
+            fileId.push(this.idList[index].id);
+          default:
+            break;
+        }
+      }
+    });
+    return { desId, fileId };
   }
   sureDelete(event: any) {
-    if(event.type === 'not') {
-      this.alertShow = false
+    let { desId, fileId } = this.deleteItem();
+
+    if (event.type === "not") {
+      this.alertShow = false;
     } else {
-      let list: Array<number> = this.deleteItem()
+      this.alertShow = false;
+      if (desId.length) {
+        this.$request
+          .post("/api/api/dossier/userDeleteDossier", {ids: [...desId]})
+          .then((res: any) => {
+            console.log(res);
+            
+            if (res.data.success === true) {
+              MsgBox.success("删除成功");
+              this.cancelSelect();
+              this.getList();
+              return
+            }
+             throw new Error()
+          })
+          .catch((err: any) => {
+            this.cancelSelect();
+            MsgBox.error("删除失败");
+          });
+      } else if (fileId.length) {
+        this.$request
+          .post("/api/api/archive/userDeleteArchive", { ids: fileId })
+          .then((res: any) => {
+            if (res.data.success === true) {
+              if (!desId.length) MsgBox.success("删除成功");
+              this.cancelSelect();
+              this.getList();
+              return
+            }
+            throw new Error()
+          })
+          .catch((err: any) => {
+            this.cancelSelect();
+            MsgBox.error("删除失败");
+          });
+      }
     }
   }
   created() {
@@ -231,7 +300,6 @@ export default class Description extends Vue {
     //   });
     this.getList();
   }
-
 }
 </script>
 <style lang="scss">

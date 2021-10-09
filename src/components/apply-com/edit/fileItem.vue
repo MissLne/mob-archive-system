@@ -9,7 +9,7 @@
     </div>
     <div class="btn">
       <div @click="showDetail">详细</div>
-      <div>下载</div>
+      <div @click="download">下载</div>
     </div>
     <div class="details" v-if="isShow" :class="{ close: isClose }"></div>
   </div>
@@ -25,9 +25,9 @@ export default class FileItem extends Vue {
   }
   private isShow: boolean = false;
   private isClose: boolean = false;
-  private noname: number = 0
+  private noname: number = 0;
   private url = require("@/assets/index/anjuan.png");
-  
+
   showDetail() {
     if (this.isShow) {
       this.isClose = true;
@@ -38,6 +38,11 @@ export default class FileItem extends Vue {
       return;
     }
     this.isShow = !this.isShow;
+  }
+  download() {
+    this.$request.get("api/api/use/downloadMyUse", {
+      useContentId: this.fileItem.id,
+    });
   }
 }
 </script>

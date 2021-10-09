@@ -35,6 +35,7 @@ import DesHead from "@/components/des-com/index/des-head.vue";
 import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue"
+import MsgBox from "@/components/public-com/MsgBox/Msg";
 
 interface dataType {
   size: number | undefined;
@@ -66,13 +67,13 @@ export default class MyDes extends Vue {
   public popArr: string[] = ["案卷详情", "选择"];
   public count: number = 0;
   public headData: any = {
-    title: "著录中",
-    leftUrl: "3",
-    rightUrl: "",
+    title: "",
+    leftUrl: "1",
+    rightUrl: "2",
     leftPic: true,
-    rightPic: false,
+    rightPic: true,
     leftText: "",
-    rightText: "选择",
+    rightText: "",
     isShow: false,
   };
   public pageData: any = {
@@ -93,43 +94,22 @@ export default class MyDes extends Vue {
     });
   }
   handleClick(event: any) {
-    let obj = {};
     if (event.clickType === "right") {
-      if (this.headData.rightText === "选择") {
-        this.initSelect(false)
-        this.isShow = true;
-        obj = {
-          leftPic: false,
-          leftText: "取消",
-          rightText: "全选",
-        };
-        this.headData = Object.assign(this.headData, obj);
+      if(event.show) this.isShow = true
+      if (this.headData.isShow) {
+        setTimeout(() => {
+          this.headData.isShow = false;
+        }, 400);
         return;
       }
-      this.initSelect(true)
+      this.initSelect(false);
+      this.headData.isShow = !this.headData.isShow;
     } else {
-      if (this.headData.leftText === "取消") {
-        this.initSelect(false)
-        return;
-      }
-
-      if (this.headData.leftUrl == "4") {
-        this.headData.leftUrl = "3";
-      } else {
-        this.headData.leftUrl = "4";
-      }
+      this.$router.go(-1);
     }
   }
   cancelSelect() {
     this.isShow = false;
-
-    let obj = {
-      leftPic: true,
-      rightPic: false,
-      rightText: "选择",
-      leftText: "",
-    };
-    this.headData = Object.assign(this.headData, obj);
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
@@ -138,13 +118,12 @@ export default class MyDes extends Vue {
     (this as any).$request
       .get("/api/api/archive/getArchiveList", { ...this.getListData,id: this.$route.params.id })
       .then((res: any) => {
-        console.log(res);
-        
+        this.headData.title = this.$route.params.name
         let result = res.data.data.records;
-        // this.checkList = new Array(result.length).fill(false);
-        // for(let i = 0;i < result.length;i++) {
-        //   this.idList.push(result[i].id)
-        // }
+        this.checkList = new Array(result.length).fill(false);
+        for(let i = 0;i < result.length;i++) {
+          this.idList.push(result[i].id)
+        }
         this.pageData.total = this.count = res.data.data.total;
 
 
@@ -199,7 +178,24 @@ export default class MyDes extends Vue {
     if(event.type === 'not') {
       this.alertShow = false
     } else {
+      this.alertShow = false
       let list: Array<number> = this.deleteItem()
+      console.log(list);
+      this.$request
+          .post("/api/api/archive/userDeleteArchive", { ids: list })
+          .then((res: any) => {
+            if (res.data.success === true) {
+              MsgBox.success("删除成功");
+              this.cancelSelect();
+              this.getList();
+              return
+            }
+            throw new Error()
+          })
+          .catch((err: any) => {
+            this.cancelSelect();
+            MsgBox.error("删除失败");
+          });
     }
   }
   created() {

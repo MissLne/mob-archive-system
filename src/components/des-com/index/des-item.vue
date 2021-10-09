@@ -10,10 +10,18 @@
     <div class="btn">
       <div @click="showDetail">详细</div>
        <router-link
+       v-if="desItem.type === 0"
+       tag="div"
+        :to="{ name: 'myDes', params: { id: desItem.id,name: desItem.topic } }"
+        >查看</router-link
+      >
+      <!-- <router-link
+       v-if="desItem.type === 1"
        tag="div"
         :to="{ name: 'myDes', params: { id: desItem.id } }"
         >查看</router-link
-      >
+      > -->
+      <div v-if="desItem.type === 1">查看</div>
     </div>
     <div class="details" v-if="isShow" :class="{ close: isClose }"></div>
   </div>
@@ -30,6 +38,7 @@ export default class DesItem extends Vue {
   private url = require("@/assets/index/anjuan.png");
   
   created() {
+    
   }
   showDetail() {
     if (this.isShow) {
