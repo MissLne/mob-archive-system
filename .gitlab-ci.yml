@@ -1,0 +1,40 @@
+cache:
+  paths:
+    - node_modules/
+
+# 步骤
+stages:
+  - build
+  - deploy
+
+# 编译 - Node.js 12 环境
+build:
+  image: harbor.server.topviewclub.cn/library/node:12.18.2
+  stage: build
+  script:
+    - npm --registry https://nexus.server.topviewclub.cn/repository/npm-proxy/ install
+    - npm run build
+    - rm -rf artifact
+    - mkdir artifact
+    - cp -rf ./dist/* ./artifact/
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - artifact
+  only:
+    - dev
+
+# Docker 发布 - SNAPSHOT 版本
+deploy-snapshot:
+  stage: deploy
+  image:
+    name: harbor.server.topviewclub.cn/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$HARBOR_CI_USERNAME\",\"password\":\"$NEXUS_CI_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - >
+      if [ -f "$CI_PROJECT_DIR/Dockerfile" ]; then
+        /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY/$CI_PROJECT_NAME/$CI_PROJECT_NAME-snapshot:$CI_JOB_ID-$CI_COMMIT_SHORT_SHA --destination $CI_REGISTRY/$CI_PROJECT_NAME/$CI_PROJECT_NAME-snapshot:latest
+      fi
+  only:
+    - dev

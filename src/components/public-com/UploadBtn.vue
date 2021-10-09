@@ -1,7 +1,7 @@
 <template>
   <div id="upload">
     <input type="file" class="select-files" :disabled="disabled" @change="uploadFiles">
-    <img src="@/assets/temp-arch/upload.png" alt="" class="icon">
+    <img src="@/assets/temp-arch/upload.png" class="icon">
   </div>
 </template>
 

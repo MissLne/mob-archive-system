@@ -2,7 +2,7 @@
   <div v-if="listData" id="arch-list">
     <!-- <button @click="onChecking">{{isChecking ? '全选' : '选择'}}</button> -->
     <ul class="list">
-      <li v-for="(item, index) in listData" :key="item.id" class="list-item">
+      <li v-for="(item, index) in listData" :key="item.fileId" class="list-item">
         <ArchItem :itemData="item"  @onClick="passClickIndex([index])"/>
         <!-- 选择时的遮罩层 -->
         <label class="check-mask" @click="checkItem(index)" v-show="isChecking">
@@ -22,6 +22,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import ArchItem from '@/components/temp-arch-com/ArchItem.vue'
+import MsgBox from './MsgBox/Msg';
 
 @Component({
   components: {
@@ -35,7 +36,7 @@ export default class ArchList extends Vue {
 
   /* 选择文件部分 */
   onChecking() {
-    if (!this.checkList.length)
+    if (this.checkList.length !== this.listData.length)
       this.checkList = new Array(this.listData.length).fill(false);
     // 全选
     if (this.isChecking) {
@@ -63,8 +64,14 @@ export default class ArchList extends Vue {
     this.checkList.forEach((value, index) => {
       if (value) checkedIndex.push(index);
     });
-    this.passClickIndex(checkedIndex)
-    this.isChecking = false;
+
+    if (checkedIndex.length === 0) {
+      MsgBox.error('请选择至少一个文件')
+    }
+    else {
+      this.passClickIndex(checkedIndex)
+      this.isChecking = false;
+    }
   }
   /* 告诉父组件点击了哪个元素 */
   @Emit('passClickIndex')
@@ -88,7 +95,7 @@ export default class ArchList extends Vue {
           top: 0;
           left: 0;
           width: 100%;
-          height: 100%;
+          height: calc(100% + 32px); //标题也要覆盖。。
           .check-circle {
             position: absolute;
             top: 10px;

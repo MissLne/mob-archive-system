@@ -131,6 +131,8 @@ export default class CollectFilesUpload extends Vue {
       if (this.listData.length) {
         (this.$refs.archList as ArchList).onChecking()
         this.headData.rightText = '全选'
+        // 开始选择时，禁用上传
+        this.disabledUpload = true
       }
       else
         MsgBox.error('请先上传文件')
@@ -138,11 +140,15 @@ export default class CollectFilesUpload extends Vue {
   }
   public stopSelect() {
     this.headData.rightText = '选择'
+    // 取消选择状态时，结束选择，启用上传
+    this.disabledUpload = false;
   }
 
   // 点击或选择后，将数据传给父组件
   @Emit('passDetailData')
   passDetailData(indexList: Array<number>) {
+    // 开始编辑时，结束选择，启用上传
+    this.disabledUpload = false;
     return indexList.map((value) => {
       const temp = this.listData[value];
       return this.listData[value];
