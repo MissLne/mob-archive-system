@@ -4,7 +4,7 @@
       <div @click="prePage" class="btn">上一页</div>
       <div class="numbers">
         <span style="color: #85B8FD;">{{ totalPage.current }}</span
-        >/{{ page }}
+        >/{{ totalPage.total }}
       </div>
       <div @click="nextPage" class="btn">下一页</div>
     </div>
@@ -21,11 +21,6 @@ interface Item {
 export default class DesBtn extends Vue {
   @Prop({}) private totalPage!: Item;
   private page: number = 0;
-  created() {
-    console.log(this.totalPage.total);
-
-    this.page = this.totalPage.total
-  }
   prePage(): void {
     this.$emit("changePage", { type: "prePage" });
   }

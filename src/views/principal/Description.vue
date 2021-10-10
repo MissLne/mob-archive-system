@@ -127,8 +127,9 @@ export default class Description extends Vue {
   //   that.scrollToTop = scrollTop;
   // }
   searchThings(event: any) {
+    let res = [event.searchVal]
     this.getListData.current = 1;
-    this.getListData.topic?.push(event.searchVal);
+    this.getListData.topic = res
     this.getList();
     console.log(event);
   }
@@ -184,15 +185,9 @@ export default class Description extends Vue {
         this.checkList = new Array(result.length).fill(false);
         for (let i = 0; i < result.length; i++) {
           this.idList.push({ id: result[i].id, type: result[i].type });
-        }
-
-        if (res.data.data.hasOwnProperty("total")) {
-          this.count = res.data.data.total;
+        } 
+          this.count = res.data.data.total
           this.pageData.total = Math.ceil(this.count / 10);
-        } else {
-          this.pageData.total = Math.ceil(result.length / 10);
-        }
-        
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             (this as any).$service
