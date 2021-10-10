@@ -9,19 +9,25 @@
     </div>
     <div class="btn">
       <div @click="showDetail">详细</div>
-      <div @click="download">下载</div>
+      <div
+        @click="download"
+        :style="{ background: fileItem.downloaded ? '#85b8fd' : '#C4DEFF' }"
+      >
+        下载
+      </div>
     </div>
     <div class="details" v-if="isShow" :class="{ close: isClose }"></div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import MsgBox from "@/components/public-com/MsgBox/Msg";
 
 @Component
 export default class FileItem extends Vue {
   @Prop({}) private fileItem!: any;
   created() {
-    console.log(this.fileItem);
+    console.log(this.fileItem, "-=-");
   }
   private isShow: boolean = false;
   private isClose: boolean = false;
@@ -40,9 +46,25 @@ export default class FileItem extends Vue {
     this.isShow = !this.isShow;
   }
   download() {
-    this.$request.get("api/api/use/downloadMyUse", {
-      useContentId: this.fileItem.id,
-    });
+    if (this.fileItem.downloaded) {
+      this.$request
+        .get("api/api/use/downloadMyUse", {
+          useContentId: this.fileItem.useContentId,
+        })
+        .then((res: any) => {
+          if (res.data.success === true) {
+            this.$router.go(-1);
+            MsgBox.success("下载成功");
+            return;
+          }
+          throw new Error();
+        })
+        .catch((err: any) => {
+          MsgBox.error("下载失败");
+        });
+    } else {
+          MsgBox.error("该文件不可下载");
+    }
   }
 }
 </script>
@@ -55,7 +77,7 @@ export default class FileItem extends Vue {
   background: #fff;
   box-sizing: border-box;
   padding: 39px 42px 32px 45px;
-  margin: 22px auto 0 auto;
+  margin: 0 auto 22px auto;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
@@ -75,7 +97,7 @@ export default class FileItem extends Vue {
       line-height: 40px;
       text-align: center;
       color: #fff;
-      background: #85b8fd;
+      // background: #85b8fd;
       border-radius: 8px;
       margin-left: 54px;
     }

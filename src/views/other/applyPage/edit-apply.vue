@@ -91,7 +91,6 @@ export default class editApply extends Vue {
           }
         });
         this.fileData = result;
-        console.log(this.fileData);
       });
   }
   sureDelete(event: any) {

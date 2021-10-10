@@ -10,7 +10,7 @@
       :popArr="popArr"
       @handleClick="handleClick($event)"
     />
-    <DesSearch :searchText="searchText" />
+    <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
     <myTool :count="count" @selectHandle="selectHandle($event)" />
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
@@ -51,6 +51,7 @@ interface dataType {
   type: number;
   retentionPeriod: number;
   status: number;
+  topic?: Array<string>;
 }
 
 type CheckItem = {
@@ -106,6 +107,7 @@ export default class Description extends Vue {
     type: 2,
     retentionPeriod: 1,
     status: 0,
+    topic: [],
   };
   selectHandle(event: any) {
     this.getListData.type = event.index;
@@ -124,6 +126,12 @@ export default class Description extends Vue {
   //     document.body.scrollTop;
   //   that.scrollToTop = scrollTop;
   // }
+  searchThings(event: any) {
+    this.getListData.current = 1;
+    this.getListData.topic?.push(event.searchVal);
+    this.getList();
+    console.log(event);
+  }
   handleClick(event: any) {
     let obj = {};
     if (event.clickType === "right") {
@@ -177,8 +185,14 @@ export default class Description extends Vue {
         for (let i = 0; i < result.length; i++) {
           this.idList.push({ id: result[i].id, type: result[i].type });
         }
-        this.count = res.data.data.total;
-        this.pageData.total = Math.ceil(this.count / 10);
+
+        if (res.data.data.hasOwnProperty("total")) {
+          this.count = res.data.data.total;
+          this.pageData.total = Math.ceil(this.count / 10);
+        } else {
+          this.pageData.total = Math.ceil(result.length / 10);
+        }
+        
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             (this as any).$service
@@ -209,7 +223,7 @@ export default class Description extends Vue {
         this.getList();
       } else if (
         event.type === "nextPage" &&
-        this.pageData.current < Math.ceil(this.pageData.total / 10)
+        this.pageData.current < this.pageData.total
       ) {
         this.getListData.current++;
         this.pageData.current++;
@@ -246,15 +260,15 @@ export default class Description extends Vue {
       this.alertShow = false;
       if (desId.length) {
         this.$request
-          .post("/api/api/dossier/userDeleteDossier", {ids: [...desId]})
+          .post("/api/api/dossier/userDeleteDossier", { ids: [...desId] })
           .then((res: any) => {
             if (res.data.success === true) {
               MsgBox.success("删除成功");
               this.cancelSelect();
               this.getList();
-              return
+              return;
             }
-             throw new Error()
+            throw new Error();
           })
           .catch((err: any) => {
             this.cancelSelect();
@@ -268,9 +282,9 @@ export default class Description extends Vue {
               if (!desId.length) MsgBox.success("删除成功");
               this.cancelSelect();
               this.getList();
-              return
+              return;
             }
-            throw new Error()
+            throw new Error();
           })
           .catch((err: any) => {
             this.cancelSelect();

@@ -1,6 +1,6 @@
 <template>
   <div id="apply">
-    <DesHead :headData="headData"  @handleClick="handleClick($event)"/>
+    <DesHead :headData="headData" @handleClick="handleClick($event)" />
     <DesSearch :searchText="searchText" />
     <div class="slots"></div>
     <div v-for="(item, index) in itemData" :key="index" class="item-box">
@@ -16,12 +16,21 @@
       <div @click="cancelSelect">取消</div>
       <div @click="alertShow = true">删除</div>
     </div>
-     <Alerts
+    <DesBtn
+      @changePage="changePage($event)"
+      :totalPage="pageData"
+      v-if="pageData.total"
+    />
+    <Alerts
       :title="'确认删除'"
       v-if="alertShow"
       @sureDelete="sureDelete($event)"
     />
-    <img src="@/assets/apply/Addapplication.png" class="add-apply" @click="toAddPage"/>
+    <img
+      src="@/assets/apply/Addapplication.png"
+      class="add-apply"
+      @click="toAddPage"
+    />
     <div class="slots2"></div>
   </div>
 </template>
@@ -32,17 +41,19 @@ import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
+import DesBtn from "@/components/des-com/index/des-btn.vue";
 
 @Component({
   components: {
     ApplyItem,
     DesHead,
     DesSearch,
-    Alerts
+    Alerts,
+    DesBtn,
   },
 })
 export default class Apply extends Vue {
-  private idList: Array<number> = []
+  private idList: Array<number> = [];
   private alertShow: boolean = false;
   private searchText: string = "请输入时间搜索";
   private itemData: any[] = [];
@@ -52,6 +63,10 @@ export default class Apply extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
+  public pageData: any = {
+    current: 1,
+    total: 0,
+  };
   public headData: any = {
     title: "借阅申请",
     leftUrl: "3",
@@ -63,18 +78,46 @@ export default class Apply extends Vue {
     isShow: false,
   };
   getList(): void {
+    console.log({ ...this.pageData });
+
     (this as any).$request
-      .post("/api/api/use/getMyUseApplyList", {})
+      .post("/api/api/use/getMyUseApplyList", {
+        current: this.pageData.current,
+      })
       .then((res: any) => {
-        this.itemData = this.changeStatus(res.data.data.records);
-        this.checkList = new Array(this.itemData .length).fill(false);
-        for(let i = 0;i < this.itemData.length;i++) {
-          this.idList.push(this.itemData[i].id)
+        let result = this.changeStatus(res.data.data.records);
+        console.log(result);
+        
+        this.itemData = result
+        // result.map((item, index) => {
+        //   this.$set(this.itemData, index, item);
+        // });
+        this.pageData.total = Math.ceil(res.data.data.total / 10);
+        this.checkList = new Array(this.itemData.length).fill(false);
+        this.idList = [];
+        for (let i = 0; i < this.itemData.length; i++) {
+          this.idList.push(this.itemData[i].id);
         }
       });
   }
+  changePage(event: any): void {
+    if (event && this.pageData.current) {
+      if (event.type === "prePage" && this.pageData.current > 1) {
+        this.pageData.current--;
+        this.getList();
+      } else if (
+        event.type === "nextPage" &&
+        this.pageData.current < this.pageData.total
+      ) {
+        this.pageData.current++;
+        this.getList();
+      } else {
+        return;
+      }
+    }
+  }
   toAddPage() {
-    this.$router.push({name: 'addApply'})
+    this.$router.push({ name: "addApply" });
   }
   changeStatus(arr: any[]) {
     let data = new Map([
@@ -90,41 +133,41 @@ export default class Apply extends Vue {
     });
     return str;
   }
-     deleteItem() {
-    let deleteId: Array<number> = []
-    this.checkList.map((item,index) => {
-      if(item) deleteId.push(this.idList[index])
-    })
-    return deleteId
+  deleteItem() {
+    let deleteId: Array<number> = [];
+    this.checkList.map((item, index) => {
+      if (item) deleteId.push(this.idList[index]);
+    });
+    return deleteId;
   }
   sureDelete(event: any) {
-    if(event.type === 'not') {
-      this.alertShow = false
+    if (event.type === "not") {
+      this.alertShow = false;
     } else {
-      this.alertShow = false
-      let list: Array<number> = this.deleteItem()
+      this.alertShow = false;
+      let list: Array<number> = this.deleteItem();
       console.log(list);
       this.$request
-          .post("/api/api/use/deleteUseApply", [...list])
-          .then((res: any) => {
-            if (res.data.success === true) {
-              MsgBox.success("删除成功");
-              this.cancelSelect();
-              this.getList();
-              return
-            }
-            throw new Error()
-          })
-          .catch((err: any) => {
+        .post("/api/api/use/deleteUseApply", [...list])
+        .then((res: any) => {
+          if (res.data.success === true) {
+            MsgBox.success("删除成功");
             this.cancelSelect();
-            MsgBox.error("删除失败");
-          });
+            this.getList();
+            return;
+          }
+          throw new Error();
+        })
+        .catch((err: any) => {
+          this.cancelSelect();
+          MsgBox.error("删除失败");
+        });
     }
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
   }
-    cancelSelect() {
+  cancelSelect() {
     this.isShow = false;
 
     let obj = {

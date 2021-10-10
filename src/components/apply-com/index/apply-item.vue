@@ -52,9 +52,6 @@ export default class ApplyItem extends Vue {
     for (let i = 0; i < this.item.length; i++) {
       this.item[i].content = this.applyItem[this.item[i].type];
     }
-  }
-  created() {
-    this.initData();
     let data = new Map([
           ["申请","#800CE8"],
           ["审批","#EB2D02"],
@@ -63,6 +60,13 @@ export default class ApplyItem extends Vue {
           ["完成","#8EBEFE"],
         ]);
         this.classColor = data.get(this.applyItem.status) || ""
+  }
+  created() {
+    this.initData();
+    
+  }
+  updated() {
+    this.initData();
   }
 }
 </script>

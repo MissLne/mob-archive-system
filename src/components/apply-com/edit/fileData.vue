@@ -1,12 +1,9 @@
 <template>
   <div id="fileData">
-    <div class="title">可下载文件</div>
-    <div class="bodyer" >
-      <div v-for="(item, index) in fileList" 
-        :key="index">
-        <FileItem 
-        :fileItem="item"
-      />
+    <div class="titles">可下载文件</div>
+    <div class="bodyer">
+      <div v-for="(item, index) in fileList" :key="index">
+        <FileItem :fileItem="item" />
       </div>
     </div>
     <div class="footer">
@@ -43,9 +40,6 @@ export default class FileData extends Vue {
   public fileList: any[] = [];
   created() {
     this.page();
-    
-    // console.log(this.fileList);
-    
   }
   changePage(event: any): void {
     if (event && this.pageData.current) {
@@ -83,8 +77,16 @@ export default class FileData extends Vue {
 </script>
 <style lang="scss">
 #fileData {
+  .titles {
+    height: 75px;
+    padding-left: 45px;
+    line-height: 75px;
+    font-size: 30px;
+    color: #444444;
+  }
   margin: 8px auto 0 auto;
   width: 700.3px;
+  padding-bottom: 1px;
   background: #fff;
   box-sizing: border-box;
 }

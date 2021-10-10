@@ -1,6 +1,6 @@
 <template>
   <div id="add-apply">
-    <DesHead :headData="headData" />
+     <DesHead :headData="headData" @handleClick="handleClick($event)" />
     <div class="slots"></div>
     <div class="main">
       <div>
@@ -95,6 +95,12 @@ export default class AddApply extends Vue {
           this.addData.applyContent = res.data.data.applyContent;
           this.addData.applyReason = res.data.data.applyReason;
         });
+    }
+  }
+  handleClick(event: any) {
+    let obj = {};
+    if (event.clickType === "left") {
+      this.$router.push({ name: "apply" });
     }
   }
   submit(num: number) {

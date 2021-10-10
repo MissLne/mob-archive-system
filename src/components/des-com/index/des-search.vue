@@ -2,7 +2,7 @@
   <div id="des-search">
     <div>
       <img src="@/assets/head/search@2x.png" />
-      <input :placeholder="searchText" />
+      <input :placeholder="searchText" @input="searchThings" v-model="searchVal"/>
     </div>
   </div>
 </template>
@@ -11,7 +11,26 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class DesSearch extends Vue {
-  @Prop({}) private searchText!: string
+  @Prop({}) private searchText!: string;
+  private timeout: any = null;
+  private searchVal: string = ""
+  searchThings() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
+      this.$emit("searchThings", {searchVal: this.searchVal});
+    }, 1000);
+  }
+  debounce(fn: any, wait: number) {
+    let timer: any = null;
+    return function () {
+      if (timer !== null) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(fn, wait);
+    };
+  }
 }
 </script>
 <style lang="scss">
