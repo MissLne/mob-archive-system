@@ -1,5 +1,6 @@
 <template>
   <div id="description">
+    <SideBar :sideBarShow="sideBarShow"/>
     <Alerts
       :title="'确认删除'"
       v-if="alertShow"
@@ -44,6 +45,7 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
+import SideBar from "@/components/public-com/SideBar.vue"
 
 interface dataType {
   size: number | undefined;
@@ -71,6 +73,7 @@ type Id = {
     DesItem,
     DesBtn,
     Alerts,
+    SideBar
   },
 })
 export default class Description extends Vue {
@@ -78,6 +81,7 @@ export default class Description extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
+  public sideBarShow: boolean = false
   private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<Id> = [];
@@ -127,9 +131,9 @@ export default class Description extends Vue {
   //   that.scrollToTop = scrollTop;
   // }
   searchThings(event: any) {
-    let res = [event.searchVal]
+    let res = [event.searchVal];
     this.getListData.current = 1;
-    this.getListData.topic = res
+    this.getListData.topic = res;
     this.getList();
     console.log(event);
   }
@@ -155,8 +159,10 @@ export default class Description extends Vue {
       }
 
       if (this.headData.leftUrl == "4") {
+        this.sideBarShow = false
         this.headData.leftUrl = "3";
       } else {
+        this.sideBarShow = true
         this.headData.leftUrl = "4";
       }
     }
@@ -185,9 +191,9 @@ export default class Description extends Vue {
         this.checkList = new Array(result.length).fill(false);
         for (let i = 0; i < result.length; i++) {
           this.idList.push({ id: result[i].id, type: result[i].type });
-        } 
-          this.count = res.data.data.total
-          this.pageData.total = Math.ceil(this.count / 10);
+        }
+        this.count = res.data.data.total;
+        this.pageData.total = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             (this as any).$service
@@ -210,9 +216,11 @@ export default class Description extends Vue {
       });
   }
   changePage(event: any): void {
-    document.body.scrollTo(0, 0);
     if (event && this.getListData.current) {
       if (event.type === "prePage" && this.getListData.current > 1) {
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.getListData.current--;
         this.pageData.current--;
         this.getList();
@@ -220,6 +228,9 @@ export default class Description extends Vue {
         event.type === "nextPage" &&
         this.pageData.current < this.pageData.total
       ) {
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.getListData.current++;
         this.pageData.current++;
         this.getList();

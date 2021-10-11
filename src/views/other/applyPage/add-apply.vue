@@ -1,6 +1,6 @@
 <template>
   <div id="add-apply">
-     <DesHead :headData="headData" @handleClick="handleClick($event)" />
+    <DesHead :headData="headData" @handleClick="handleClick($event)" />
     <div class="slots"></div>
     <div class="main">
       <div>
@@ -16,11 +16,19 @@
       <div>
         <div class="item1">
           <p>申请原因</p>
-          <textarea v-model="addData.applyReason"></textarea>
+          <textarea
+            v-model="addData.applyReason"
+            :class="{ errorClass: reasonErr }"
+            :placeholder="applyReason"
+          ></textarea>
         </div>
         <div class="item1">
           <p>申请内容</p>
-          <textarea v-model="addData.applyContent"></textarea>
+          <textarea
+            :placeholder="applyContent"
+            v-model="addData.applyContent"
+            :class="{ errorClass: contentErr }"
+          ></textarea>
         </div>
       </div>
       <div class="btn">
@@ -52,6 +60,10 @@ interface read {
   },
 })
 export default class AddApply extends Vue {
+  private contentErr: boolean = false;
+  private reasonErr: boolean = false;
+  private applyContent: string = "（内容200字以内）";
+  private applyReason: string = "（内容200字以内）";
   private readData: read = {
     username: "",
     departmentName: "",
@@ -104,77 +116,88 @@ export default class AddApply extends Vue {
     }
   }
   submit(num: number) {
-    console.log(1);
-
-    if (this.$route.params && this.$route.params.type === "编辑") {
-      let dothing = new Map([
-        [
-          0,
-          () => {
-            (this as any).$request
-              .post("/api/api/use/updateUseApply", {
-                id: this.$route.params.id,
-                departmentId: localStorage.getItem("departmentId"),
-                ...this.addData,
-              })
-              .then((res: any) => {
-                if (res.data.success === true) {
-                  this.$router.push({name: 'apply'});
-                  MsgBox.success("暂存成功");
-                  return;
-                }
-                throw new Error();
-              })
-              .catch((err: any) => {
-                MsgBox.error("暂存失败");
-              });
-          },
-        ],
-        [
-          1,
-          () => {
-            (this as any).$request
-              .post("/api/api/use/updateUseApply", {
-                id: this.$route.params.id,
-                departmentId: localStorage.getItem("departmentId"),
-                ...this.addData,
-              })
-              .then(() => {
-                (this as any).$request.get("/api/api/use/submitUseApply", {
-                  id: this.$route.params.id,
-                });
-              })
-              .then((res: any) => {
-                if (res.data.success === true) {
-                  this.$router.push({name: 'apply'});
-                  MsgBox.success("提交成功");
-                  return;
-                }
-                throw new Error();
-              })
-              .catch((err: any) => {
-                MsgBox.error("提交失败");
-              });
-          },
-        ],
-      ]);
-      let action: any = dothing.get(num);
-      action.call(this);
+    if (!this.addData.applyReason || !this.addData.applyContent) {
+      !this.addData.applyReason
+        ? (this.applyReason = "请输入申请原因！")
+        : this.applyReason;
+      !this.addData.applyReason ? (this.reasonErr = true) : this.applyReason;
+      !this.addData.applyContent
+        ? (this.applyContent = "请输入申请内容！")
+        : this.applyReason;
+      !this.addData.applyContent ? (this.contentErr = true) : this.applyReason;
+      MsgBox.error("请完善内容!")
     } else {
-      this.addData.status = num;
-      (this as any).$request
-        .post("/api/api/use/useApply", this.addData)
-        .then((res: any) => {
-          if (res.data.success === true) {
-            this.$router.go(-1);
-            MsgBox.success("上传成功");
-            return;
-          }
-          throw new Error();
-        })
-        .catch((err: any) => {
-          MsgBox.error("上传失败");
-        });
+      this.reasonErr = this.contentErr = false;
+      if (this.$route.params && this.$route.params.type === "编辑") {
+        let dothing = new Map([
+          [
+            0,
+            () => {
+              (this as any).$request
+                .post("/api/api/use/updateUseApply", {
+                  id: this.$route.params.id,
+                  departmentId: localStorage.getItem("departmentId"),
+                  ...this.addData,
+                })
+                .then((res: any) => {
+                  if (res.data.success === true) {
+                    this.$router.push({ name: "apply" });
+                    MsgBox.success("暂存成功");
+                    return;
+                  }
+                  throw new Error();
+                })
+                .catch((err: any) => {
+                  MsgBox.error("暂存失败");
+                });
+            },
+          ],
+          [
+            1,
+            () => {
+              (this as any).$request
+                .post("/api/api/use/updateUseApply", {
+                  id: this.$route.params.id,
+                  departmentId: localStorage.getItem("departmentId"),
+                  ...this.addData,
+                })
+                .then(() => {
+                  (this as any).$request.get("/api/api/use/submitUseApply", {
+                    id: this.$route.params.id,
+                  });
+                })
+                .then((res: any) => {
+                  if (res.data.success === true) {
+                    this.$router.push({ name: "apply" });
+                    MsgBox.success("提交成功");
+                    return;
+                  }
+                  throw new Error();
+                })
+                .catch((err: any) => {
+                  MsgBox.error("提交失败");
+                });
+            },
+          ],
+        ]);
+        let action: any = dothing.get(num);
+        action.call(this);
+      } else {
+        this.addData.status = num;
+        (this as any).$request
+          .post("/api/api/use/useApply", this.addData)
+          .then((res: any) => {
+            if (res.data.success === true) {
+              this.$router.go(-1);
+              MsgBox.success("上传成功");
+              return;
+            }
+            throw new Error();
+          })
+          .catch((err: any) => {
+            MsgBox.error("上传失败");
+          });
+      }
     }
   }
 }
@@ -221,9 +244,31 @@ export default class AddApply extends Vue {
         width: 100%;
         height: 212px;
         font-size: 20px;
-        color: #444;
+        color: #444 !important;
         border: none;
         border-bottom: 1px solid #e1e1e1;
+      }
+      .errorClass {
+        color: #f00;
+        border-bottom: 1px solid #f00;
+      }
+      .errorClass::-webkit-input-placeholder {
+        /* WebKit browsers */
+        /* placeholder颜色  */
+        color: #ff0000;
+        /* placeholder字号  */
+      }
+      .errorClass:-moz-placeholder {
+        /* Mozilla Firefox 4 to 18 */
+        color: #ff0000;
+      }
+      .errorClass::-moz-placeholder {
+        /* Mozilla Firefox 19+ */
+        color: #ff0000;
+      }
+      .errorClass::-ms-input-placeholder {
+        /* Internet Explorer 10+ */
+        color: #ff0000;
       }
     }
     .btn {

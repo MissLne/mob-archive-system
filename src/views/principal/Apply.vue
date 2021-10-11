@@ -1,5 +1,6 @@
 <template>
   <div id="apply">
+    <SideBar :sideBarShow="sideBarShow"/>
     <DesHead :headData="headData" @handleClick="handleClick($event)" />
     <DesSearch :searchText="searchText" />
     <div class="slots"></div>
@@ -42,6 +43,7 @@ import DesSearch from "@/components/des-com/index/des-search.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
+import SideBar from "@/components/public-com/SideBar.vue"
 
 @Component({
   components: {
@@ -50,9 +52,11 @@ import DesBtn from "@/components/des-com/index/des-btn.vue";
     DesSearch,
     Alerts,
     DesBtn,
+    SideBar
   },
 })
 export default class Apply extends Vue {
+  public sideBarShow: boolean = false
   private idList: Array<number> = [];
   private alertShow: boolean = false;
   private searchText: string = "请输入时间搜索";
@@ -103,12 +107,18 @@ export default class Apply extends Vue {
   changePage(event: any): void {
     if (event && this.pageData.current) {
       if (event.type === "prePage" && this.pageData.current > 1) {
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.pageData.current--;
         this.getList();
       } else if (
         event.type === "nextPage" &&
         this.pageData.current < this.pageData.total
       ) {
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.pageData.current++;
         this.getList();
       } else {
@@ -177,6 +187,7 @@ export default class Apply extends Vue {
       rightText: "选择",
       leftText: "",
     };
+    this.sideBarShow? obj.leftUrl = "4" : obj.leftUrl = "3"
     this.headData = Object.assign(this.headData, obj);
   }
   initSelect(type: boolean) {
@@ -205,9 +216,11 @@ export default class Apply extends Vue {
         return;
       }
 
-      if (this.headData.leftUrl == "4") {
+     if (this.headData.leftUrl == "4") {
+        this.sideBarShow = false
         this.headData.leftUrl = "3";
       } else {
+        this.sideBarShow = true
         this.headData.leftUrl = "4";
       }
     }

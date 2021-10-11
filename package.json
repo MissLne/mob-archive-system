@@ -16,6 +16,7 @@
     "vue-jsonp": "^2.0.0",
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.2.0",
+    "vue-touch": "^2.0.0-beta.4",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
@@ -27,7 +28,7 @@
     "element-ui": "^2.15.6",
     "less": "^4.1.1",
     "less-loader": "^10.0.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2",
     "typescript": "~4.1.5",
     "vue-template-compiler": "^2.6.11"

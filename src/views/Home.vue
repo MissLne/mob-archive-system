@@ -5,30 +5,34 @@
         <router-view />
       </keep-alive>
     </div>
-    <Tabbar :type="type" @changePage="changePage($event)"/>
-    
+    <Tabbar :type="type" @changePage="changePage($event)" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import Tabbar from "@/components/tools/tabbar.vue"
-
-
+import Tabbar from "@/components/tools/tabbar.vue";
 
 @Component({
   components: {
-    Tabbar
+    Tabbar,
   },
 })
 export default class Home extends Vue {
-  private type: number | string = 0
+  private type: number | string = 0;
   created() {
-    this.type = localStorage.getItem('tabbarT') || 0
+    console.log("type");
+    this.$nextTick(() => {
+      this.type = localStorage.getItem("tabbarT")|| 0;
+    });
+    this.type = localStorage.getItem("tabbarT") || 0;
   }
   changePage(event: any) {
-    localStorage.setItem('tabbarT',event.go)
-    this.type = event.go
+    localStorage.setItem("tabbarT", event.go);
+
+    this.$nextTick(() => {
+      this.type = event.go;
+    });
     // this.$router.go(0)
   }
 }
@@ -41,6 +45,5 @@ export default class Home extends Vue {
   justify-content: space-between;
   align-items: center;
   flex-direction: column;
-  
 }
 </style>

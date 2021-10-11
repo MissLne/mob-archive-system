@@ -8,27 +8,15 @@
       </div>
     </div>
     <div class="btn">
-      <div @click="showDetail">详细</div>
+      <div @click="showDetail" ref="detail-wrapper">详细</div>
       <router-link
         v-if="desItem.type === 0"
         tag="div"
         :to="{ name: 'myDes', params: { id: desItem.id, name: desItem.topic } }"
         >查看</router-link
       >
-      <!-- <router-link
-       v-if="desItem.type === 1"
-       tag="div"
-        :to="{ name: 'myDes', params: { id: desItem.id } }"
-        >查看</router-link
-      > -->
-      <div v-if="desItem.type === 1" ref="detail-wrapper">查看</div>
+      <div v-if="desItem.type === 1">查看</div>
     </div>
-    <!-- <div
-      class="details"
-      v-if="isShow"
-      :class="{ close: isClose, overflowTop: isOverflow }"
-      ref="detail-wrapper"
-    ></div> -->
     <div
       class="details"
       :class="{ showDetail: isShow, overflowTop: isOverflow }"
@@ -109,12 +97,8 @@ export default class DesItem extends Vue {
     result.confidentialLevel = level.get(result.confidentialLevel)
     result.retentionPeriod = period.get(result.retentionPeriod)
     result.recordTime = result.recordTime.slice(0,10)
-    // console.log(1);
     
     for (let i = 0; i < this.detailData.length; i++) {
-      
-      // console.log(result[this.detailData[i].type]);
-      
       this.detailData[i].content = result[this.detailData[i].type];
     }
   }
@@ -122,7 +106,6 @@ export default class DesItem extends Vue {
     this.isShow = false;
   }
   showDetail() {
-    // if (!this.isShow) {
     const ele = this.$refs["detail-wrapper"];
 
     const scale = window.innerWidth / 750;
@@ -135,7 +118,6 @@ export default class DesItem extends Vue {
     } else {
       this.isOverflow = false;
     }
-    // }
     this.isShow = !this.isShow;
   }
 }

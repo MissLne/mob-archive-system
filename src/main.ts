@@ -10,8 +10,6 @@ import  axios from 'axios'
 import Vant from 'vant';
 import 'vant/lib/index.css';
 
-
-
 Vue.use(Vant);
 Vue.prototype.$service = service;
 Vue.prototype.$request = request;

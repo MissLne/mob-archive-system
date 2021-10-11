@@ -1,15 +1,20 @@
 <template>
   <div id="tabbar">
-      <div v-for="(item, index) in barData" :key="index">
+    <div v-for="(item, index) in barData" :key="index">
+      <router-link
+        :to="item.itemLink"
+        tag="div"
+        :style="{ color: type === index ? '#8EBEFE' : '' }"
+        @click.native="changePage(index)"
+      >
         <img :src="item.imageUrl" />
-        <router-link :to="item.itemLink" tag="div" :style="{'color': type === index? '#8EBEFE' : ''}" @click.native="changePage(index)">
-          <p>{{ item.itemName }}</p>
-        </router-link>
-      </div>
+        <p>{{ item.itemName }}</p>
+      </router-link>
     </div>
+  </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from "vue-property-decorator";
 class Item {
   itemName: string = "";
   itemLink: string | object = "";
@@ -17,7 +22,7 @@ class Item {
 }
 @Component
 export default class Tabbar extends Vue {
-  @Prop({default: 0}) private type!: number;
+  @Prop({ default: 0 }) private type!: number;
   private barData: Array<Item> = [
     {
       itemName: "著录中",
@@ -58,7 +63,7 @@ export default class Tabbar extends Vue {
     }
   }
   changePage(event: any) {
-    this.$emit('changePage',{go: event})
+    this.$emit("changePage", { go: event });
     for (let i = 0; i < this.barData.length; i++) {
       this.barData[i].imageUrl = this.iUrl[event][i];
     }
@@ -67,7 +72,7 @@ export default class Tabbar extends Vue {
 </script>
 <style lang="scss">
 #tabbar {
-  > div {
+  > div div{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -78,20 +83,20 @@ export default class Tabbar extends Vue {
     height: 44px;
     margin-bottom: 5px;
   }
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 10;
-    width: 750px;
-    height: 90px;
-    font-size: 14px;
-    color: #d1e5fe;
-    box-sizing: border-box;
-    padding: 0 114px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #ffffff;
-    box-shadow: 4px 3px 7px 0px rgba(76, 108, 174, 0.4);
-  }
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  width: 750px;
+  height: 90px;
+  font-size: 14px;
+  color: #d1e5fe;
+  box-sizing: border-box;
+  padding: 0 114px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  box-shadow: 4px 3px 7px 0px rgba(76, 108, 174, 0.4);
+}
 </style>
