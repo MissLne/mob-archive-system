@@ -82,8 +82,6 @@ export default class Apply extends Vue {
     isShow: false,
   };
   getList(): void {
-    console.log({ ...this.pageData });
-
     (this as any).$request
       .post("/api/api/use/getMyUseApplyList", {
         current: this.pageData.current,
@@ -103,6 +101,33 @@ export default class Apply extends Vue {
           this.idList.push(this.itemData[i].id);
         }
       });
+
+
+
+
+
+    // (this as any).$request
+    //   .post("/api/api/use/getMyUseApplyList",{
+    //     current: 9
+    //   })
+    //   .then((res: any) => {
+    //     let result = this.changeStatus(res.data.data.records);
+    //     console.log(result);
+    //     for(let i = 0;i < result.length;i++) {
+    //       if(result[i].status === "完成") {
+    //         this.$request.get("/api/api/use/getMyUseResultByUseApplyId",{id: result[i].id})
+    //         .then((ress: any) => {
+    //           ress.data.data.map((item: any) => {
+    //             console.log(item.downloaded);
+    //           })
+    //         // console.log(ress.data.data.downloaded);
+            
+    //       })
+    //       }
+          
+          
+    //     }
+    //   });
   }
   changePage(event: any): void {
     if (event && this.pageData.current) {
@@ -116,9 +141,9 @@ export default class Apply extends Vue {
         event.type === "nextPage" &&
         this.pageData.current < this.pageData.total
       ) {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
+        // this.$nextTick(() => {
+        //   window.scrollTo(0, 0);
+        // });
         this.pageData.current++;
         this.getList();
       } else {
@@ -138,7 +163,7 @@ export default class Apply extends Vue {
       [4, "完成"],
     ]);
     let str = arr.map((item: any) => {
-      item.status && (item.status = data.get(item.status));
+      item.hasOwnProperty("status") && (item.status = data.get(item.status));
       return item;
     });
     return str;

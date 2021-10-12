@@ -1,6 +1,5 @@
 <template>
   <div id="details">
-    
     <div class="itemDetail">
       <div v-for="(item, index) in item" :key="index">
         <div>{{ item.text }}</div>
@@ -30,7 +29,14 @@
     <div v-if="detailData.status === '完成'" class="success">
       <div>
         <p>审批状态</p>
-        <div>{{ agreeData.status }}</div>
+        <div class="statusData">
+          <div v-for="(item, index) in statusData" :key="index">
+            <img
+              :src="index === agreeData.status ? seletList[1] : seletList[0]"
+            />
+            <p>{{ item }}</p>
+          </div>
+        </div>
       </div>
       <div>
         <p>审批意见</p>
@@ -51,7 +57,6 @@
 import { StepRenderSlots } from "element-ui/types/step";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
-
 interface ItemTyle {
   text: string;
   content: string;
@@ -68,7 +73,7 @@ interface ItemData {
 @Component
 export default class Details extends Vue {
   @Prop({}) private detailData!: any;
-  
+
   private item: Array<ItemTyle> = [
     {
       text: "申请编号",
@@ -106,6 +111,11 @@ export default class Details extends Vue {
       type: "applyTime",
     },
   ];
+  private seletList: any[] = [
+    require("@/assets/index/unselect.png"),
+    require("@/assets/index/doselect.png"),
+  ];
+  private statusData: Array<string> = ["同意", "拒绝", "转交"];
   private agreeData: ItemData = {
     result: "",
     name: "",
@@ -117,15 +127,14 @@ export default class Details extends Vue {
       this.item[i].content = this.detailData[this.item[i].type];
     }
     if (this.detailData.status === "完成") {
-      let data = new Map([
-        [0, "同意"],
-        [1, "拒绝"],
-        [2, "转交"],
-      ]);
-      this.detailData.useReviewListBoList[0].status = data.get(
-        this.detailData.useReviewListBoList[0].status
-      );
-      console.log(this.detailData);
+      // let data = new Map([
+      //   [0, "同意"],
+      //   [1, "拒绝"],
+      //   [2, "转交"],
+      // ]);
+      // this.detailData.useReviewListBoList[0].status = data.get(
+      //   this.detailData.useReviewListBoList[0].status
+      // );
 
       for (let key in this.agreeData) {
         this.agreeData[key] = this.detailData.useReviewListBoList[0][key];
@@ -138,6 +147,9 @@ export default class Details extends Vue {
   created() {
     this.initData();
   }
+  // actived() {
+  //   this.initData();
+  // }
 }
 </script>
 <style lang="scss">
@@ -147,6 +159,25 @@ export default class Details extends Vue {
   margin: 0 auto;
   padding: 22px 0 29px 0;
   font-size: 28px;
+  .statusData {
+    > div {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    color: #999;
+    width: 400px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e1e1e1;
+    img {
+      width: 38px;
+      height: 38px;
+      margin-right: 13px;
+    }
+  }
   .itemDetail {
     margin: 0 43px 0 44px;
     > div {
@@ -203,7 +234,7 @@ export default class Details extends Vue {
       align-items: flex-start;
     }
     > div:nth-of-type(1) {
-      margin-bottom: 53px;
+      margin-bottom: 28px;
     }
   }
   .cancel {
@@ -230,8 +261,7 @@ export default class Details extends Vue {
       background: #85b8fd;
       color: #ffffff;
     }
-    > div:nth-of-type(1){
-      
+    > div:nth-of-type(1) {
       background: #ffffff;
       color: #ff0000;
     }

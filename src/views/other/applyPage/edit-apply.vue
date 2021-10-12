@@ -49,11 +49,17 @@ export default class editApply extends Vue {
   created() {
     this.getDetail();
   }
+  activated() {
+    
+    
+    this.getDetail();
+    console.log(this.detailData,"0+0");
+  }
   getDetail() {
     (this as any).$request
       .get("/api/api/use/getUseApplyDetail", this.$route.params)
       .then((res: any) => {
-        console.log(this.$route.params, res.data.data);
+        // console.log(this.$route.params, res.data.data);
 
         this.detailData = Object.assign(res.data.data, this.$route.params);
 
@@ -69,7 +75,7 @@ export default class editApply extends Vue {
         this.detailData.status = data.get(this.detailData.status);
       });
     this.$request
-      .get("/api/api/use/getMyUseResultByUseApplyId", this.$route.params)
+      .get("/api/api/use/getMyUseResultByUseApplyId", {id: 195})
       .then((res: any) => {
         let result = res.data.data;
         result.map((item: any, index: number) => {

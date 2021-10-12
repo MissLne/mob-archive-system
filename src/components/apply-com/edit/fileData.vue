@@ -41,6 +41,9 @@ export default class FileData extends Vue {
   created() {
     this.page();
   }
+  // actived() {
+  //   this.page();
+  // }
   changePage(event: any): void {
     if (event && this.pageData.current) {
       if (event.type === "prePage" && this.pageData.current > 1) {
