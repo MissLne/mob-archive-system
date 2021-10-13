@@ -4,7 +4,7 @@
       <img :src="desItem.fileToken ? desItem.fileToken : url" />
       <div class="title">
         <div>{{ desItem.topic }}</div>
-        <div>{{ desItem.keyWord ? desItem.keyWord : "暂无简介" }}</div>
+        <div>{{ desItem.introduce ? desItem.introduce : "暂无简介" }}</div>
       </div>
     </div>
     <div class="btn">
