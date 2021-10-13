@@ -4,16 +4,16 @@
       <img :src="fileItem.fileToken ? fileItem.fileToken : url" />
       <div class="title">
         <div>{{ fileItem.topic }}</div>
-        <div>{{ fileItem.keyWord ? fileItem.keyWord : "暂无简介" }}</div>
+        <div>{{ fileItem.introduce ? fileItem.introduce : "暂无简介" }}</div>
       </div>
     </div>
     <div class="btn">
-      <a download="d" :href="downloadUrl">ouo</a>
+      
       <div @click="showDetail" ref="detail-wrapper">详细</div>
-      <div
-        @click="download"
+      <div @click="download"
         :style="{ background: fileItem.downloaded ? '#85b8fd' : '#C4DEFF' }"
       >
+      <a download="d" :href="downloadUrl" v-if="fileItem.downloaded"></a>
         下载
       </div>
     </div>
@@ -36,8 +36,8 @@ import MsgBox from "@/components/public-com/MsgBox/Msg";
 @Component
 export default class FileItem extends Vue {
   @Prop({}) private fileItem!: any;
-  
-  private downloadUrl: string = ""
+
+  private downloadUrl: string = "";
   private isOverflow: boolean = false;
   private isShow: boolean = false;
   private isClose: boolean = false;
@@ -63,15 +63,32 @@ export default class FileItem extends Vue {
       title: "截止日期",
       content: "",
       type: "deadLine",
-    }
+    },
   ];
   created() {
-      for (let i = 0; i < this.detailData.length; i++) {
-        this.detailData[i].content = this.fileItem[this.detailData[i].type];
-      }
+    for (let i = 0; i < this.detailData.length; i++) {
+      this.detailData[i].content = this.fileItem[this.detailData[i].type];
+    }
+    this.$service
+      .get(
+        `api/api/use/downloadMyUse/?useContentId=${this.fileItem.useContentId}`,
+        {
+          responseType: "arraybuffer",
+        }
+      )
+      .then((data: any) => {
+        this.downloadUrl =
+          "data:image/png;base64," +
+          btoa(
+            new Uint8Array(data.data).reduce(
+              (data, byte) => data + String.fromCharCode(byte),
+              ""
+            )
+          );
+      });
   }
   coverClose() {
-    this.isShow = false
+    this.isShow = false;
   }
   showDetail() {
     const ele = this.$refs["detail-wrapper"];
@@ -88,40 +105,12 @@ export default class FileItem extends Vue {
     }
     this.isShow = !this.isShow;
   }
-   download() {
-    // if (this.fileItem.downloaded) {
-      this.$service
-        .get(`api/api/use/downloadMyUse/?useContentId=${this.fileItem.useContentId}`, {
-          responseType: "arraybuffer"
-          
-          // useContentId: 291,
-        })
-        .then((data: any) => {
-          
-          this.downloadUrl =
-                  "data:image/png;base64," +
-                  btoa(
-                    new Uint8Array(data.data).reduce(
-                      (data, byte) => data + String.fromCharCode(byte),
-                      ""
-                    )
-                  );
-                  console.log(this.downloadUrl);
-        //   if (res.data.success === true) {
-        //     this.$router.go(-1);
-        //     MsgBox.success("下载成功");
-        //     return;
-        //   }
-        //   throw new Error();
-          
-        })
-        // .catch((err: any) => {
-        //   MsgBox.error("下载失败");
-        // });
-    // } else {
-          // MsgBox.error("该文件不可下载");
-    // }
-        }
+  download() {
+    if (this.fileItem.downloaded) {
+    } else {
+      MsgBox.error("该文件不可下载");
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -154,7 +143,16 @@ export default class FileItem extends Vue {
       color: #8ebefe;
       text-decoration: underline;
     }
-    > div:nth-of-type(2) {
+    > div:nth-of-type(2) { 
+      a {
+        top: 0;
+        left: 0;
+        display: inline-block;
+        position: absolute;
+        width: 78px;
+      height: 40px;
+      }
+      position: relative;
       font-size: 22px;
       width: 78px;
       height: 40px;
@@ -188,7 +186,12 @@ export default class FileItem extends Vue {
     div:nth-of-type(2) {
       margin-top: 27px;
       width: 448;
-      height: 95px;
+      height: 85px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
       font-size: 20px;
     }
   }

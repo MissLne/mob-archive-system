@@ -75,7 +75,7 @@ export default class editApply extends Vue {
         this.detailData.status = data.get(this.detailData.status);
       });
     this.$request
-      .get("/api/api/use/getMyUseResultByUseApplyId", {id: 195})
+      .get("/api/api/use/getMyUseResultByUseApplyId", this.$route.params)
       .then((res: any) => {
         let result = res.data.data;
         result.map((item: any, index: number) => {

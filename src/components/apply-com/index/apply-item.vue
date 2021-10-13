@@ -58,6 +58,7 @@ export default class ApplyItem extends Vue {
           ["同意","#12DB00"],
           ["拒绝","#EB2D02"],
           ["完成","#8EBEFE"],
+          ["延期","#F2C10C"]
         ]);
         this.classColor = data.get(this.applyItem.status) || ""
   }

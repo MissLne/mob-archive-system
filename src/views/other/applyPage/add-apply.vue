@@ -17,6 +17,7 @@
         <div class="item1">
           <p>申请原因</p>
           <textarea
+            maxlength="200"
             v-model="addData.applyReason"
             :class="{ errorClass: reasonErr }"
             :placeholder="applyReason"
@@ -25,6 +26,7 @@
         <div class="item1">
           <p>申请内容</p>
           <textarea
+            maxlength="200"
             :placeholder="applyContent"
             v-model="addData.applyContent"
             :class="{ errorClass: contentErr }"
@@ -167,14 +169,18 @@ export default class AddApply extends Vue {
                   });
                 })
                 .then((res: any) => {
-                  if (res.data.success === true) {
+                  // if (res.data.success === true) {
+                    console.log(res);
+                    
                     this.$router.push({ name: "apply" });
                     MsgBox.success("提交成功");
                     return;
-                  }
+                  // }
                   throw new Error();
                 })
                 .catch((err: any) => {
+                  console.log(err);
+                  
                   MsgBox.error("提交失败");
                 });
             },

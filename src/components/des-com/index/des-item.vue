@@ -23,7 +23,7 @@
     >
       <div v-for="(item, index) in detailData" :key="index" class="detailItem">
         <div>{{ item.title }}：</div>
-        <div>{{ item.content? item.content : "无" }}</div>
+        <div>{{ item.content ? item.content : "无" }}</div>
       </div>
     </div>
     <div class="covers" v-if="isShow" @click="closeDetail"></div>
@@ -76,12 +76,11 @@ export default class DesItem extends Vue {
       content: "",
       type: "retentionPeriod",
     },
-    
   ];
   created() {
-    let result = JSON.parse(JSON.stringify(this.desItem))
+    let result = JSON.parse(JSON.stringify(this.desItem));
     // console.log(result);
-    
+
     let level = new Map([
       [0, "公开"],
       [1, "内部"],
@@ -92,12 +91,12 @@ export default class DesItem extends Vue {
     let period = new Map([
       [1, "永久"],
       [2, "30年"],
-      [3, "10年"]
+      [3, "10年"],
     ]);
-    result.confidentialLevel = level.get(result.confidentialLevel)
-    result.retentionPeriod = period.get(result.retentionPeriod)
-    result.recordTime = result.recordTime.slice(0,10)
-    
+    result.confidentialLevel = level.get(result.confidentialLevel);
+    result.retentionPeriod = period.get(result.retentionPeriod);
+    result.recordTime = result.recordTime.slice(0, 10);
+
     for (let i = 0; i < this.detailData.length; i++) {
       this.detailData[i].content = result[this.detailData[i].type];
     }
@@ -188,8 +187,13 @@ export default class DesItem extends Vue {
     }
     div:nth-of-type(2) {
       margin-top: 27px;
-      width: 448;
-      height: 95px;
+      width: 390px;
+      height: 85px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
       font-size: 20px;
     }
   }
@@ -223,9 +227,7 @@ export default class DesItem extends Vue {
         // margin-right: 10px;
         margin-top: 16px;
       }
-
     }
-
   }
   .showDetail {
     transform: scaleY(1);

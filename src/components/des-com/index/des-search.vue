@@ -8,6 +8,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import InputDate from "@/components/public-com/Input/InputDate.vue"
 
 @Component
 export default class DesSearch extends Vue {

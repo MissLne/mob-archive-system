@@ -1,8 +1,8 @@
 <template>
   <div id="apply">
-    <SideBar :sideBarShow="sideBarShow"/>
+    <SideBar :sideBarShow="sideBarShow" />
     <DesHead :headData="headData" @handleClick="handleClick($event)" />
-    <DesSearch :searchText="searchText" />
+    <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
     <div class="slots"></div>
     <div v-for="(item, index) in itemData" :key="index" class="item-box">
       <ApplyItem :applyItem="item" />
@@ -43,7 +43,7 @@ import DesSearch from "@/components/des-com/index/des-search.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
-import SideBar from "@/components/public-com/SideBar.vue"
+import SideBar from "@/components/public-com/SideBar.vue";
 
 @Component({
   components: {
@@ -52,11 +52,11 @@ import SideBar from "@/components/public-com/SideBar.vue"
     DesSearch,
     Alerts,
     DesBtn,
-    SideBar
+    SideBar,
   },
 })
 export default class Apply extends Vue {
-  public sideBarShow: boolean = false
+  public sideBarShow: boolean = false;
   private idList: Array<number> = [];
   private alertShow: boolean = false;
   private searchText: string = "请输入时间搜索";
@@ -70,6 +70,7 @@ export default class Apply extends Vue {
   public pageData: any = {
     current: 1,
     total: 0,
+    time: "",
   };
   public headData: any = {
     title: "借阅申请",
@@ -81,16 +82,32 @@ export default class Apply extends Vue {
     rightText: "选择",
     isShow: false,
   };
+  searchThings(event: any) {
+    this.pageData.time = event.searchVal;
+    this.pageData.current = 1;
+    this.getList();
+    console.log(event);
+  }
   getList(): void {
-    (this as any).$request
-      .post("/api/api/use/getMyUseApplyList", {
-        current: this.pageData.current,
+    let data = {
+      current: this.pageData.current,
+      applyTime: this.pageData.time
+    }
+    if(!this.pageData.time) {
+      delete data.applyTime
+    } else {
+      data.applyTime = this.pageData.time
+    }
+    (this as any)
+      .$request.post("/api/api/use/getMyUseApplyList", {
+        ...data
       })
       .then((res: any) => {
         let result = this.changeStatus(res.data.data.records);
+        // let result = res.data.data.records
         console.log(result);
-        
-        this.itemData = result
+
+        this.itemData = result;
         // result.map((item, index) => {
         //   this.$set(this.itemData, index, item);
         // });
@@ -101,33 +118,6 @@ export default class Apply extends Vue {
           this.idList.push(this.itemData[i].id);
         }
       });
-
-
-
-
-
-    // (this as any).$request
-    //   .post("/api/api/use/getMyUseApplyList",{
-    //     current: 9
-    //   })
-    //   .then((res: any) => {
-    //     let result = this.changeStatus(res.data.data.records);
-    //     console.log(result);
-    //     for(let i = 0;i < result.length;i++) {
-    //       if(result[i].status === "完成") {
-    //         this.$request.get("/api/api/use/getMyUseResultByUseApplyId",{id: result[i].id})
-    //         .then((ress: any) => {
-    //           ress.data.data.map((item: any) => {
-    //             console.log(item.downloaded);
-    //           })
-    //         // console.log(ress.data.data.downloaded);
-            
-    //       })
-    //       }
-          
-          
-    //     }
-    //   });
   }
   changePage(event: any): void {
     if (event && this.pageData.current) {
@@ -141,9 +131,9 @@ export default class Apply extends Vue {
         event.type === "nextPage" &&
         this.pageData.current < this.pageData.total
       ) {
-        // this.$nextTick(() => {
-        //   window.scrollTo(0, 0);
-        // });
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.pageData.current++;
         this.getList();
       } else {
@@ -161,6 +151,7 @@ export default class Apply extends Vue {
       [2, "同意"],
       [3, "拒绝"],
       [4, "完成"],
+      [5, "延期"],
     ]);
     let str = arr.map((item: any) => {
       item.hasOwnProperty("status") && (item.status = data.get(item.status));
@@ -212,7 +203,7 @@ export default class Apply extends Vue {
       rightText: "选择",
       leftText: "",
     };
-    this.sideBarShow? obj.leftUrl = "4" : obj.leftUrl = "3"
+    this.sideBarShow ? (obj.leftUrl = "4") : (obj.leftUrl = "3");
     this.headData = Object.assign(this.headData, obj);
   }
   initSelect(type: boolean) {
@@ -241,11 +232,11 @@ export default class Apply extends Vue {
         return;
       }
 
-     if (this.headData.leftUrl == "4") {
-        this.sideBarShow = false
+      if (this.headData.leftUrl == "4") {
+        this.sideBarShow = false;
         this.headData.leftUrl = "3";
       } else {
-        this.sideBarShow = true
+        this.sideBarShow = true;
         this.headData.leftUrl = "4";
       }
     }

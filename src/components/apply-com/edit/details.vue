@@ -48,7 +48,7 @@
       </div>
       <div>
         <p>审批日期</p>
-        <p>{{ agreeData.createTime }}</p>
+        <p>{{ agreeData.createTime.replace("T"," ") }}</p>
       </div>
     </div>
   </div>
@@ -126,6 +126,7 @@ export default class Details extends Vue {
     for (let i = 0; i < this.item.length; i++) {
       this.item[i].content = this.detailData[this.item[i].type];
     }
+    this.item[6].content = this.item[6].content.replace("T"," ")
     if (this.detailData.status === "完成") {
       // let data = new Map([
       //   [0, "同意"],
@@ -189,6 +190,7 @@ export default class Details extends Vue {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        // background: #f00;
         width: 400px;
         padding-bottom: 27px;
         border-bottom: 1px solid #e1e1e1;
@@ -201,10 +203,13 @@ export default class Details extends Vue {
     > div:nth-of-type(4),
     > div:nth-of-type(5) {
       > div:nth-of-type(2) {
+        font-size: 20px;
         color: #999;
         word-wrap: break-word;
+        white-space: normal;
+        line-height: 30px;
         width: 100%;
-        padding-bottom: 40px;
+        padding-bottom: 30px;
         border-bottom: 1px solid #e1e1e1;
         margin: 19px 0 25px 0;
       }
