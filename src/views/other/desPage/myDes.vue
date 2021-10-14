@@ -1,6 +1,10 @@
 <template>
   <div id="myDes">
-    <Alerts :title="'确认删除'" v-if="alertShow" @sureDelete="sureDelete($event)"/>
+    <Alerts
+      :title="'确认删除'"
+      v-if="alertShow"
+      @sureDelete="sureDelete($event)"
+    />
     <DesHead
       :headData="headData"
       :popArr="popArr"
@@ -8,7 +12,7 @@
     />
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
-      <DesItem v-if="desItem" :desItem="item" />
+      <DesItem v-if="desItem" :desItem="item"/>
       <img
         class="manySelect"
         :src="checkList[index] ? seletList[1] : seletList[0]"
@@ -34,12 +38,12 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
-import Alerts from "@/components/tools/alerts.vue"
+import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 
 interface dataType {
   size: number | undefined;
-  current: number | undefined
+  current: number | undefined;
 }
 
 type CheckItem = {
@@ -51,7 +55,7 @@ type CheckItem = {
     DesHead,
     DesItem,
     DesBtn,
-    Alerts
+    Alerts,
   },
 })
 export default class MyDes extends Vue {
@@ -59,9 +63,9 @@ export default class MyDes extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
-  private alertShow: boolean = false
+  private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
-  private idList: Array<number> = []
+  private idList: Array<number> = [];
   private isShow: boolean = false;
   private desItem: [] = [];
   public popArr: string[] = ["案卷详情", "选择"];
@@ -82,7 +86,7 @@ export default class MyDes extends Vue {
   };
   public getListData: dataType = {
     size: 10,
-    current: 1
+    current: 1,
   };
   // selectHandle(event: any) {
   //   this.getListData.type = event.index;
@@ -95,7 +99,13 @@ export default class MyDes extends Vue {
   }
   handleClick(event: any) {
     if (event.clickType === "right") {
-      if(event.show) this.isShow = true
+      
+      if(this.$route.params.type === "我的档案" && event.isChoice) {
+
+        MsgBox.error("无法操作已入库档案")
+        return
+      }
+      if (event.show) this.isShow = true;
       if (this.headData.isShow) {
         setTimeout(() => {
           this.headData.isShow = false;
@@ -116,17 +126,19 @@ export default class MyDes extends Vue {
   }
   getList(): void {
     (this as any).$request
-      .get("/api/api/archive/getArchiveList", { ...this.getListData,id: this.$route.params.id })
+      .get("/api/api/archive/getArchiveList", {
+        ...this.getListData,
+        id: this.$route.params.id,
+      })
       .then((res: any) => {
-        this.headData.title = this.$route.params.name
+        this.headData.title = this.$route.params.name;
         let result = res.data.data.records;
         this.checkList = new Array(result.length).fill(false);
-        for(let i = 0;i < result.length;i++) {
-          this.idList.push(result[i].id)
+        for (let i = 0; i < result.length; i++) {
+          this.idList.push(result[i].id);
         }
-        this.pageData.total = this.count = res.data.data.total;
-
-
+        this.count = res.data.data.total;
+        this.pageData.total = Math.ceil(this.count / 10);
 
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
@@ -157,7 +169,7 @@ export default class MyDes extends Vue {
         this.getList();
       } else if (
         event.type === "nextPage" &&
-        this.pageData.current < Math.ceil(this.pageData.total / 10)
+        this.pageData.current < this.pageData.total
       ) {
         this.getListData.current++;
         this.pageData.current++;
@@ -168,40 +180,39 @@ export default class MyDes extends Vue {
     }
   }
   deleteItem() {
-    let deleteId: Array<number> = []
-    this.checkList.map((item,index) => {
-      if(item) deleteId.push(this.idList[index])
-    })
-    return deleteId
+    let deleteId: Array<number> = [];
+    this.checkList.map((item, index) => {
+      if (item) deleteId.push(this.idList[index]);
+    });
+    return deleteId;
   }
   sureDelete(event: any) {
-    if(event.type === 'not') {
-      this.alertShow = false
+    if (event.type === "not") {
+      this.alertShow = false;
     } else {
-      this.alertShow = false
-      let list: Array<number> = this.deleteItem()
+      this.alertShow = false;
+      let list: Array<number> = this.deleteItem();
       console.log(list);
       this.$request
-          .post("/api/api/archive/userDeleteArchive", { ids: list })
-          .then((res: any) => {
-            if (res.data.success === true) {
-              MsgBox.success("删除成功");
-              this.cancelSelect();
-              this.getList();
-              return
-            }
-            throw new Error()
-          })
-          .catch((err: any) => {
+        .post("/api/api/archive/userDeleteArchive", { ids: list })
+        .then((res: any) => {
+          if (res.data.success === true) {
+            MsgBox.success("删除成功");
             this.cancelSelect();
-            MsgBox.error("删除失败");
-          });
+            this.getList();
+            return;
+          }
+          throw new Error();
+        })
+        .catch((err: any) => {
+          this.cancelSelect();
+          MsgBox.error("删除失败");
+        });
     }
   }
   created() {
     this.getList();
   }
-
 }
 </script>
 <style lang="scss">

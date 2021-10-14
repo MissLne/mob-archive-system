@@ -15,7 +15,7 @@
     <myTool :count="count" @selectHandle="selectHandle($event)" />
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
-      <DesItem v-if="desItem" :desItem="item" />
+      <DesItem v-if="desItem" :desItem="item" typeName="著录中"/>
       <img
         class="manySelect"
         :src="checkList[index] ? seletList[1] : seletList[0]"

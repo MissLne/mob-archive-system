@@ -52,7 +52,7 @@ export default class DesHead extends Vue {
     this.$emit("handleClick", { clickType: "left" });
   }
   rightClick(e?: number) {
-    if(e && e === 1) this.$emit("handleClick", { clickType: "right",show: true });
+    if(e && e === 1) this.$emit("handleClick", { clickType: "right",show: true,isChoice: true });
      if (this.headData.isShow) {
        this.isClose = true;
         setTimeout(() => {
