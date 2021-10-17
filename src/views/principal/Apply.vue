@@ -2,7 +2,7 @@
   <div id="apply">
     <SideBar :sideBarShow="sideBarShow" />
     <DesHead :headData="headData" @handleClick="handleClick($event)" />
-    <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
+    <DesSearch :searchText="searchText" :isDate="true" @onConfirm="onConfirm($event)"/>
     <div class="slots"></div>
     <div v-for="(item, index) in itemData" :key="index" class="item-box">
       <ApplyItem :applyItem="item" />
@@ -88,6 +88,11 @@ export default class Apply extends Vue {
     this.getList();
     console.log(event);
   }
+  onConfirm(event: any) {
+    this.pageData.time = event.date;
+    this.pageData.current = 1;
+    this.getList();
+  }
   getList(): void {
     let data = {
       current: this.pageData.current,
@@ -104,9 +109,10 @@ export default class Apply extends Vue {
       })
       .then((res: any) => {
         let result = this.changeStatus(res.data.data.records);
-        // let result = res.data.data.records
-        console.log(result);
-
+        console.log(res.data.data);
+        if(res.data.data.records.length == 0) {
+          MsgBox.error("搜索内容为空")
+        }
         this.itemData = result;
         // result.map((item, index) => {
         //   this.$set(this.itemData, index, item);
@@ -218,7 +224,8 @@ export default class Apply extends Vue {
         this.initSelect(false);
         this.isShow = true;
         obj = {
-          leftUrl: "1",
+          leftUrl: "",
+          leftPic: false,
           leftText: "取消",
           rightText: "全选",
         };
@@ -227,7 +234,7 @@ export default class Apply extends Vue {
       }
       this.initSelect(true);
     } else {
-      if (this.headData.leftUrl === "1") {
+      if (this.headData.leftText === "取消") {
         this.initSelect(false);
         return;
       }
@@ -235,7 +242,7 @@ export default class Apply extends Vue {
       if (this.headData.leftUrl == "4") {
         this.sideBarShow = false;
         this.headData.leftUrl = "3";
-      } else {
+      } else if(this.headData.leftUrl == "3"){
         this.sideBarShow = true;
         this.headData.leftUrl = "4";
       }

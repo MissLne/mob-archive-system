@@ -190,10 +190,11 @@ export default class DesItem extends Vue {
       margin-top: 27px;
       width: 390px;
       height: 85px;
+      line-height: 42px;
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
-      -webkit-line-clamp: 4;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       font-size: 20px;
     }

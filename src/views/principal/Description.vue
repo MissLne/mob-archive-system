@@ -11,7 +11,7 @@
       :popArr="popArr"
       @handleClick="handleClick($event)"
     />
-    <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
+    <DesSearch :searchText="searchText" @searchThings="searchThings($event)" :isDate="false"/>
     <myTool :count="count" :listData="listData" @selectHandle="selectHandle($event)" />
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
@@ -199,6 +199,9 @@ export default class Description extends Vue {
       .post("/api/api/dossier/getPartDossierList", { ...this.getListData })
       .then((res: any) => {
         let result = res.data.data.records;
+        if(res.data.data.records.length == 0) {
+          MsgBox.error("内容为空")
+        }
         console.log(result);
         this.idList = [];
         this.checkList = new Array(result.length).fill(false);

@@ -10,6 +10,9 @@ import  axios from 'axios'
 import Vant from 'vant';
 import 'vant/lib/index.css';
 import localStore from "@/utils/local"
+import { Calendar } from 'vant';
+ 
+Vue.use(Calendar);
 
 Vue.use(Vant);
 Vue.prototype.$service = service;

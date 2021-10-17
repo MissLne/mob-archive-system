@@ -1,20 +1,45 @@
 <template>
   <div id="des-search">
-    <div>
+    <div class="input-father">
       <img src="@/assets/head/search@2x.png" />
-      <input :placeholder="searchText" @input="searchThings" v-model="searchVal"/>
+      <input :placeholder="searchText" @input="searchThings" v-model="searchVal" v-if="!isDate"/>
+      <div v-if="isDate">
+        <div @click="show = true" class="calendar-title">{{date? date : '选择搜索日期'}}</div>
+      <van-calendar v-model="show" @confirm="onConfirm($event)" color="#8cbffe" :max-date="maxDate" :min-date="minDate"/>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import InputDate from "@/components/public-com/Input/InputDate.vue"
 
 @Component
 export default class DesSearch extends Vue {
   @Prop({}) private searchText!: string;
+  @Prop({default: false}) private isDate!: boolean;
+  private show: boolean = false
   private timeout: any = null;
   private searchVal: string = ""
+  private date: string = ""
+  private minDate: any = new Date("1958/01/01")
+  private maxDate: any = new Date()
+  GMTToStr(time: string){
+    let date = new Date(time)
+    let Str=date.getFullYear() + '-' +
+    (date.getMonth() + 1) + '-' + 
+    date.getDate()
+    return Str
+}
+  onConfirm(e: any) {
+    // console.log(e);
+    let arr = this.GMTToStr(e).split("-")
+    console.log(arr);
+    arr[1].length < 2? arr[1] = '0' + arr[1] : arr[1]
+    arr[2].length < 2? arr[2] = '0' + arr[2] : arr[2]
+    this.date = arr.join("-")
+    this.show = false
+    this.$emit('onConfirm',{date: this.date})
+  }
   searchThings() {
     if (this.timeout) {
       clearTimeout(this.timeout);
@@ -44,7 +69,13 @@ export default class DesSearch extends Vue {
   top: 124px;
   left: 0;
   background: linear-gradient(to bottom, #8cbffe 0%, #8fc1ff 100%);
-  div {
+  .calendar-title {
+     color: rgba(255, 255, 255, 0.5);
+      font-size: 32px;
+    width: 300px;
+    font-weight: normal;
+  }
+  .input-father {
     background: #c6dfff;
     width: 690px;
     height: 77px;
