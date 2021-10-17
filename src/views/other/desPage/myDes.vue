@@ -166,6 +166,9 @@ export default class MyDes extends Vue {
       if (event.type === "prePage" && this.getListData.current > 1) {
         this.getListData.current--;
         this.pageData.current--;
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.getList();
       } else if (
         event.type === "nextPage" &&
@@ -173,6 +176,9 @@ export default class MyDes extends Vue {
       ) {
         this.getListData.current++;
         this.pageData.current++;
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.getList();
       } else {
         return;
