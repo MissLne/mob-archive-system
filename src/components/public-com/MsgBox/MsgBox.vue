@@ -25,7 +25,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .msg-box {
     display: flex;
     justify-content: center;
@@ -51,12 +51,13 @@
   }
   .move-enter,
   .move-leave-to {
-    bottom: -80px;
+    // bottom: -80px;
+    transform: translateX(-50%) translateY(299px);
   }
-  .move-enter-to,
+  /* .move-enter-to,
   .move-leave {
     bottom: 199px;
-  }
+  } */
   .move-enter-active {
     // animation: move 0.5s ease-out forwards,
     transition: all 0.5s;

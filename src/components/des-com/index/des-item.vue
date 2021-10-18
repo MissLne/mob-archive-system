@@ -15,7 +15,7 @@
         :to="{ name: 'myDes', params: { id: desItem.id, name: desItem.topic } }"
         >查看</router-link
       >
-      <div v-if="desItem.type === 1">查看</div>
+      <div v-if="desItem.type === 1" @click="openDetailPage">查看</div>
     </div>
     <div
       class="details"
@@ -118,6 +118,9 @@ export default class DesItem extends Vue {
       this.isOverflow = false;
     }
     this.isShow = !this.isShow;
+  }
+  openDetailPage() {
+    this.$router.push({name: 'archDetail', params: {id: this.desItem.id}})
   }
 }
 </script>

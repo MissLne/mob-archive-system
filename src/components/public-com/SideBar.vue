@@ -1,19 +1,28 @@
 <template>
-  <div id="side-bar" :style="{transform: sideBarShow? 'scaleX(1)' : 'scaleX(0)'}">
+  <div id="side-bar" :style="{transform: sideBarShow? 'translateX(0)' : 'translateX(-100%)'}">
     <div class="side-bar-top">
-      <div>临时档案</div>
+      <!-- <div>临时档案</div> -->
+      <router-link to="temp-arch" tag="div">临时档案</router-link>
       <div>回收站</div>
     </div>
-    <div class="side-bar-foot">退出登录</div>
+    <div class="side-bar-foot" @click="logout">退出登录</div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import MsgBox from "./MsgBox/Msg";
 
 @Component
 export default class SideBar extends Vue {
   @Prop({}) private sideBarShow!: boolean
+  logout() {
+    localStorage.clear();
+    this.$router.go(-1);
+    setTimeout(() => {
+      MsgBox.success('退出登录成功');
+    }, 450)
+  }
 }
 </script>
 

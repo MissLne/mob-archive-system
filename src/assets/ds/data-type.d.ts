@@ -7,10 +7,13 @@ interface ArchItemData {
   fileToken: string,
   fileType:	string,
 
-  thumbnailFileId: number,
   thumbnailFileName: string,
+  thumbnailFileId: number,
   thumbnailFileToken: string,
   thumbnailFileType: string,
+
+  zippedImageFileId: number,
+  zippedImageFileToken: string,
 
   topic: string,
   categoryCodeId:	number,
@@ -28,9 +31,9 @@ interface UploadFileData {
   fileId: number,
   fileToken: string,
 
-  thumbnailContentType: string,
   thumbnailFileId: number,
   thumbnailFileToken: string,
+  thumbnailContentType: string,
 
   zippedImageFileId: number,
   zippedImageFileToken: string,

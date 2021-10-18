@@ -1,17 +1,74 @@
 <template>
   <div id="app">
-    <!-- <keep-alive> -->
+    <transition :name="transitionName">
       <router-view/>
-    <!-- </keep-alive> -->
+    </transition>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { watchRouteChange } from '@/utils/componentUtils'
 
 @Component
 export default class App extends Vue {
+  private transitionName: string = '';
+  created() {
+    watchRouteChange(this);
+  }
 }
 </script>
-<style lang="less">
-
+<style lang="scss">
+  .slots {
+    height: 124px;
+  }
+  // 动画写法
+  /* @keyframes slide-right {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(100vw);
+    }
+  }
+  @keyframes slide-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100vw);
+    }
+  }
+  .slide-right-leave-active {
+    animation: slide-right 0.4s ease-out;
+  }
+  .slide-right-enter-active {
+    animation: slide-left 0.4s reverse ease-in;
+  }
+  .slide-left-leave-active {
+    animation: slide-left 0.4s ease-out;
+  }
+  .slide-left-enter-active {
+    animation: slide-right 0.4s reverse ease-in;
+  } */
+  // 过渡写法
+  .slide-right-enter,
+  .slide-left-leave-to {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-100vw);
+  }
+  .slide-left-enter,
+  .slide-right-leave-to {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(100vw);
+  }
+  .slide-left-enter-active,
+  .slide-left-leave-active,
+  .slide-right-enter-active,
+  .slide-right-leave-active {
+    transition: transform 0.4s ease-out;
+  }
 </style>

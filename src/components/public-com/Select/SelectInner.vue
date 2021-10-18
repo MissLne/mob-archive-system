@@ -62,6 +62,7 @@ export default class SelectInner extends Vue {
 
 <style lang="scss">
   .select {
+    width: 484px;
     background: #8EBEFE;
     color: #FFF;
     .option-box {

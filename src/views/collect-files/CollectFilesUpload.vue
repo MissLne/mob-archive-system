@@ -3,7 +3,6 @@
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
     
-    <!-- <button @click="testMsgBox">测试</button> -->
     <ArchList
       ref="archList"
       :listData="listData"
@@ -25,9 +24,9 @@
 import { Component, Vue, Emit } from 'vue-property-decorator'
 import UploadBtn from '@/components/public-com/UploadBtn.vue';
 import ArchList from '@/components/public-com/ArchList.vue';
-import MsgBox from '@/components/public-com/MsgBox/Msg';
-import fileutils from '@/utils/fileutils';
 import DesHead from '@/components/des-com/index/des-head.vue';
+import MsgBox from '@/components/public-com/MsgBox/Msg';
+import { setPicSrc } from '@/utils/fileUtils';
 import Alerts from '@/components/tools/alerts.vue';
 
 @Component({
@@ -35,7 +34,7 @@ import Alerts from '@/components/tools/alerts.vue';
     UploadBtn,
     ArchList,
     DesHead,
-    Alerts
+    Alerts,
   }
 })
 export default class CollectFilesUpload extends Vue {
@@ -95,7 +94,7 @@ export default class CollectFilesUpload extends Vue {
         this.listData.splice(0, 0, data);
         // this.$set(data, 'fileName', file.name)
         this.$set(this.listData[0], 'fileName', file.name)
-        fileutils.setPicSrc(data, file);
+        setPicSrc(data, file);
       }
       else
         throw Error(res.message);
@@ -115,13 +114,13 @@ export default class CollectFilesUpload extends Vue {
     if (clickType === 'left') {
       if (this.isAllSubmitted) {
         this.alertsData.close()
-        this.$router.replace({name: 'login'})
+        this.$router.go(-1);
       }
       else {
         this.alertsData.alerts('未提交的信息将会丢失');
         this.alertsSureHandle = ({type}: any) => {
           if (type === 'sure')
-            this.$router.replace({name: 'login'})
+            this.$router.go(-1);
           else
             this.alertsData.close()
         }
@@ -150,7 +149,6 @@ export default class CollectFilesUpload extends Vue {
     // 开始编辑时，结束选择，启用上传
     this.disabledUpload = false;
     return indexList.map((value) => {
-      const temp = this.listData[value];
       return this.listData[value];
     });
   }
@@ -159,6 +157,7 @@ export default class CollectFilesUpload extends Vue {
 
 <style lang="scss">
   #collect-files-upload {
+    min-height: 100vh;
     box-sizing: border-box;
     padding: 20px 25px 0;
     .uploadHint {

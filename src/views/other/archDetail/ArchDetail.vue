@@ -3,12 +3,16 @@
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
 
-    <div class="container">
+    <div v-if="detailData" class="container">
       <div class="input-box">
         <div class="preview-box">
           <span class="preview-title">预览</span>
           <div class="preview-img-box">
-            <img :src="detailData.picSrc" alt="" class="preview-img">
+            <img 
+              v-if="detailData.picSrc"
+              :src="detailData.picSrc"
+              class="preview-img"
+            >
           </div>
         </div>
         <h3 class="title">基础信息</h3>
@@ -105,7 +109,7 @@ import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import Alerts from '@/components/tools/alerts.vue';
-import { recursionGetId } from '@/utils/fileUtils';
+import { recursionGetId, downloadPic } from '@/utils/fileUtils';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
 
 @Component({
@@ -118,11 +122,11 @@ import InputDate from '@/components/public-com/Input/InputDate.vue';
   }
 })
 export default class TempArchDetail extends Vue {
-  @Prop() detailData!: ArchItemData;
+  private detailData: ArchItemData | null = null;
   // select的内容
-  @Prop() fondsIdentifier!: Array<any>;
-  @Prop() dossierType!: Array<any>;
-  @Prop() departmentNameTree!: Array<any>;
+  private fondsIdentifier: Array<any> = [];
+  private dossierType: Array<any> = [];
+  private departmentNameTree: Array<any> = [];
   private readonly confidentialLevelArray = [
     {name: '公开', id: 0},
     {name: '内部', id: 1},
@@ -165,14 +169,33 @@ export default class TempArchDetail extends Vue {
     rightText: "",
     isShow: false,
   }
-
   private created() {
-    console.log('created', this.detailData, this.dossierType)
-    this.createSetting();
+    // 获取详细数据
+    this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
+      .then(({data: res}: {data: any}) => {
+        console.log(res);
+        this.detailData = res.data;
+
+        if (this.detailData)
+          return downloadPic(this.detailData.thumbnailFileToken, this.detailData.fileType)
+      })
+      .then((res: any) => {
+        if (this.detailData)
+          this.$set(this.detailData, 'picSrc', res);
+        console.log('created', this.detailData)
+        console.log('dossiertype is', (this.detailData as ArchItemData))
+        this.createSetting()
+      })
+
+    // 设置select菜单的内容
+    this.fondsIdentifier = JSON.parse(localStorage.getItem('fondsIdentifier') as string)
+    this.dossierType = JSON.parse(localStorage.getItem('dossierType') as string)
+    this.departmentNameTree = JSON.parse(localStorage.getItem('departmentNameTree') as string)
+
   }
   createSetting() {
-    if (this.detailData.fileName)
-      this.inputsProps.topic.value = this.detailData.fileName;
+    if (this.detailData && this.detailData.topic)
+      this.inputsProps.topic.value = this.detailData.topic;
   }
 
   private headClick({clickType}: any) {
@@ -242,6 +265,7 @@ export default class TempArchDetail extends Vue {
               color: #FF0000;
             }
             .item-input {
+              position: relative;
               width: 430px;
               height: $item-height;
               border: none;
