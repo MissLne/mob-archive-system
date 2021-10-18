@@ -12,7 +12,7 @@
       <router-link
         v-if="desItem.type === 0"
         tag="div"
-        :to="{ name: 'myDes', params: { id: desItem.id, name: desItem.topic } }"
+        :to="{ name: 'myDes', params: { id: desItem.id, name: desItem.topic,type: typeName } }"
         >查看</router-link
       >
       <div v-if="desItem.type === 1" @click="openDetailPage">查看</div>
@@ -34,6 +34,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class DesItem extends Vue {
+  @Prop({}) private typeName!: string
   @Prop({}) private desItem!: any;
   private isShow: boolean = false;
   private isClose: boolean = false;
@@ -192,10 +193,11 @@ export default class DesItem extends Vue {
       margin-top: 27px;
       width: 390px;
       height: 85px;
+      line-height: 42px;
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
-      -webkit-line-clamp: 4;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       font-size: 20px;
     }

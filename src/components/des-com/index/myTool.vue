@@ -18,10 +18,7 @@ interface Item {
 })
 export default class Tool extends Vue {
   @Prop({}) private count!: number
-  public listData: Item = {
-    title: "显示全部",
-    list: ["显示案卷","显示文件"]
-  }
+  @Prop({}) public listData!: Item
   handleClickS(event: any) {
     this.$emit('selectHandle',{index: event.num})
   }

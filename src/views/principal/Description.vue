@@ -11,11 +11,11 @@
       :popArr="popArr"
       @handleClick="handleClick($event)"
     />
-    <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
-    <myTool :count="count" @selectHandle="selectHandle($event)" />
+    <DesSearch :searchText="searchText" @searchThings="searchThings($event)" :isDate="false"/>
+    <myTool :count="count" :listData="listData" @selectHandle="selectHandle($event)" />
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
-      <DesItem v-if="desItem" :desItem="item" />
+      <DesItem v-if="desItem" :desItem="item" typeName="著录中"/>
       <img
         class="manySelect"
         :src="checkList[index] ? seletList[1] : seletList[0]"
@@ -65,6 +65,11 @@ type Id = {
   id: number;
   type: number;
 };
+
+interface Item {
+  title: string;
+  list: any[];
+}
 @Component({
   components: {
     DesHead,
@@ -81,6 +86,10 @@ export default class Description extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
+  public listData: Item = {
+    title: "显示全部",
+    list: ["显示案卷","显示文件"]
+  }
   public sideBarShow: boolean = false
   private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
@@ -115,6 +124,10 @@ export default class Description extends Vue {
   };
   selectHandle(event: any) {
     this.getListData.type = event.index;
+    this.getListData.current = 1
+    // this.listData.title = this.listData.list[event.index];
+    // (this as any).$localStore.setData("desListData",this.getListData);
+    // (this as any).$localStore.setData("desData",this.listData.title);
     this.getList();
   }
   initSelect(type: boolean) {
@@ -186,6 +199,9 @@ export default class Description extends Vue {
       .post("/api/api/dossier/getPartDossierList", { ...this.getListData })
       .then((res: any) => {
         let result = res.data.data.records;
+        if(res.data.data.records.length == 0) {
+          MsgBox.error("内容为空")
+        }
         console.log(result);
         this.idList = [];
         this.checkList = new Array(result.length).fill(false);
@@ -224,6 +240,7 @@ export default class Description extends Vue {
         this.getListData.current--;
         this.pageData.current--;
         this.getList();
+        // (this as any).$localStore.setData("desListData",this.getListData)
       } else if (
         event.type === "nextPage" &&
         this.pageData.current < this.pageData.total
@@ -233,6 +250,7 @@ export default class Description extends Vue {
         });
         this.getListData.current++;
         this.pageData.current++;
+        // (this as any).$localStore.setData("desListData",this.getListData)
         this.getList();
       } else {
         return;
@@ -300,22 +318,13 @@ export default class Description extends Vue {
     }
   }
   created() {
-    // let obj = [{
-    //   id:111,
-    //   num: false
-    // }]
-    // console.log(obj.includes({id:111,num: false}));
-
-    // (this as any).$request
-    //   .post("/api/api/user/login", {
-    //     account: "12345678",
-    //     password: "123",
-    //   })
-    //   .then((res: any) => {
-    //     localStorage.setItem("token", res.data.data.token);
-    //     localStorage.setItem("username", res.data.data.user.name);
-    //     localStorage.setItem("departmentId", res.data.data.user.departmentId);
-    //   });
+    // if(!(this as any).$localStore.getData("desListData") && (this as any).$localStore.getData("desListData").length != 0) {
+    //   this.getListData = (this as any).$localStore.getData("desListData")
+    //   this.pageData.current = this.getListData.current
+    // }
+    // if((this as any).$localStore.getData("desData") != "" || (this as any).$localStore.getData("desData").length != 0) {
+    //   this.listData.title = (this as any).$localStore.getData("desData")
+    // }
     this.getList();
   }
 }
