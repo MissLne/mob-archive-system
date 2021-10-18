@@ -13,7 +13,7 @@
       <div @click="download"
         :style="{ background: fileItem.downloaded ? '#85b8fd' : '#C4DEFF' }"
       >
-      <a download="d" :href="downloadUrl" v-if="fileItem.downloaded"></a>
+      <a download="未命名" :href="downloadUrl" v-if="fileItem.downloaded"></a>
         下载
       </div>
     </div>
