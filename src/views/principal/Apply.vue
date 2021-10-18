@@ -28,6 +28,7 @@
       @sureDelete="sureDelete($event)"
     />
     <img
+    v-show="!isShow"
       src="@/assets/apply/Addapplication.png"
       class="add-apply"
       @click="toAddPage"
@@ -111,7 +112,7 @@ export default class Apply extends Vue {
         let result = this.changeStatus(res.data.data.records);
         console.log(res.data.data);
         if(res.data.data.records.length == 0) {
-          MsgBox.error("搜索内容为空")
+          MsgBox.error("内容为空")
         }
         this.itemData = result;
         // result.map((item, index) => {
@@ -261,7 +262,7 @@ export default class Apply extends Vue {
     height: 82px;
     bottom: 100px;
     right: 42px;
-    z-index: 999;
+    z-index: 1;
   }
   .select-btn {
     width: 519px;
