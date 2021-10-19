@@ -29,7 +29,7 @@
       v-if="pageData.total"
     />
     <div class="slots2"></div>
-    <img src="@/assets/index/upload.png" class="upload" v-if="!isShow" />
+    <img src="@/assets/index/upload.png" class="upload" v-if="!isShow && !sideBarShow" />
     <div class="select-btn" v-if="isShow">
       <div @click="cancelSelect">返回</div>
       <div @click="alertShow = true">删除</div>

@@ -28,7 +28,7 @@
       @sureDelete="sureDelete($event)"
     />
     <img
-    v-show="!isShow"
+    v-show="!isShow && !sideBarShow"
       src="@/assets/apply/Addapplication.png"
       class="add-apply"
       @click="toAddPage"
