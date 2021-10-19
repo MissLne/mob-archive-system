@@ -12,7 +12,7 @@
       @handleClick="handleClick($event)"
     />
     <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
-    <myTool :count="count" @selectHandle="selectHandle($event)" />
+    <myTool :count="count" :listData="listData" @selectHandle="selectHandle($event)" />
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
       <DesItem v-if="desItem" :desItem="item"  typeName="我的档案"/>
@@ -54,7 +54,10 @@ interface dataType {
   status: number;
   topic?: Array<string>;
 }
-
+interface Item {
+  title: string;
+  list: any[];
+}
 type CheckItem = {
   id: number;
   show: boolean;
@@ -80,6 +83,10 @@ export default class Description extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
+  public listData: Item = {
+    title: "显示全部",
+    list: ["显示案卷","显示文件"]
+  }
   public sideBarShow: boolean = false
   private alertShow: boolean = false;
   private checkList: Array<boolean> = [];

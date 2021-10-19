@@ -31,7 +31,7 @@
     <div class="slots2"></div>
     <img src="@/assets/index/upload.png" class="upload" v-if="!isShow" />
     <div class="select-btn" v-if="isShow">
-      <div @click="cancelSelect">取消</div>
+      <div @click="cancelSelect">返回</div>
       <div @click="alertShow = true">删除</div>
     </div>
   </div>
@@ -172,11 +172,21 @@ export default class Description extends Vue {
       }
 
       if (this.headData.leftUrl == "4") {
-        this.sideBarShow = false
-        this.headData.leftUrl = "3";
-      } else {
-        this.sideBarShow = true
-        this.headData.leftUrl = "4";
+        obj = {
+          leftUrl: "3",
+          leftPic: true,
+          rightText: "选择",
+        };
+        this.headData = Object.assign(this.headData, obj);
+        this.sideBarShow = false;
+      } else if(this.headData.leftUrl == "3"){
+        obj = {
+          leftUrl: "4",
+          leftPic: true,
+          rightText: "",
+        };
+        this.headData = Object.assign(this.headData, obj);
+        this.sideBarShow = true;
       }
     }
   }
