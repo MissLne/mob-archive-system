@@ -4,7 +4,7 @@
     <header class="slots"></header><!-- 占header的位置 -->
 
     <section
-      v-for="partStruct in metaDataTree"
+      v-for="partStruct in shownTree"
       :key="partStruct.id"
       class="part-struct-box"
     >
@@ -64,7 +64,15 @@ interface MetaDataStruct {
 })
 export default class MetaData extends Vue {
   fileType: string = '';
-  metaDataTree: MetaDataStruct = {} as MetaDataStruct;
+  metaDataTree: {[key: string]: any} = {} as MetaDataStruct;
+  get shownTree() {
+    const obj: {[key: string]: any} = {};
+    for (const key in this.metaDataTree) {
+      if (key !== 'specialMetadataStruct')
+        obj[key] = this.metaDataTree[key]
+    }
+    return obj;
+  }
 
   created() {
     this.metaDataTree = this.$store.state.metaData.tree

@@ -32,7 +32,12 @@ export default class InputDate extends Vue {
   @Emit('onConfirm')
   private onConfirm(selected: Date) {
     this.show = false;
-    return `${selected.getFullYear()}-${selected.getMonth() + 1}-${selected.getDate()}`;
+    let Y: any = selected.getFullYear();
+    let M: any = selected.getMonth() + 1;
+    M = M < 10 ? '0' + M : M;
+    let D: any = selected.getDate();
+    D = D < 10 ? '0' + D : D;
+    return `${Y}-${M}-${D}`;
   }
 }
 </script>

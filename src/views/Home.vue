@@ -17,10 +17,7 @@ import Tabbar from "@/components/tools/tabbar.vue";
 export default class Home extends Vue {
   private type: number | string = 0;
   created() {
-    console.log("type");
-    this.$nextTick(() => {
-      this.type = localStorage.getItem("tabbarT")|| 0;
-    });
+    
     this.type = localStorage.getItem("tabbarT") || 0;
   }
   changePage(event: any) {

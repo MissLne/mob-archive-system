@@ -90,7 +90,10 @@
           </li>
         </ul>
       </div>
-      <div class="go-meta-box">
+      <div 
+        v-if="haveMetaData"
+        class="go-meta-box"
+      >
         <router-link
           :to="{ name: 'archMetaData' }"
           class="go-meta"
@@ -130,6 +133,7 @@ import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType } from
 import InputDate from '@/components/public-com/Input/InputDate.vue';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
+import metaData from '@/store/modules/meta-data';
 
 @Component({
   components: {
@@ -165,13 +169,13 @@ export default class TempArchDetail extends Vue {
 
   // 表单必填项是否完成
   get isComplete() {
-    const obj = this.inputsProps
-    for (let key in obj) {
-      if (obj[key].required && obj[key].required === '')
-        return false;
-    }
-    console.log('opsigjsodfjo')
-    return true
+    // 用循环失效，直接暴力写法了
+    return this.inputsProps.topic.value
+      && this.inputsProps.fondsIdentifierId.value
+      && this.inputsProps.categoryCodeId.value
+      && this.inputsProps.departmentId.value
+      && this.inputsProps.confidentialLevel.value
+      && this.inputsProps.retentionPeriod.value
   }
   // 表单属性
   private readonly inputsProps: {[key: string]: any} = {
@@ -191,7 +195,7 @@ export default class TempArchDetail extends Vue {
     const obj: {[key: string]: any} = {};
     const props = this.inputsProps;
 
-    const specialMeta = this.$store.state.metaData.specialMetadataStruct[0].child as Array<MetaDataItem>;
+    const specialMeta = this.$store.state.metaData.tree.specialMetadataStruct[0].child as Array<MetaDataItem>;
 
     for (const key in props) {
       if (props[key].required)
@@ -242,7 +246,8 @@ export default class TempArchDetail extends Vue {
 
         if (!this.detailData) return;
 
-        if ((this.detailData.fileType as string).split('/')[0] === 'image') {
+        if ((this.detailData.fileType as string).split('/')[0] === 'image' || 
+        (this.detailData.fileType as string).split('/')[0] === 'video') {
           if (this.detailData.thumbnailFileToken)
             return downloadPic(this.detailData.thumbnailFileToken, this.detailData.fileType)
           else if (this.detailData.fileToken)
@@ -275,10 +280,17 @@ export default class TempArchDetail extends Vue {
     props.confidentialLevel.value =
       this.confidentialLevelArray[props.confidentialLevel.value].name;
     // 初始化元数据
-    this.$store.commit('metaData/setMetaDataTree', {
-      metaData: (dData as any).metadataStructTreeBoList,
-      fileType: (dData as any).fileType.split('/')[0],
-    });
+      this.$store.commit('metaData/setMetaDataTree', {
+        metaData: ((dData as any).metadataStructTreeBoList as Array<MetaDataItem>)
+          .filter(value => {
+            const name = value.metadataName;
+            return name !== '人物'
+              && name !== '时间'
+              && name !== '地点'
+              && name !== '事件'
+          }),
+        fileType: (dData as any).fileType.split('/')[0],
+      });
   }
 
   // 编辑
@@ -329,6 +341,12 @@ export default class TempArchDetail extends Vue {
         Msg.error('保存失败')
       })
     this.isEditing = false;
+  }
+
+  // 是否存在元数据
+  get haveMetaData() {
+    const type = this.detailData?.fileType.split('/')[0];
+    return type === 'image' || type === 'audio' || type === 'video';
   }
 
   private headClick({clickType}: any) {

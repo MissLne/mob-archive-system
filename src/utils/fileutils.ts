@@ -205,6 +205,7 @@ export function fillArchDetail(detailData: any, inputsProps: any) {
  * @param handle 经过节点时遍历的函数
  */
 export function dfsTree(tree: any, handle: (obj: MetaDataItem) => void) {
+  if (!tree) return;
   for (let obj of tree) {
     handle(obj);
     if (obj.child)

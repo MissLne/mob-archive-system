@@ -4,7 +4,7 @@
       <router-link
         :to="item.itemLink"
         tag="div"
-        :style="{ color: type === index ? '#8EBEFE' : '' }"
+        :style="{ color: type == index ? '#8EBEFE' : '' }"
         @click.native="changePage(index)"
       >
         <img :src="item.imageUrl" />
@@ -58,6 +58,7 @@ export default class Tabbar extends Vue {
     ],
   ];
   created() {
+    console.log(this.type)
     for (let i = 0; i < this.barData.length; i++) {
       this.barData[i].imageUrl = this.iUrl[this.type][i];
     }

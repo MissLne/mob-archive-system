@@ -8,24 +8,25 @@ const metaData: Module<any, any> = {
     flatArr: [] as Array<MetaDataItem>,
     // 树状的数据
     tree: {} as MetaDataStruct,
-    
-    specialMetadataStruct: [] as Array<MetaDataItem>
   },
   mutations: {
     /**
      * 输入扁平状数据，设置树状数据
      * @param payload metaData和fileType
      */
-    setMetaDataTree(state, payload: {metaData: any, fileType: string}) {
+    setMetaDataTree(state, payload: {metaData: any, fileType?: string}) {
       // 将扁平数据设置好
       state.flatArr = payload.metaData;
       // 将树状数据设置好
       const fullMetaDataTree: MetaDataStruct = JSON.parse(localStorage.getItem('struct') as string);
-      state.specialMetadataStruct = fullMetaDataTree.specialMetadataStruct;
-      state.tree = {
-        publicMetadataStruct: fullMetaDataTree.publicMetadataStruct,
-        [`${payload.fileType}MetadataStruct`]: fullMetaDataTree[`${payload.fileType}MetadataStruct`],
-      }
+      if (payload.fileType)
+        state.tree = {
+          specialMetadataStruct: fullMetaDataTree.specialMetadataStruct,
+          publicMetadataStruct: fullMetaDataTree.publicMetadataStruct,
+          [`${payload.fileType}MetadataStruct`]: fullMetaDataTree[`${payload.fileType}MetadataStruct`],
+        }
+      else
+          state.tree = { specialMetadataStruct: fullMetaDataTree.specialMetadataStruct }
       // 将获取的数据放入map
       const map: Map<number, string> = new Map()
       payload.metaData.forEach(({child, id, metadataValue}: MetaDataItem) => {
