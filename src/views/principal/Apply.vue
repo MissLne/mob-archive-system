@@ -14,7 +14,7 @@
       />
     </div>
     <div class="select-btn" v-if="isShow">
-      <div @click="cancelSelect">取消</div>
+      <div @click="cancelSelect">返回</div>
       <div @click="alertShow = true">删除</div>
     </div>
     <DesBtn
@@ -28,6 +28,7 @@
       @sureDelete="sureDelete($event)"
     />
     <img
+    v-show="!isShow && !sideBarShow"
       src="@/assets/apply/Addapplication.png"
       class="add-apply"
       @click="toAddPage"
@@ -111,7 +112,7 @@ export default class Apply extends Vue {
         let result = this.changeStatus(res.data.data.records);
         console.log(res.data.data);
         if(res.data.data.records.length == 0) {
-          MsgBox.error("搜索内容为空")
+          MsgBox.error("内容为空")
         }
         this.itemData = result;
         // result.map((item, index) => {
@@ -240,11 +241,21 @@ export default class Apply extends Vue {
       }
 
       if (this.headData.leftUrl == "4") {
+        obj = {
+          leftUrl: "3",
+          leftPic: true,
+          rightText: "选择",
+        };
+        this.headData = Object.assign(this.headData, obj);
         this.sideBarShow = false;
-        this.headData.leftUrl = "3";
       } else if(this.headData.leftUrl == "3"){
+        obj = {
+          leftUrl: "4",
+          leftPic: true,
+          rightText: "",
+        };
+        this.headData = Object.assign(this.headData, obj);
         this.sideBarShow = true;
-        this.headData.leftUrl = "4";
       }
     }
   }
@@ -261,7 +272,7 @@ export default class Apply extends Vue {
     height: 82px;
     bottom: 100px;
     right: 42px;
-    z-index: 999;
+    z-index: 1;
   }
   .select-btn {
     width: 519px;

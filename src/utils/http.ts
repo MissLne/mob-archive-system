@@ -3,7 +3,7 @@ import router from '@/router/index'
 
 
 const service = axios.create({
-  timeout: 10000 
+  timeout: 100000 
 })
 
 service.interceptors.request.use(
