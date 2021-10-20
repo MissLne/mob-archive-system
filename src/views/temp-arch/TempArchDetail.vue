@@ -190,17 +190,15 @@ export default class TempArchDetail extends Vue {
 
 <style lang="scss">
   #temp-arch-detail {
+    overflow: hidden;
     width: 700px;
     height: 1335px;
     border-radius: 1px;
     // margin: auto;
-    padding: 0 25px;
+    padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;
     .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       width: 700px;
       height: 1208px;
       box-sizing: border-box;
@@ -226,7 +224,10 @@ export default class TempArchDetail extends Vue {
               height: 100%;
             }
           }
-          
+        }
+        .title {
+          margin: 15px 0 29px;
+          font-size: 30px;
         }
         .inf-list {
           margin-right: 53px;
@@ -305,7 +306,7 @@ export default class TempArchDetail extends Vue {
       }
       .go-meta-box {
         width: 100%;
-        margin-bottom: 40px;
+        margin: 24px 0 42px;
         a {
           color: #8EBEFE;
         }

@@ -1,5 +1,5 @@
 <template>
-  <div id="temp-arch-detail">
+  <div id="arch-detail">
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
 
@@ -69,9 +69,8 @@
               <!-- 虽然用index绑定不好，但是这是不会变的 -->
               <label
                 v-for="(labelItem, labelIndex) in retentionPeriodArray"
-                v-once
-                class="radio-box"
                 :key="labelIndex"
+                class="radio-box"
               >
                 <input
                   v-model="item.value"
@@ -83,20 +82,39 @@
                 <span>{{labelItem}}</span>
               </label>
             </div>
-          </li>
 
+            <!-- 写到下面才能挡住 -->
+            <transition name="van-fade">
+              <div class="disabled-mask" v-show="!isEditing"></div>
+            </transition>
+          </li>
         </ul>
       </div>
       <div class="go-meta-box">
         <router-link
-          :to="{ name: 'tempArchMeta', params: { fileType: detailData.fileType.split('/')[0] }}"
+          :to="{ name: 'archMetaData' }"
           class="go-meta"
         >查看元数据>></router-link>
       </div>
-      <div class="btns-box">
-        <button class="left-btn">删除</button>
-        <button class="right-btn" :style="{ 'background-color': isComplete ? '#8EBEFE' : '#D2E6FE'}">著录</button>
-      </div>
+
+      <transition name="btns-move" mode="out-in">
+        <div v-if="!isEditing" class="btns-box" key="box1">
+          <button
+            class="left-btn"
+            @click="deleteFile"
+          >删除</button>
+          <button
+            class="right-btn"
+            :style="{ 'background-color': isComplete ? '#8EBEFE' : '#D2E6FE'}"
+            @click="editFile"
+          >编辑</button>
+        </div>
+        
+        <div v-else class="btns-box" key="box2">
+          <button class="single-save-btn" @click="saveFile">保存</button>
+        </div>
+      </transition>
+
     </div>
     <!-- <div class="bg-box"></div> -->
   </div>
@@ -108,25 +126,30 @@ import Select from '@/components/public-com/Select/Select.vue'
 import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
-import Alerts from '@/components/tools/alerts.vue';
-import { recursionGetId, downloadPic } from '@/utils/fileUtils';
+import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType } from '@/utils/fileUtils';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
+import { Dialog } from 'vant';
+import Msg from '@/components/public-com/MsgBox/Msg';
 
 @Component({
   components: {
     Select,
     Input,
     DesHead,
-    Alerts,
     InputDate
   }
 })
 export default class TempArchDetail extends Vue {
+  @Prop() archId!: number;
   private detailData: ArchItemData | null = null;
   // select的内容
   private fondsIdentifier: Array<any> = [];
   private dossierType: Array<any> = [];
   private departmentNameTree: Array<any> = [];
+  get isAllow() {
+    return this.$store.getters.permissionList
+  }
+  // 密级列表
   private readonly confidentialLevelArray = [
     {name: '公开', id: 0},
     {name: '内部', id: 1},
@@ -134,16 +157,24 @@ export default class TempArchDetail extends Vue {
     {name: '机密', id: 3},
     {name: '秘密', id: 4}
   ];
+  // 保密期限列表
   private readonly retentionPeriodArray = [ '永久', '30年', '10年' ];
 
+  // 是否正在编辑
+  private isEditing: boolean = false;
+
+  // 表单必填项是否完成
   get isComplete() {
-    /* for (let key in this.inputsProps) {
-      
-    } */
+    const obj = this.inputsProps
+    for (let key in obj) {
+      if (obj[key].required && obj[key].required === '')
+        return false;
+    }
+    console.log('opsigjsodfjo')
     return true
   }
-
-  private readonly inputsProps = {
+  // 表单属性
+  private readonly inputsProps: {[key: string]: any} = {
     topic: { title: '题名', required: true, msg: '请输入题名', type: 'text', value: '' },
     people: { title: '人物', required: false, type: 'text', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
@@ -155,8 +186,41 @@ export default class TempArchDetail extends Vue {
     confidentialLevel: { title: '密级', required: true, type: 'select', value: '' },
     retentionPeriod: { title: '保密期限', required: true, type: 'radio', value: 1 },
   }
+  // 提交表单信息
   get inputsValue() {
-    return null;
+    const obj: {[key: string]: any} = {};
+    const props = this.inputsProps;
+
+    const specialMeta = this.$store.state.metaData.specialMetadataStruct[0].child as Array<MetaDataItem>;
+
+    for (const key in props) {
+      if (props[key].required)
+        obj[key] = props[key].value
+      else
+        specialMeta.forEach(item => {
+          if (item.metadataName === props[key].title)
+            item.metadataValue = props[key].value
+        })
+    }
+    obj['fondsIdentifierId'] = recursionGetId(this.fondsIdentifier, obj['fondsIdentifierId'], 'fondsName', 'id');
+    obj['categoryCodeId'] = recursionGetId(this.dossierType, obj['categoryCodeId'], 'typeName', 'id');
+    obj['departmentId'] = recursionGetId(this.departmentNameTree, obj['departmentId'], 'departmentName', 'id');
+    obj['confidentialLevel'] = recursionGetId(this.confidentialLevelArray, obj['confidentialLevel'], 'name', 'id');
+
+    obj['metadata'] = (
+      [...(this.$store.state.metaData.flatArr), ...(specialMeta)] as Array<MetaDataItem>
+    )
+      .filter(value => value.metadataValue)
+      .map((value) => {
+        let { id, metadataValue, metadataName } = value
+        if (metadataName.slice(-2) === '时间')
+          metadataValue += 'T00:00:00'
+        return { metadataId: id, metadataValue }
+      }
+    )
+    obj['id'] = this.archId;
+
+    return obj;
   }
 
   private headData: any = {
@@ -173,17 +237,23 @@ export default class TempArchDetail extends Vue {
     // 获取详细数据
     this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
       .then(({data: res}: {data: any}) => {
-        console.log(res);
+        console.log('archDetailData', res);
         this.detailData = res.data;
 
-        if (this.detailData)
-          return downloadPic(this.detailData.thumbnailFileToken, this.detailData.fileType)
+        if (!this.detailData) return;
+
+        if ((this.detailData.fileType as string).split('/')[0] === 'image') {
+          if (this.detailData.thumbnailFileToken)
+            return downloadPic(this.detailData.thumbnailFileToken, this.detailData.fileType)
+          else if (this.detailData.fileToken)
+            return downloadPic(this.detailData.fileToken, this.detailData.fileType)
+        }
+        else
+          return setPicByContentType(this.detailData.fileType as string)
       })
       .then((res: any) => {
         if (this.detailData)
           this.$set(this.detailData, 'picSrc', res);
-        console.log('created', this.detailData)
-        console.log('dossiertype is', (this.detailData as ArchItemData))
         this.createSetting()
       })
 
@@ -194,8 +264,71 @@ export default class TempArchDetail extends Vue {
 
   }
   createSetting() {
-    if (this.detailData && this.detailData.topic)
-      this.inputsProps.topic.value = this.detailData.topic;
+    const dData = this.detailData;
+    const props = this.inputsProps;
+    // 将获取的数据填入表单
+    fillArchDetail(dData, this.inputsProps);
+    // 获取的全宗号是数字，转为对应的字符
+    props.fondsIdentifierId.value = 
+      recursionGetId(this.fondsIdentifier, props.fondsIdentifierId.value, 'fondsIdentifier', 'fondsName');
+    // 获取的密级是数字，转为对应的字符
+    props.confidentialLevel.value =
+      this.confidentialLevelArray[props.confidentialLevel.value].name;
+    // 初始化元数据
+    this.$store.commit('metaData/setMetaDataTree', {
+      metaData: (dData as any).metadataStructTreeBoList,
+      fileType: (dData as any).fileType.split('/')[0],
+    });
+  }
+
+  // 编辑
+  editFile() {
+    this.isEditing = true;
+  }
+  // 删除
+  deleteFile() {
+    Dialog.confirm({
+      title: '确认删除',
+      confirmButtonText: '是',
+      cancelButtonText: '否'
+    }).then(() => {
+      let queryStr;
+      if (this.isAllow('managerDeleteArchive') !== -1)
+        queryStr = 'managerDeleteArchive';
+      else if (this.isAllow('userDeleteArchive') !== -1)
+        queryStr = 'userDeleteArchive';
+      else
+        return;
+      
+      this.$service.post(`/api/api/archive/${queryStr}`, {
+        ids: [this.archId]
+      }).then(({data}: any) => {
+        if (data.code === 200) {
+          Msg.success('删除成功')
+          this.$router.back();
+        }
+        else throw Error();
+      }).catch(err => {
+        Msg.error('删除失败')
+      })
+    }).catch(() => {})
+  }
+  // 保存
+  saveFile() {
+    console.log(this.inputsValue)
+    this.$service.post('/api/api/archive/updateArchive', this.inputsValue)
+      .then(({data: res}: any) => {
+        console.log(res)
+        if(res.code === 200)
+          Msg.success('保存成功')
+        else
+          throw Error()
+      })
+      .catch((err: any) => {
+        console.log(err)
+        Msg.error('保存失败')
+      })
+    this.isEditing = false;
   }
 
   private headClick({clickType}: any) {
@@ -212,12 +345,13 @@ export default class TempArchDetail extends Vue {
 </script>
 
 <style lang="scss">
-  #temp-arch-detail {
+  #arch-detail {
+    overflow: hidden;
     width: 700px;
     height: 1335px;
     border-radius: 1px;
     // margin: auto;
-    padding: 0 25px;
+    padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;
     .container {
@@ -249,12 +383,16 @@ export default class TempArchDetail extends Vue {
               height: 100%;
             }
           }
-          
+        }
+        .title {
+          margin: 15px 0 29px;
+          font-size: 30px;
         }
         .inf-list {
           margin-right: 53px;
           .item {
             $item-height: 73px;
+            position: relative; // 为了disabled-mask
             display: flex;
             justify-content: space-between;
             .item-title {
@@ -313,6 +451,14 @@ export default class TempArchDetail extends Vue {
                 margin-right: 34px;
               }
             }
+            .disabled-mask {
+              z-index: 2;
+              position: absolute;
+              right: 0;
+              width: 430px;
+              height: 100%;
+              background: rgba(255, 255, 255, 0.4);
+            }
             /* .item-box {
               position: relative;
               .face-recognition-icon {
@@ -329,7 +475,7 @@ export default class TempArchDetail extends Vue {
       }
       .go-meta-box {
         width: 100%;
-        margin-bottom: 40px;
+        margin: 24px 0 42px;
         a {
           color: #8EBEFE;
         }
@@ -357,7 +503,18 @@ export default class TempArchDetail extends Vue {
           color: #fff;
           box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
         }
+        .single-save-btn {
+          width: 100%;
+          height: 75px;
+          border: none;
+          background-color: #85B8FD;
+          color: #FFF;
+          box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
+          border-radius: 8px;
+          transition: background-color 0.15s ease-out;
+        }
       }
+      @import '~@/assets/css/animation/btns-move.scss';
     }
     .bg-box {
       z-index: -1;

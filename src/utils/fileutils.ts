@@ -25,48 +25,50 @@ export function setPicSrc(data: UploadFileData, file: File) {
     })
     Vue.set(data, 'picSrc', data.picSrc);
   }
-  else if (data.fileName) {
-    const strings = data.fileName.split('.'); 
-    const suffix = strings[strings.length - 1];
-    // Object.defineProperty(data, 'picSrc', 'test');
-    console.log('passDetailData', data)
-    if (suffix.includes('pdf'))
-      data.picSrc = require('@/assets/temp-arch/pdf.png')
-    else if (suffix.includes('doc'))
-      data.picSrc = require('@/assets/temp-arch/word.png')
-    else if (suffix.includes('ppt'))
-      data.picSrc = require('@/assets/temp-arch/ppt.png')
-    else if (suffix.includes('xlsx'))
-      data.picSrc = require('@/assets/temp-arch/excel.png')
-    else
-      data.picSrc = require('@/assets/temp-arch/unknown.png')
+  else if (data.contentType) {
+    data.picSrc = setPicByContentType(data.contentType)
   }
   else
     console.log('fail to set picSrc');
 }
 
+export function setPicByContentType(contentType: string): string {
+  const strings = contentType.split('/'); 
+  const suffix = strings[strings.length - 1];
+  if (suffix.includes('pdf'))
+    return require('@/assets/temp-arch/pdf.png')
+  else if (suffix.includes('.document'))
+    return require('@/assets/temp-arch/word.png')
+  else if (suffix.includes('.presentation'))
+    return require('@/assets/temp-arch/ppt.png')
+  else if (suffix.includes('.sheet'))
+    return require('@/assets/temp-arch/excel.png')
+  else
+    return require('@/assets/temp-arch/unknown.png')
+}
+
 /**
  * 递归地从树上寻找：具有名为keyName的键，且值等于keyValue的对象。并获取其名为idName的键对应的值。
- * @param tree 要搜索的数（孩子名为children）
+ * @param tree 要搜索的树（孩子名为children）
  * @param keyValue 索引键值
  * @param keyName 索引键名
  * @param idName 搜索键值的键名
- * @returns 
+ * @param treeChildrenName 树的孩子名，默认为children
+ * @returns 数字，找不到为undefined
  */
-export function recursionGetId(tree: Array<any>, keyValue: string, keyName: string, idName: string) {
+export function recursionGetId(tree: Array<any>, keyValue: string, keyName: string, idName: string, treeChildrenName: string = 'children') {
     // console.log(tree, keyValue, keyName, idName)
     let ans: any = undefined;
     if (tree)
       for (let i = 0; i < tree.length; ++i) {
         const child = tree[i];
-        // console.log(child[keyName])
         if (child[keyName] === keyValue) {
           ans = child[idName];
           // console.log(ans)
           break;
         }
         else {
-          ans = recursionGetId(child.children, keyValue, keyName, idName);
+          ans = recursionGetId(child[treeChildrenName], keyValue, keyName, idName);
           if (ans) break;
         }
       }
@@ -183,8 +185,29 @@ export const uploadFile = async (fileMd5Value: any, fileName: any, fileChunkList
   })
 }
 
-//
+export function fillArchDetail(detailData: any, inputsProps: any) {
+  // getArchiveDetail
+  inputsProps.topic.value = detailData.topic;
+  inputsProps.people.value = detailData.people;
+  inputsProps.time.value = detailData.time?.split('T')[0];
+  inputsProps.place.value = detailData.address;
+  inputsProps.event.value = detailData.event;
+  inputsProps.fondsIdentifierId.value = detailData.fondsName;
+  inputsProps.categoryCodeId.value = detailData.categoryName;
+  inputsProps.departmentId.value = detailData.departmentName;
+  inputsProps.confidentialLevel.value = detailData.confidentialLevel;
+  inputsProps.retentionPeriod.value = detailData.retentionPeriod;
+}
 
-export function fillInformation() {
-  
+/**
+ * 递归遍历元数据树
+ * @param tree 元数据树
+ * @param handle 经过节点时遍历的函数
+ */
+export function dfsTree(tree: any, handle: (obj: MetaDataItem) => void) {
+  for (let obj of tree) {
+    handle(obj);
+    if (obj.child)
+      dfsTree(obj.child, handle);
+  }
 }

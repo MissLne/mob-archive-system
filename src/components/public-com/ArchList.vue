@@ -148,22 +148,8 @@ export default class ArchList extends Vue {
         box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
         border-radius: 8px;
       }
-      // 动画
-      &.btns-move-enter,
-      &.btns-move-leave-to {
-        transform: translateY(150px);
-      }
-      &.btns-move-enter-active {
-        transition: transform 0.35s ease-out;
-      }
-      &.btns-move-leave-active {
-        transition: transform 0.25s ease-in;
-      }
-      &.btns-move-enter-to,
-      &.btns-move-left {
-        transform: translateY(0px);
-      }
     }
-    
+    // btns-box的动画
+    @import '~@/assets/css/animation/btns-move.scss';
   }
 </style>

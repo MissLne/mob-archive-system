@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
+import { component } from 'vue/types/umd'
 
 Vue.use(VueRouter)
 
@@ -78,9 +79,9 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/temp-arch/TempArchDetail.vue'),
       },
       {
-        path: 'detail/meta',
-        name: 'tempArchMeta',
-        component: () => import('@/views/temp-arch/TempArchMeta.vue'),
+        path: 'meta-data',
+        name: 'tempArchMetaData',
+        component: () => import('@/views/public/MetaData.vue'),
       },
     ]
   },
@@ -90,10 +91,22 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/views/other/desPage/myDes.vue'),
   },
   {
-    path: '/archdetail',
-    name: 'archDetail',
-    component: () => import('@/views/other/archDetail/ArchDetail.vue'),
-  },
+    path: '/arch',
+    redirect: '/arch/detail',
+    component: () => import('@/views/other/archDetail/Arch.vue'),
+    children: [
+      {
+        path: 'detail',
+        name: 'archDetail',
+        component: () => import('@/views/other/archDetail/ArchDetail.vue'),
+      },
+      {
+        path: 'meta-data',
+        name: 'archMetaData',
+        component: () => import('@/views/public/MetaData.vue'),
+      },
+    ]
+  }, 
 ]
 
 const router = new VueRouter({

@@ -1,7 +1,7 @@
 <template>
   <div id="des-item">
     <div>
-      <img :src="desItem.fileToken ? desItem.fileToken : url" />
+      <van-image :src="desItem.fileToken ? desItem.fileToken : url" fit="contain"/>
       <div class="title">
         <div>{{ desItem.topic }}</div>
         <div>{{ desItem.introduce ? desItem.introduce : "暂无简介" }}</div>
@@ -31,6 +31,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { Image } from 'vant';
 
 @Component
 export default class DesItem extends Vue {

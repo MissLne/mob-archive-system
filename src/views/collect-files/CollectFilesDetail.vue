@@ -294,17 +294,15 @@ export default class CollectFilesDetail extends Vue {
 
 <style lang="scss">
   #collect-files-detail {
+    overflow: hidden;
     width: 700px;
     height: 1335px;
     border-radius: 1px;
     // margin: auto;
-    padding: 0 25px;
+    padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;
     .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       width: 700px;
       height: 1208px;
       box-sizing: border-box;
@@ -331,6 +329,10 @@ export default class CollectFilesDetail extends Vue {
             }
           }
           
+        }
+        .title {
+          margin: 15px 0 29px;
+          font-size: 30px;
         }
         .inf-list {
           margin-right: 53px;

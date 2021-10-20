@@ -44,3 +44,20 @@ interface UploadFileData {
   saveData?: any,
   [key: string]: any,
 }
+
+interface MetaDataItem {
+  id: number,
+  parentId: number,
+  metadataName: string,
+  metadataValue: any,
+  child: Array<MetaDataItem>
+}
+
+interface MetaDataStruct {
+  publicMetadataStruct: Array<MetaDataItem>
+  specialMetadataStruct: Array<MetaDataItem>
+  audioMetadataStruct?: Array<MetaDataItem>
+  imageMetadataStruct?: Array<MetaDataItem>
+  videoMetadataStruct?: Array<MetaDataItem>
+  [key: string]: Array<MetaDataItem>
+}

@@ -46,12 +46,13 @@ import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue"
+import { setPicByContentType } from "@/utils/fileUtils";
 
 interface dataType {
   size: number | undefined;
   current: number | undefined;
   type: number;
-  retentionPeriod: number;
+  retentionPeriod?: number;
   status: number;
   topic?: Array<string>;
 }
@@ -118,7 +119,7 @@ export default class Description extends Vue {
     size: 10,
     current: 1,
     type: 2,
-    retentionPeriod: 1,
+    // retentionPeriod: 1,
     status: 0,
     topic: [],
   };
@@ -211,7 +212,7 @@ export default class Description extends Vue {
         this.count = res.data.data.total;
         this.pageData.total = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
-          if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
+          if (item.hasOwnProperty("fileToken") && item.fileToken !== null && item.fileType.split('/')[0] === 'image') {
             (this as any).$service
               .get(`/api/api/file/download/${item.fileToken}`, {
                 responseType: "arraybuffer",
@@ -226,6 +227,9 @@ export default class Description extends Vue {
                     )
                   );
               });
+          }
+          else if (item.fileType) {
+            item.fileToken = setPicByContentType(item.fileType)
           }
         });
         this.desItem = result;

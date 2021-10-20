@@ -127,9 +127,12 @@ export default class Login extends Vue {
     })
   }
   private initLocalStorage(res: any) {
+    console.log('登录咯', res)
     localStorage.setItem('token', res.token);
     localStorage.setItem('username', res.user.name);
     localStorage.setItem('departmentId', res.user.departmentId);
+    // 载入权限列表
+    localStorage.setItem('permissionList', JSON.stringify(res.permissionList));
     // 载入元数据结构
     this.$service.get('/api/api/archive/getFileMetadataStructTree')
       .then(({data: res}: {data: any}) => {
@@ -159,7 +162,7 @@ export default class Login extends Vue {
       .then(({data: res}: any) => {
         console.log('getCollectedFileType', res)
         if (res.success && res.code === 200)
-          localStorage.setItem('departmentNameTree', JSON.stringify(res.data.children))
+          localStorage.setItem('departmentNameTree', JSON.stringify([res.data]))
       })
   }
 }
