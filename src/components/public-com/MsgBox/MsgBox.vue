@@ -25,7 +25,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .msg-box {
     display: flex;
     justify-content: center;

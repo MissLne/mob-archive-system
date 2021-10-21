@@ -4,15 +4,20 @@
     <div class="slots"></div><!-- 占header的位置 -->
 
     <div v-if="detailData" class="container">
-      <PreviewBox :picSrc="detailData.picSrc"/>
+      <PreviewBox
+        :picSrc="detailData.picSrc"
+        :fileToken="detailData.fileToken"
+        :fileType="detailData.fileType"
+      />
       <ArchForm
-        :disabled="!isEditing"
         :inputsProps="inputsProps"
         :fondsIdentifier="fondsIdentifier"
         :dossierType="dossierType"
         :departmentNameTree="departmentNameTree"
         :confidentialLevelArray="confidentialLevelArray"
         :retentionPeriodArray="retentionPeriodArray"
+        :disabled="!isEditing"
+        :fileId="detailData.fileId"
       />
       <div 
         v-if="haveMetaData"

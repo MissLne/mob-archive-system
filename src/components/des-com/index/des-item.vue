@@ -1,7 +1,7 @@
 <template>
   <div id="des-item">
     <div>
-      <van-image :src="desItem.fileToken ? desItem.fileToken : url" fit="contain"/>
+      <van-image :src="desItem.fileToken ? desItem.fileToken : url" fit="cover" class="thumbnail-img"/>
       <div class="title">
         <div>{{ desItem.topic }}</div>
         <div>{{ desItem.introduce ? desItem.introduce : "暂无简介" }}</div>
@@ -171,7 +171,7 @@ export default class DesItem extends Vue {
       // z-index: 100;
     }
   }
-  img {
+  .thumbnail-img {
     width: 119px;
     height: 150px;
   }

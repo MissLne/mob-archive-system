@@ -3,17 +3,28 @@
     <title class="title">基础信息</title>
     <ul class="form">
       <li v-for="item in inputsProps" :key="item.title" class="item">
+        <!-- 标题 -->
         <span class="item-title" :class="{ required: item.required }">
           {{item.title}}
           <!-- {{item.value}}{{typeof item.value}} -->
         </span>
+        <!-- 人脸识别图标，为了选择器能选到input才写到上面 -->
+        <FaceRecognitionIcon
+          v-if="canRecognize && item.title === '人物'"
+          class="face-icon"
+          :fileId="fileId"
+          @passFaceDataName="setFaceDataName"
+        />
+        <!-- 文本输入 -->
         <Input
           v-if="item.type === 'text'"
           v-model="item.value"
           :required="item.required"
           :msg="item.msg"
         />
+        <!-- 日期输入 -->
         <InputDate v-else-if="item.type === 'date'" v-model="item.value" />
+        <!-- 下拉选择 -->
         <div v-else-if="item.type === 'select'" class="item-input">
           <img
             src="@/assets/temp-arch/pulldown-gray@2x.png"
@@ -49,7 +60,7 @@
             :optionVariableKey="'id'"
           />
         </div>
-
+        <!-- 多选框 -->
         <div v-else class="item-input all-radio-boxes">
           <!-- 虽然用index绑定不好，但是这是不会变的 -->
           <label
@@ -67,8 +78,7 @@
             <span>{{ labelItem }}</span>
           </label>
         </div>
-
-        <!-- 写到下面才能挡住 -->
+        <!-- 防止输入的遮罩层，写到下面才能挡住 -->
         <transition name="van-fade">
           <div class="disabled-mask" v-show="disabled"></div>
         </transition>
@@ -82,12 +92,14 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 import Input from "@/components/public-com/Input/Input.vue";
 import InputDate from "@/components/public-com/Input/InputDate.vue";
 import Select from "@/components/public-com/Select/Select.vue";
+import FaceRecognitionIcon from "@/views/face-recognition/FaceRecognitionIcon.vue";
 
 @Component({
   components: {
     Input,
     InputDate,
     Select,
+    FaceRecognitionIcon,
   },
 })
 export default class ArchForm extends Vue {
@@ -100,6 +112,15 @@ export default class ArchForm extends Vue {
   @Prop() retentionPeriodArray!: Array<any>;
   // 功能
   @Prop({default: false}) disabled!: boolean;
+  @Prop({default: true}) canRecognize!: boolean;
+  // 人脸识别用
+  @Prop() fileId!: number;
+
+  setFaceDataName(nameString: string) {
+    console.log('receive!', nameString)
+    if (this.inputsProps.people)
+      this.inputsProps.people.value = nameString;
+  }
 }
 </script>
 
@@ -175,6 +196,16 @@ export default class ArchForm extends Vue {
             color: #666666;
             line-height: inherit;
           }
+        }
+      }
+      // 如果下一个元素是人脸识别图标，就加一点padding
+      .face-icon {
+        z-index: 2;
+        position: absolute;
+        top: 19px;
+        right: 0;
+        & + .input-wrap /deep/ input{
+          padding-right: 45px;
         }
       }
       .disabled-mask {

@@ -1,20 +1,22 @@
 <template>
   <div id="app">
-    <transition :name="transitionName">
-      <router-view/>
-    </transition>
+    <transition-view>
+      <keep-alive include="Home">
+        <router-view/>
+      </keep-alive>
+    </transition-view>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { watchRouteChange } from '@/utils/utils-component'
+import { Component, Vue } from 'vue-property-decorator';
+import TransitionView from '@/components/public-com/TransitionView.vue'
 
-@Component
-export default class App extends Vue {
-  private transitionName: string = '';
-  created() {
-    watchRouteChange(this);
+@Component({
+  components: {
+    TransitionView
   }
+})
+export default class App extends Vue {
 }
 </script>
 <style lang="scss">

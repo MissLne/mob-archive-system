@@ -34,37 +34,12 @@ export default class TempArch extends Vue {
     this.fondsIdentifier = JSON.parse(localStorage.getItem('fondsIdentifier') as string)
     this.dossierType = JSON.parse(localStorage.getItem('dossierType') as string)
     this.departmentNameTree = JSON.parse(localStorage.getItem('departmentNameTree') as string)
-    /* if (!this.fondsIdentifier) {
-      this.$service.get(`/api/api/fondsIdentifier/getFondsIdentifier`)
-        .then(({data: res}: any) => {
-          console.log('getCollectedFileType', res)
-          if (res.success && res.code === 200)
-            this.fondsIdentifier = res.data
-        })
-    }
-    if (!this.dossierType) {
-      this.$service.get(`/api/api/type/getDossierType`)
-        .then(({data: res}: any) => {
-          console.log('getCollectedFileType', res)
-          if (res.success && res.code === 200)
-            this.dossierType = res.data.children
-        })
-    }
-    if (!this.departmentNameTree) {
-      this.$service.get(`/api/api/department/getDepartmentTree`)
-        .then(({data: res}: any) => {
-          console.log('getCollectedFileType', res)
-          if (res.success && res.code === 200)
-            this.departmentNameTree = res.data.children
-        })
-    } */
   }
   passDetailData(data: ArchItemData[]) {
     this.initSelectData();
     this.detailDataList = data;
     this.$router.push({
       name: 'tempArchDetail',
-      params: { count: this.detailDataList.length.toString() },
     })
   }
   nextDetail() {
@@ -74,7 +49,6 @@ export default class TempArch extends Vue {
       this.detailDataList.splice(0, 1);
       this.$router.replace({
         name: 'tempArchDetail',
-        params: { count: this.detailDataList.length.toString() },
       })
     }
   }

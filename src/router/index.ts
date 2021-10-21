@@ -60,7 +60,7 @@ const routes: Array<RouteConfig> = [
       {
         path: 'face-recognition',
         name: 'faceRecognition',
-        component: () => import('@/views/collect-files/FaceRecognition.vue'),
+        component: () => import('@/views/face-recognition/FaceRecognition.vue'),
       }
     ]
   },
@@ -74,28 +74,28 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/temp-arch/TempArchUpload.vue'),
       },
       {
-        path: 'detail/:count',
+        path: 'detail/x',
         name: 'tempArchDetail',
         component: () => import('@/views/temp-arch/TempArchDetail.vue'),
         props: true
       },
       {
-        path: 'detail/meta-data',
+        path: 'detail/meta-data/x',
         name: 'tempArchMetaData',
-        component: () => import('@/views/public/MetaData.vue'),
+        component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
-  },
-  {
-    path: '/myDes',
-    name: 'myDes',
-    component: () => import('@/views/other/desPage/myDes.vue'),
   },
   {
     path: '/arch',
     redirect: '/arch/detail',
     component: () => import('@/views/other/archDetail/Arch.vue'),
     children: [
+      {
+        path: 'my-des',
+        name: 'myDes',
+        component: () => import('@/views/other/archDetail/MyDes.vue'),
+      },
       {
         path: 'detail',
         name: 'archDetail',
@@ -104,7 +104,7 @@ const routes: Array<RouteConfig> = [
       {
         path: 'meta-data',
         name: 'archMetaData',
-        component: () => import('@/views/public/MetaData.vue'),
+        component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
   }, 
@@ -115,7 +115,8 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
   scrollBehavior (to, from, savedPosition) {
-    return { x: 0, y: 0 }
+    // return { x: 0, y: 0 }
+    return savedPosition
   }
 })
 

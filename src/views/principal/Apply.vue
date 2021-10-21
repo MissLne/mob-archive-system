@@ -302,7 +302,7 @@ export default class Apply extends Vue {
     width: 82px;
     height: 82px;
     bottom: 100px;
-    right: 42px;
+    right: 30px;
     z-index: 1;
   }
   .select-btn {

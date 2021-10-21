@@ -84,6 +84,7 @@ export default class Input extends Vue {
     .input {
       width: 100%;
       height: 100%;
+      box-sizing: border-box;
       border: none;
       border-bottom: 3px solid #E1E1E1;
       padding: 0;

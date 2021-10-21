@@ -5,12 +5,10 @@
 
     <div class="container">
       <div class="input-box">
-        <div class="preview-box">
-          <span class="preview-title">预览</span>
-          <div class="preview-img-box">
-            <img :src="detailData.picSrc" alt="" class="preview-img">
-          </div>
-        </div>
+        <PreviewBox
+          :picSrc="detailData.picSrc"
+          :fileType="detailData.contentType"
+        />
         <h3 class="title">基础信息</h3>
         <ul class="inf-list">
           <li v-for="item in inputsProps" :key="item.title" class="item">
@@ -92,6 +90,7 @@ import DesHead from '@/components/des-com/index/des-head.vue';
 import Alerts from '@/components/tools/alerts.vue';
 import { recursionGetId } from '@/utils/utils-file';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
+import PreviewBox from '@/components/public-com/PreviewBox.vue';
 
 @Component({
   components: {
@@ -99,7 +98,8 @@ import InputDate from '@/components/public-com/Input/InputDate.vue';
     Input,
     DesHead,
     Alerts,
-    InputDate
+    InputDate,
+    PreviewBox
   }
 })
 export default class CollectFilesDetail extends Vue {
@@ -309,27 +309,6 @@ export default class CollectFilesDetail extends Vue {
       padding: 18px 0 29px 40px;
       background-color: #fff;
       .input-box {
-        .preview-box {
-          $preview-box-height: 186px;
-          display: flex;
-          justify-content: space-between;
-          height: $preview-box-height;
-          margin-right: 75px;
-          .preview-title {
-            line-height: $preview-box-height;
-          }
-          .preview-img-box {
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            width: 186px;
-            height: $preview-box-height;
-            .preview-img {
-              height: 100%;
-            }
-          }
-          
-        }
         .title {
           margin: 15px 0 29px;
           font-size: 30px;
@@ -374,8 +353,8 @@ export default class CollectFilesDetail extends Vue {
           }
         }
       }
-      
       .submit-box {
+        margin-top: 50px;
         margin-right: 39px;
         .submit-btn {
           width: 100%;

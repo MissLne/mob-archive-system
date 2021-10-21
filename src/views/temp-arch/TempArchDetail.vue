@@ -5,7 +5,11 @@
 
     <!-- <button @click="nextDetail()">下一个</button> -->
     <div class="container">
-      <PreviewBox :picSrc="detailData.picSrc"/>
+      <PreviewBox
+        :picSrc="detailData.picSrc"
+        :fileToken="detailData.fileToken"
+        :fileType="detailData.fileType"
+      />
       <ArchForm
         :inputsProps="inputsProps"
         :fondsIdentifier="fondsIdentifier"
@@ -13,6 +17,7 @@
         :departmentNameTree="departmentNameTree"
         :confidentialLevelArray="confidentialLevelArray"
         :retentionPeriodArray="retentionPeriodArray"
+        :fileId="detailData.fileId"
       />
         
       <div class="go-meta-box">
