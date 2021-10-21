@@ -21,5 +21,8 @@ export default class Arch extends Vue {
 </script>
 
 <style lang="scss">
-
+  #arch {
+    width: 100vw;
+    min-height: 100vh;
+  }
 </style>

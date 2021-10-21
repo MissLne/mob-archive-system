@@ -50,7 +50,7 @@
           />
         </div>
 
-        <div v-else class="item-input">
+        <div v-else class="item-input all-radio-boxes">
           <!-- 虽然用index绑定不好，但是这是不会变的 -->
           <label
             v-for="(labelItem, labelIndex) in retentionPeriodArray"
@@ -139,38 +139,42 @@ export default class ArchForm extends Vue {
           // mix-blend-mode: difference;
         }
       }
-      .radio-box {
-        line-height: $item-height;
-        input[type="radio"] {
-          width: 0;
-          height: 0;
-          margin: 0;
-        }
-        input[type="radio"] + .check-circle {
-          /* position: absolute;
-              top: 10px;
-              right: 10px; */
-          display: inline-block;
-          width: 38px;
-          height: 38px;
-          box-sizing: border-box;
-          border: 4px solid #d1e5fe;
-          margin-right: 11px;
-          color: transparent;
-          font-weight: bold;
-          text-align: center;
-          line-height: 32px;
-          border-radius: 50%;
-          transition: all 0.15s ease-out;
-        }
-        input[type="radio"]:checked + .check-circle {
-          border-color: #89bcfe;
-          color: #89bcfe;
-        }
-        span {
-          color: #666666;
-          line-height: inherit;
-          margin-right: 34px;
+      .all-radio-boxes {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        .radio-box {
+          input[type="radio"] {
+            width: 0;
+            height: 0;
+            margin: 0;
+          }
+          input[type="radio"] + .check-circle {
+            /* position: absolute;
+                top: 10px;
+                right: 10px; */
+            display: inline-block;
+            width: 38px;
+            height: 38px;
+            box-sizing: border-box;
+            border: 4px solid #d1e5fe;
+            margin-right: 11px;
+            color: transparent;
+            font-weight: bold;
+            text-align: center;
+            line-height: 32px;
+            border-radius: 50%;
+            transition: all 0.15s ease-out;
+          }
+          input[type="radio"]:checked + .check-circle {
+            border-color: #89bcfe;
+            color: #89bcfe;
+          }
+          span {
+            color: #666666;
+            line-height: inherit;
+          }
         }
       }
       .disabled-mask {

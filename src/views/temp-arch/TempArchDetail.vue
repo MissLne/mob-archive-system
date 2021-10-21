@@ -3,7 +3,7 @@
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
 
-    <button @click="nextDetail()">下一个</button>
+    <!-- <button @click="nextDetail()">下一个</button> -->
     <div class="container">
       <PreviewBox :picSrc="detailData.picSrc"/>
       <ArchForm

@@ -85,6 +85,5 @@ export default class TempArch extends Vue {
   #temp-arch {
     width: 100vw;
     min-height: 100vh;
-    background-image: linear-gradient(180deg, #ECF2FE, #E9F1FE);
   }
 </style>
