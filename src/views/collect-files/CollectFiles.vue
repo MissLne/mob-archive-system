@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { watchRouteChange } from '@/utils/componentUtils'
+import { watchRouteChange } from '@/utils/utils-component'
 
 @Component
 export default class CollectFiles extends Vue {

@@ -46,7 +46,7 @@ import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue"
-import { setPicByContentType } from "@/utils/fileUtils";
+import { setPicByContentType } from "@/utils/utils-file";
 
 interface dataType {
   size: number | undefined;

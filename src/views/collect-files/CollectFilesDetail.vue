@@ -90,7 +90,7 @@ import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import Alerts from '@/components/tools/alerts.vue';
-import { recursionGetId } from '@/utils/fileUtils';
+import { recursionGetId } from '@/utils/utils-file';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
 
 @Component({

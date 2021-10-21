@@ -1,5 +1,5 @@
 import { Module } from "vuex"
-import { dfsTree } from "@/utils/fileUtils"
+import { dfsTree } from "@/utils/utils-file"
 
 const metaData: Module<any, any> = {
   namespaced: true,

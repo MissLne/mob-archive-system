@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
-import { downloadPic } from '@/utils/fileUtils'
+import { downloadPic } from '@/utils/utils-file'
 
 @Component
 export default class ArchItem extends Vue {

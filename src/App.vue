@@ -9,7 +9,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { watchRouteChange } from '@/utils/componentUtils'
+import { watchRouteChange } from '@/utils/utils-component'
 
 @Component
 export default class App extends Vue {
@@ -20,8 +20,11 @@ export default class App extends Vue {
 }
 </script>
 <style lang="scss">
-  @import "~@/assets/css/animation/slide-left-and-right.scss";
-  .slots {
-    height: 124px;
+  #app {
+    background-image: linear-gradient(180deg, #ECF2FE, #E9F1FE);
+    .slots {
+      height: 124px;
+    }
+    @import "~@/assets/css/animation/slide-left-and-right.scss";
   }
 </style>

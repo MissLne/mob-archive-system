@@ -3,7 +3,6 @@
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
 
-    <!-- <button @click="getTempArchList">加载</button> -->
     <ArchList
       ref="archList"
       :canClickItem="false"
@@ -24,6 +23,7 @@ import UploadBtn from '@/components/public-com/UploadBtn.vue';
 import ArchList from '@/components/public-com/ArchList.vue';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
+import { createFileChunk, getFileMd5, uploadFile } from '@/utils/utils-upload';
 // import fileUtils from '@/utils/fileUtils';
 
 interface SomeData {
@@ -59,52 +59,53 @@ export default class TempArchUpload extends Vue {
   private created() {
     this.getTempArchList()
   }
-  // 获取数据
+  // ajax获取数据
   private getTempArchList() {
-    (this as any).$service.get('/api/api/archive/selectTemporaryArchive')
-    .then((res: any) => {
-      console.log('temp-arch-list-data', res)
-      res = res.data.data;
-      this.listData = res;
-    })
-    .catch((err: any) => {
-      console.log('temp-arch-list-data', err)
-    })
+    this.listData = [];
+    this.$service.get('/api/api/archive/selectTemporaryArchive')
+      .then(({data: res}: any) => {
+        console.log('temp-arch-list-data', res)
+        res = res.data;
+        this.listData = res;
+      })
+      .catch((err: any) => {
+        console.log('temp-arch-list-data', err)
+      })
+  }
+  // ajax添加数据
+  private addTempArch({fileId, thumbnailFileId, zippedFileId}: any) {
+    this.$service.post('/api/api/archive/addTemporaryArchive', [
+      {fileId, thumbnailFileId, zippedFileId}
+    ])
+      .then(({data: res}: any) => {
+        console.log(res)
+      })
   }
   // 上传文件
   private onUploadFiles (file: File) {
-    const formData = new FormData();
-    formData.append('multipartFile', file);
-
     MsgBox.success('文件上传中...', true)
     this.disabledUpload = true;
 
-    this.$service.post('/api/api/file/upload', formData, {
-      headers: { 'content-type': 'multipart/form-data' }
-    })
-    .then(({data: res}: any) => {
-      if (res.code === 200) {
-        console.log('上传成功', res);
-        MsgBox.changeStatus('上传成功');
-        
-        const data: UploadFileData = res.data;
+    const fileChunkList = createFileChunk(file);
+    const Md5 = getFileMd5(fileChunkList)
+    uploadFile(Md5, file.name, fileChunkList, file.type)
+      .then((res: any) => {
+        console.log('分片上传成功', res);
+        return this.addTempArch(res.data)
+      })
+      .then((res: any) => {
+        console.log('添加临时档案', res);
+        MsgBox.changeStatus('上传成功', true);
         this.getTempArchList();
-      }
-      else
-        throw Error(res.message);
-    })
-    .catch((err: Error) => {
-      console.log('上传失败', err.message)
-      // MsgBox.changeStatus(err.message, false);
-      if (err.message === '不支持上传该文件类型')
-        MsgBox.changeStatus('不支持上传该文件类型', false);
-      else
+      })
+      .catch((err: any) => {
+        console.log('失败', err);
         MsgBox.changeStatus('上传失败', false);
-    })
-    .finally(() => {
-      MsgBox.closeBox(1000);
-      this.disabledUpload = false;
-    })
+      })
+      .finally(() => {
+        MsgBox.closeBox();
+        this.disabledUpload = false;
+      })
   }
   // 将选择的档案传出去
   @Emit('passDetailData')

@@ -34,8 +34,10 @@
       </div>
     </section>
 
-    <section class="save-box child-arr-box">
-      <button class="save-btn" @click="saveMetaData">提交</button>
+    <section class="child-arr-box">
+      <SingleBtn
+        :name="'提交'"
+      />
     </section>
   </div>
 </template>
@@ -46,6 +48,7 @@ import Input from '@/components/public-com/Input/Input.vue';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import { Vue, Component } from 'vue-property-decorator'
+import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
 
 interface MetaDataStruct {
   publicMetadataStruct: Array<MetaDataItem>
@@ -59,7 +62,8 @@ interface MetaDataStruct {
   components: {
     DesHead,
     Input,
-    InputDate
+    InputDate,
+    SingleBtn
   }
 })
 export default class MetaData extends Vue {
@@ -127,20 +131,6 @@ export default class MetaData extends Vue {
     }
     .save-box {
       margin-top: -8px;
-      .save-btn {
-        width: 100%;
-        height: 75px;
-        border: none;
-        margin: 40px 0 30px;
-        background-color: hsl(215, 97%, 76%);
-        color: #FFF;
-        box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
-        border-radius: 8px;
-        transition: background-color 0.15s ease-out;
-        &:active {
-          background-color: hsl(215, 97%, 71%);
-        }
-      }
     }
   }
 </style>

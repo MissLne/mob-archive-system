@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { watchRouteChange } from '@/utils/componentUtils'
+import { watchRouteChange } from '@/utils/utils-component'
 
 @Component
 export default class TempArch extends Vue {
@@ -65,7 +65,7 @@ export default class TempArch extends Vue {
     this.$router.push({ name: 'tempArchDetail' })
   }
   nextDetail() {
-    console.log(this.detailDataList.length)
+    console.log('oaisfhjosjdosi', this.detailDataList.length)
     if (this.detailDataList.length === 1)
       this.$router.go(-1);
     else

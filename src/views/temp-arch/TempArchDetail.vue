@@ -4,95 +4,29 @@
     <div class="slots"></div><!-- 占header的位置 -->
 
     <div class="container">
-      <div class="input-box">
-        <div class="preview-box">
-          <span class="preview-title">预览</span>
-          <div class="preview-img-box">
-            <img :src="detailData.picSrc" alt="" class="preview-img">
-          </div>
-        </div>
-        <h3 class="title">基础信息</h3>
-        <ul class="inf-list">
-          <li v-for="item in inputsProps" :key="item.title" class="item">
-            <span class="item-title" :class="{ 'required': item.required }">{{item.title}}</span>
-              <Input
-                v-if="item.type === 'text'"
-                v-model="item.value"
-                :required="item.required"
-                :msg="item.msg"
-              />
-              <InputDate
-                v-else-if="item.type === 'date'"
-                v-model="item.value"
-              />
-              <div
-                v-else-if="item.type === 'select'"
-                class="item-input"
-              >
-                <img src="@/assets/temp-arch/pulldown-gray@2x.png" class="select-pulldown-icon">
-                
-                <Select
-                  v-if="item.title === '全宗号'"
-                  v-model="item.value"
-                  :myData="fondsIdentifier"
-                  :optionVariableName="'fondsName'"
-                  :optionVariableKey="'id'"
-                />
-                <Select
-                  v-else-if="item.title === '类别号'"
-                  v-model="item.value"
-                  :myData="dossierType"
-                  :optionVariableName="'typeName'"
-                  :optionVariableKey="'id'"
-                />
-                <Select
-                  v-else-if="item.title === '部门'"
-                  v-model="item.value"
-                  :myData="departmentNameTree"
-                  :optionVariableName="'departmentName'"
-                  :optionVariableKey="'id'"
-                />
-                <Select
-                  v-else
-                  v-model="item.value"
-                  :myData="confidentialLevelArray"
-                  :optionVariableName="'name'"
-                  :optionVariableKey="'id'"
-                />
-              </div>
-
-            <div v-else class="item-input">
-              <!-- 虽然用index绑定不好，但是这是不会变的 -->
-              <label
-                v-for="(labelItem, labelIndex) in retentionPeriodArray"
-                v-once
-                class="radio-box"
-                :key="labelIndex"
-              >
-                <input
-                  v-model="item.value"
-                  type="radio"
-                  name="period"
-                  :value="labelIndex + 1"
-                >
-                <i class="check-circle">✓</i>
-                <span>{{labelItem}}</span>
-              </label>
-            </div>
-          </li>
-
-        </ul>
-      </div>
+      <PreviewBox :picSrc="detailData.picSrc"/>
+      <ArchForm
+        :inputsProps="inputsProps"
+        :fondsIdentifier="fondsIdentifier"
+        :dossierType="dossierType"
+        :departmentNameTree="departmentNameTree"
+        :confidentialLevelArray="confidentialLevelArray"
+        :retentionPeriodArray="retentionPeriodArray"
+      />
+        
       <div class="go-meta-box">
         <router-link
-          :to="{ name: 'tempArchMeta', params: { fileType: detailData.fileType.split('/')[0] }}"
+          :to="{ name: 'tempArchMetaData', params: { fileType: detailData.fileType.split('/')[0] }}"
           class="go-meta"
         >查看元数据>></router-link>
       </div>
-      <div class="btns-box">
-        <button class="left-btn">删除</button>
-        <button class="right-btn" :style="{ 'background-color': isComplete ? '#8EBEFE' : '#D2E6FE'}">著录</button>
-      </div>
+      <CoupleBtns
+        :leftName="'删除'"
+        :rightName="'著录'"
+        class="couple-margin"
+        @leftClick="deleteFile"
+        @rightClick="addFile"
+      />
     </div>
     <!-- <div class="bg-box"></div> -->
   </div>
@@ -100,21 +34,22 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
-import Select from '@/components/public-com/Select/Select.vue'
-import Input from '@/components/public-com/Input/Input.vue';
-import MsgBox from '@/components/public-com/MsgBox/Msg';
+import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType } from '@/utils/utils-file';
+import { Dialog } from 'vant';
+import Msg from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
-import Alerts from '@/components/tools/alerts.vue';
-import { recursionGetId } from '@/utils/fileUtils';
-import InputDate from '@/components/public-com/Input/InputDate.vue';
+import PreviewBox from '@/components/public-com/PreviewBox.vue'
+import ArchForm from '@/components/public-com/ArchForm.vue'
+import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
+import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
 
 @Component({
   components: {
-    Select,
-    Input,
     DesHead,
-    Alerts,
-    InputDate
+    PreviewBox,
+    ArchForm,
+    CoupleBtns,
+    SingleBtn
   }
 })
 export default class TempArchDetail extends Vue {
@@ -131,6 +66,17 @@ export default class TempArchDetail extends Vue {
     {name: '秘密', id: 4}
   ];
   private readonly retentionPeriodArray = [ '永久', '30年', '10年' ];
+
+  private headData: any = {
+    title: '详情',
+    leftPic: true,
+    leftUrl: "1",
+    leftText: "",
+    rightPic: false,
+    rightUrl: "",
+    rightText: "",
+    isShow: false,
+  }
 
   get isComplete() {
     /* for (let key in this.inputsProps) {
@@ -155,15 +101,36 @@ export default class TempArchDetail extends Vue {
     return null;
   }
 
-  private headData: any = {
-    title: '详情',
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
-    rightPic: false,
-    rightUrl: "",
-    rightText: "",
-    isShow: false,
+  @Emit('nextDetail')
+  nextDetail() {
+    this.createSetting();
+  }
+
+  // ajax著录文件
+  addFile() {
+    /* this.$service.post('/api/api/archive/changeTemporaryArchiveToNormalArchive', this.inputsValue)
+      .then(({data}: any) => {
+
+      }) */
+  }
+  // ajax删除文件
+  deleteFile() {
+    Dialog.confirm({
+      title: '确认删除',
+      confirmButtonText: '是',
+      cancelButtonText: '否'
+    }).then(() => {
+      this.$service.post('/api/api/archive/deleteTemporaryArchive', 
+        [this.detailData.id]
+      ).then(({data}: any) => {
+        if (data.code === 200) {
+          Msg.success('删除成功')
+        }
+        else throw Error();
+      }).catch(err => {
+        Msg.error('删除失败')
+      })
+    }).catch(() => {})
   }
 
   private created() {
@@ -193,117 +160,20 @@ export default class TempArchDetail extends Vue {
     overflow: hidden;
     width: 700px;
     height: 1335px;
-    border-radius: 1px;
     // margin: auto;
     padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;
+    border-radius: 1px;
     .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       width: 700px;
       height: 1208px;
       box-sizing: border-box;
       padding: 18px 0 29px 40px;
       background-color: #fff;
-      .input-box {
-        .preview-box {
-          $preview-box-height: 186px;
-          display: flex;
-          justify-content: space-between;
-          height: $preview-box-height;
-          margin-right: 75px;
-          .preview-title {
-            line-height: $preview-box-height;
-          }
-          .preview-img-box {
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            width: 186px;
-            height: $preview-box-height;
-            .preview-img {
-              height: 100%;
-            }
-          }
-        }
-        .title {
-          margin: 15px 0 29px;
-          font-size: 30px;
-        }
-        .inf-list {
-          margin-right: 53px;
-          .item {
-            $item-height: 73px;
-            display: flex;
-            justify-content: space-between;
-            .item-title {
-              line-height: $item-height;
-            }
-            .required::after { // 用于显示必填红星
-              content: '*';
-              color: #FF0000;
-            }
-            .item-input {
-              width: 430px;
-              height: $item-height;
-              border: none;
-              border-bottom: 3px solid #E1E1E1;
-              .select-pulldown-icon {
-                position: absolute;
-                top: 30px;
-                right: 0;
-                width: 27px;
-                height: 15px;
-                // mix-blend-mode: difference;
-              }
-            }
-            .radio-box {
-              line-height: $item-height;
-              input[type=radio] {
-                width: 0;
-                height: 0;
-                margin: 0;
-              }
-              input[type=radio] + .check-circle {
-                /* position: absolute;
-                top: 10px;
-                right: 10px; */
-                display: inline-block;
-                width: 38px;
-                height: 38px;
-                box-sizing: border-box;
-                border: 4px solid #D1E5FE;
-                margin-right: 11px;
-                color: transparent;
-                font-weight: bold;
-                text-align: center;
-                line-height: 32px;
-                border-radius: 50%;
-                transition: all 0.15s ease-out;
-              }
-              input[type=radio]:checked + .check-circle {
-                border-color: #89BCFE;
-                color: #89BCFE;
-              }
-              span {
-                color: #666666;
-                line-height: inherit;
-                margin-right: 34px;
-              }
-            }
-            /* .item-box {
-              position: relative;
-              .face-recognition-icon {
-                z-index: 2;
-                position: absolute;
-                top: 19px;
-                right: 0;
-                width: 35px;
-                height: 35px;
-              }
-            } */
-          }
-        }
-      }
       .go-meta-box {
         width: 100%;
         margin: 24px 0 42px;
@@ -311,40 +181,14 @@ export default class TempArchDetail extends Vue {
           color: #8EBEFE;
         }
       }
-      .btns-box {
-        display: flex;
-        justify-content: space-between;
+      .couple-margin {
         margin-left: 40px;
         margin-right: 90px;
-        font-size: 42px;
-        .left-btn,
-        .right-btn {
-          width: 162px;
-          height: 75px;
-          border: none;
-          border-radius: 8px;
-        }
-        .left-btn {
-          background-color: #fff;
-          color: rgba(255, 0, 0, 0.7);
-          box-shadow: 0px 3px 7px 0px rgba(143, 143, 143, 0.35);
-        }
-        .right-btn {
-          background-color: #85B8FD;
-          color: #fff;
-          box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
-        }
       }
-    }
-    .bg-box {
-      z-index: -1;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      
-      background: linear-gradient(180deg, #ECF2FE, #E9F1FE);
+      .single-margin {
+        margin-right: 40px;
+      }
+      @import '~@/assets/css/animation/btns-move.scss';
     }
   }
 </style>
