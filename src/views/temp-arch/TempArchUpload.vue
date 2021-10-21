@@ -61,7 +61,7 @@ export default class TempArchUpload extends Vue {
   }
   // ajax获取数据
   private getTempArchList() {
-    this.listData = [];
+    this.listData = []; // 清空一下，不然不会重新加载图片呜呜
     this.$service.get('/api/api/archive/selectTemporaryArchive')
       .then(({data: res}: any) => {
         console.log('temp-arch-list-data', res)
@@ -74,12 +74,13 @@ export default class TempArchUpload extends Vue {
   }
   // ajax添加数据
   private addTempArch({fileId, thumbnailFileId, zippedFileId}: any) {
-    this.$service.post('/api/api/archive/addTemporaryArchive', [
+    return this.$service.post('/api/api/archive/addTemporaryArchive', [
       {fileId, thumbnailFileId, zippedFileId}
     ])
-      .then(({data: res}: any) => {
-        console.log(res)
-      })
+  }
+  // ajax获取图片的额外数据
+  private getImageMetaData(fileId: number) {
+    return this.$service.get(`/api/api/image/getImageMetadata?fileId=${fileId}`)
   }
   // 上传文件
   private onUploadFiles (file: File) {

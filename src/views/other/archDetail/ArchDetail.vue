@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
-import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType } from '@/utils/utils-file';
+import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType, initMetaData } from '@/utils/utils-file';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
@@ -204,17 +204,8 @@ export default class TempArchDetail extends Vue {
     props.confidentialLevel.value =
       this.confidentialLevelArray[props.confidentialLevel.value].name;
     // 初始化元数据
-      this.$store.commit('metaData/setMetaDataTree', {
-        metaData: ((dData as any).metadataStructTreeBoList as Array<MetaDataItem>)
-          .filter(value => {
-            const name = value.metadataName;
-            return name !== '人物'
-              && name !== '时间'
-              && name !== '地点'
-              && name !== '事件'
-          }),
-        fileType: (dData as any).fileType.split('/')[0],
-      });
+    console.log(dData)
+    initMetaData(this, 'metadataStructTreeBoList');
   }
 
   // 编辑

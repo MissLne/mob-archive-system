@@ -33,7 +33,7 @@ export default class Home extends Vue {
 <style lang="scss">
 .home {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: space-between;
   align-items: center;

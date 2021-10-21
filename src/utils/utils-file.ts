@@ -113,3 +113,22 @@ export function dfsTree(tree: any, handle: (obj: MetaDataItem) => void) {
       dfsTree(obj.child, handle);
   }
 }
+
+/**
+ * 初始化元数据
+ * @param _this 组件中的this 
+ */
+export function initMetaData(_this: any, propMetaDataName: string ) {
+  const dData = _this.detailData;
+  _this.$store.commit('metaData/setMetaDataTree', {
+    metaData: ((dData as any)[propMetaDataName] as Array<MetaDataItem>)
+      .filter(value => {
+        const name = value.metadataName;
+        return name !== '人物'
+          && name !== '时间'
+          && name !== '地点'
+          && name !== '事件'
+      }),
+    fileType: (dData as any).fileType.split('/')[0],
+  });
+}

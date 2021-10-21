@@ -37,6 +37,7 @@
     <section class="child-arr-box">
       <SingleBtn
         :name="'提交'"
+        @click="saveMetaData"
       />
     </section>
   </div>

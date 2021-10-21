@@ -1,7 +1,7 @@
 <template>
   <div id="temp-arch">
     <transition :name="transitionName">
-      <keep-alive include="TempArchUpload">
+      <!-- <keep-alive include="TempArchUpload"> -->
         <router-view
           :detailData="detailDataList[0]"
           :fondsIdentifier="fondsIdentifier"
@@ -10,7 +10,7 @@
           @passDetailData="passDetailData"
           @nextDetail="nextDetail"
         ></router-view>
-      </keep-alive>
+      <!-- </keep-alive> -->
     </transition>
   </div>
 </template>
@@ -62,14 +62,21 @@ export default class TempArch extends Vue {
   passDetailData(data: ArchItemData[]) {
     this.initSelectData();
     this.detailDataList = data;
-    this.$router.push({ name: 'tempArchDetail' })
+    this.$router.push({
+      name: 'tempArchDetail',
+      params: { count: this.detailDataList.length.toString() },
+    })
   }
   nextDetail() {
-    console.log('oaisfhjosjdosi', this.detailDataList.length)
     if (this.detailDataList.length === 1)
       this.$router.go(-1);
-    else
+    else {
       this.detailDataList.splice(0, 1);
+      this.$router.replace({
+        name: 'tempArchDetail',
+        params: { count: this.detailDataList.length.toString() },
+      })
+    }
   }
 }
 </script>

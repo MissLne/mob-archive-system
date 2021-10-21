@@ -3,9 +3,10 @@
     <title class="title">基础信息</title>
     <ul class="form">
       <li v-for="item in inputsProps" :key="item.title" class="item">
-        <span class="item-title" :class="{ required: item.required }">{{
-          item.title
-        }}</span>
+        <span class="item-title" :class="{ required: item.required }">
+          {{item.title}}
+          <!-- {{item.value}}{{typeof item.value}} -->
+        </span>
         <Input
           v-if="item.type === 'text'"
           v-model="item.value"

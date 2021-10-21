@@ -1,6 +1,20 @@
 import { Module } from "vuex"
 import { dfsTree } from "@/utils/utils-file"
 
+function flatMetaTree(state: any) {
+  const flatArr: Array<MetaDataItem> = [];
+  for (let key in state.tree) {
+    if (key !== 'specialMetadataStruct')
+      dfsTree(state.tree[key], obj => {
+        if (obj.metadataValue) {
+          flatArr.push(obj)
+        }
+      })
+  }
+  state.flatArr = flatArr;
+  console.log(flatArr)
+}
+
 const metaData: Module<any, any> = {
   namespaced: true,
   state: {
@@ -15,8 +29,6 @@ const metaData: Module<any, any> = {
      * @param payload metaData和fileType
      */
     setMetaDataTree(state, payload: {metaData: any, fileType?: string}) {
-      // 将扁平数据设置好
-      state.flatArr = payload.metaData;
       // 将树状数据设置好
       const fullMetaDataTree: MetaDataStruct = JSON.parse(localStorage.getItem('struct') as string);
       if (payload.fileType)
@@ -30,7 +42,7 @@ const metaData: Module<any, any> = {
       // 将获取的数据放入map
       const map: Map<number, string> = new Map()
       payload.metaData.forEach(({child, id, metadataValue}: MetaDataItem) => {
-        if (child === null)
+        if (!child)
           map.set(id, metadataValue)
       })
       // 遍历一遍树，如果id相同就赋值
@@ -46,13 +58,15 @@ const metaData: Module<any, any> = {
           }
         })
       }
+      flatMetaTree(state)
     },
     /**
      * 将树状数据转为扁平状数据（因为v-model直接修改了tree的值，所以不需要payload，好像不太符合vuex的规范）
      * 还进行了符合提交表单要求的处理
      */
     flatMetaTree(state) {
-      const flatArr: Array<MetaDataItem> = [];
+      flatMetaTree(state)
+      /* const flatArr: Array<MetaDataItem> = [];
       for (let key in state.tree) {
         if (key !== 'specialMetadataStruct')
           dfsTree(state.tree[key], obj => {
@@ -62,7 +76,7 @@ const metaData: Module<any, any> = {
           })
       }
       state.flatArr = flatArr;
-      console.log(flatArr)
+      console.log(flatArr) */
     }
   },
   actions: {

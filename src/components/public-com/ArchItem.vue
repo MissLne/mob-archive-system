@@ -17,7 +17,7 @@ export default class ArchItem extends Vue {
   onClick() {
   }
   created() {
-    console.log(this.itemData)
+    // console.log(this.itemData)
     if (this.itemData.thumbnailFileToken && this.itemData.thumbnailFileType) { // 类型为图片，不是校史征集，后台返回缩略图token
       downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
       .then((res: any) => {

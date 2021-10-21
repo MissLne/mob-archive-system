@@ -2,7 +2,7 @@
   <div id="side-bar" :style="{transform: sideBarShow? 'translateX(0)' : 'translateX(-100%)'}">
     <div class="side-bar-top">
       <!-- <div>临时档案</div> -->
-      <router-link to="temp-arch" tag="div">临时档案</router-link>
+      <router-link :to="{ name: 'tempArchUpload' }" tag="div">临时档案</router-link>
       <div>回收站</div>
     </div>
     <div class="side-bar-foot" @click="logout">退出登录</div>

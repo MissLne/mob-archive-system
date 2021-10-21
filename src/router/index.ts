@@ -74,12 +74,13 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/temp-arch/TempArchUpload.vue'),
       },
       {
-        path: 'detail',
+        path: 'detail/:count',
         name: 'tempArchDetail',
         component: () => import('@/views/temp-arch/TempArchDetail.vue'),
+        props: true
       },
       {
-        path: 'meta-data',
+        path: 'detail/meta-data',
         name: 'tempArchMetaData',
         component: () => import('@/views/public/MetaData.vue'),
       },
