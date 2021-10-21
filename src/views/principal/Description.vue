@@ -1,6 +1,6 @@
 <template>
   <div id="description">
-    <SideBar :sideBarShow="sideBarShow"/>
+    <SideBar :sideBarShow="sideBarShow" />
     <Alerts
       :title="'确认删除'"
       v-if="alertShow"
@@ -11,11 +11,19 @@
       :popArr="popArr"
       @handleClick="handleClick($event)"
     />
-    <DesSearch :searchText="searchText" @searchThings="searchThings($event)" :isDate="false"/>
-    <myTool :count="count" :listData="listData" @selectHandle="selectHandle($event)" />
+    <DesSearch
+      :searchText="searchText"
+      @searchThings="searchThings($event)"
+      :isDate="false"
+    />
+    <myTool
+      :count="count"
+      :listData="listData"
+      @selectHandle="selectHandle($event)"
+    />
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
-      <DesItem v-if="desItem" :desItem="item" typeName="著录中"/>
+      <DesItem v-if="desItem" :desItem="item" typeName="著录中" />
       <img
         class="manySelect"
         :src="checkList[index] ? seletList[1] : seletList[0]"
@@ -29,11 +37,17 @@
       v-if="pageData.total"
     />
     <div class="slots2"></div>
-    <img src="@/assets/index/upload.png" class="upload" v-if="!isShow && !sideBarShow" />
-    <div class="select-btn" v-if="isShow">
-      <div @click="cancelSelect">返回</div>
-      <div @click="alertShow = true">删除</div>
-    </div>
+    <img
+      src="@/assets/index/upload.png"
+      class="upload"
+      v-if="!isShow && !sideBarShow"
+    />
+    <transition name="delete-cancel">
+      <div class="select-btn" v-if="isShow">
+        <div @click="cancelSelect">返回</div>
+        <div @click="alertShow = true">删除</div>
+      </div>
+    </transition>
   </div>
 </template>
 <script lang="ts">
@@ -45,7 +59,7 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import SideBar from "@/components/public-com/SideBar.vue"
+import SideBar from "@/components/public-com/SideBar.vue";
 
 interface dataType {
   size: number | undefined;
@@ -78,7 +92,7 @@ interface Item {
     DesItem,
     DesBtn,
     Alerts,
-    SideBar
+    SideBar,
   },
 })
 export default class Description extends Vue {
@@ -88,9 +102,9 @@ export default class Description extends Vue {
   ];
   public listData: Item = {
     title: "显示全部",
-    list: ["显示案卷","显示文件"]
-  }
-  public sideBarShow: boolean = false
+    list: ["显示案卷", "显示文件"],
+  };
+  public sideBarShow: boolean = false;
   private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<Id> = [];
@@ -124,7 +138,7 @@ export default class Description extends Vue {
   };
   selectHandle(event: any) {
     this.getListData.type = event.index;
-    this.getListData.current = 1
+    this.getListData.current = 1;
     // this.listData.title = this.listData.list[event.index];
     // (this as any).$localStore.setData("desListData",this.getListData);
     // (this as any).$localStore.setData("desData",this.listData.title);
@@ -179,7 +193,7 @@ export default class Description extends Vue {
         };
         this.headData = Object.assign(this.headData, obj);
         this.sideBarShow = false;
-      } else if(this.headData.leftUrl == "3"){
+      } else if (this.headData.leftUrl == "3") {
         obj = {
           leftUrl: "4",
           leftPic: true,
@@ -209,8 +223,8 @@ export default class Description extends Vue {
       .post("/api/api/dossier/getPartDossierList", { ...this.getListData })
       .then((res: any) => {
         let result = res.data.data.records;
-        if(res.data.data.records.length == 0) {
-          MsgBox.error("内容为空")
+        if (res.data.data.records.length == 0) {
+          MsgBox.error("内容为空");
         }
         console.log(result);
         this.idList = [];
@@ -341,6 +355,30 @@ export default class Description extends Vue {
 </script>
 <style lang="scss">
 #description {
+  .delete-cancel-enter-active {
+    // transition: 0.8s;
+    animation: enters 1s;
+  }
+  .delete-cancel-leave-active {
+    // transition: 0.8s;
+    animation: leves .7s;
+  }
+  @keyframes leves {
+    0% {
+      bottom: 100px;
+    }
+    100% {
+      bottom: -100px;
+    }
+  }
+  @keyframes enters {
+    0% {
+      bottom: -100px;
+    }
+    100% {
+      bottom: 100px;
+    }
+  }
   .slots {
     height: 295px;
   }

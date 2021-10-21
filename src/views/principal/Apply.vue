@@ -2,7 +2,11 @@
   <div id="apply">
     <SideBar :sideBarShow="sideBarShow" />
     <DesHead :headData="headData" @handleClick="handleClick($event)" />
-    <DesSearch :searchText="searchText" :isDate="true" @onConfirm="onConfirm($event)"/>
+    <DesSearch
+      :searchText="searchText"
+      :isDate="true"
+      @onConfirm="onConfirm($event)"
+    />
     <div class="slots"></div>
     <div v-for="(item, index) in itemData" :key="index" class="item-box">
       <ApplyItem :applyItem="item" />
@@ -13,10 +17,13 @@
         @click="checkItem(index)"
       />
     </div>
-    <div class="select-btn" v-if="isShow">
-      <div @click="cancelSelect">返回</div>
-      <div @click="alertShow = true">删除</div>
-    </div>
+    <transition name="delete-cancel">
+      <div class="select-btn" v-if="isShow">
+        <div @click="cancelSelect">返回</div>
+        <div @click="alertShow = true">删除</div>
+      </div>
+    </transition>
+
     <DesBtn
       @changePage="changePage($event)"
       :totalPage="pageData"
@@ -28,7 +35,7 @@
       @sureDelete="sureDelete($event)"
     />
     <img
-    v-show="!isShow && !sideBarShow"
+      v-show="!isShow && !sideBarShow"
       src="@/assets/apply/Addapplication.png"
       class="add-apply"
       @click="toAddPage"
@@ -97,22 +104,22 @@ export default class Apply extends Vue {
   getList(): void {
     let data = {
       current: this.pageData.current,
-      applyTime: this.pageData.time
-    }
-    if(!this.pageData.time) {
-      delete data.applyTime
+      applyTime: this.pageData.time,
+    };
+    if (!this.pageData.time) {
+      delete data.applyTime;
     } else {
-      data.applyTime = this.pageData.time
+      data.applyTime = this.pageData.time;
     }
-    (this as any)
-      .$request.post("/api/api/use/getMyUseApplyList", {
-        ...data
+    (this as any).$request
+      .post("/api/api/use/getMyUseApplyList", {
+        ...data,
       })
       .then((res: any) => {
         let result = this.changeStatus(res.data.data.records);
         console.log(res.data.data);
-        if(res.data.data.records.length == 0) {
-          MsgBox.error("内容为空")
+        if (res.data.data.records.length == 0) {
+          MsgBox.error("内容为空");
         }
         this.itemData = result;
         // result.map((item, index) => {
@@ -248,7 +255,7 @@ export default class Apply extends Vue {
         };
         this.headData = Object.assign(this.headData, obj);
         this.sideBarShow = false;
-      } else if(this.headData.leftUrl == "3"){
+      } else if (this.headData.leftUrl == "3") {
         obj = {
           leftUrl: "4",
           leftPic: true,
@@ -266,6 +273,30 @@ export default class Apply extends Vue {
 </script>
 <style lang="scss">
 #apply {
+  .delete-cancel-enter-active {
+    // transition: 0.8s;
+    animation: enters 1s;
+  }
+  .delete-cancel-leave-active {
+    // transition: 0.8s;
+    animation: leves 0.7s;
+  }
+  @keyframes leves {
+    0% {
+      bottom: 100px;
+    }
+    100% {
+      bottom: -100px;
+    }
+  }
+  @keyframes enters {
+    0% {
+      bottom: -100px;
+    }
+    100% {
+      bottom: 100px;
+    }
+  }
   .add-apply {
     position: fixed;
     width: 82px;

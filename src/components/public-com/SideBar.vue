@@ -23,7 +23,7 @@ export default class SideBar extends Vue {
   justify-content: space-between;
   flex-direction: column;
   font-size: 32px;
-  z-index: 999;
+  z-index: 1000;
   position: fixed;
   bottom: 0;
   left: 0;
