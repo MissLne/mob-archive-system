@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
-import fileutils from '@/utils/fileutils'
+import { downloadPic } from '@/utils/utils-file'
 
 @Component
 export default class ArchItem extends Vue {
@@ -15,11 +15,11 @@ export default class ArchItem extends Vue {
 
   @Emit('onClick')
   onClick() {
-    // this.$emit('onClick');
   }
   created() {
+    // console.log(this.itemData)
     if (this.itemData.thumbnailFileToken && this.itemData.thumbnailFileType) { // 类型为图片，不是校史征集，后台返回缩略图token
-      fileutils.downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
+      downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
       .then((res: any) => {
         this.$set(this.itemData, 'picSrc', res);
       })

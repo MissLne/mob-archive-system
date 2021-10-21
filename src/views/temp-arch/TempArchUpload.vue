@@ -1,18 +1,30 @@
 <template>
   <div id="temp-arch-upload">
-    <button @click="getTempArchList">加载</button>
+    <DesHead :headData="headData" @handleClick="headClick"/>
+    <div class="slots"></div><!-- 占header的位置 -->
+
     <ArchList
+      ref="archList"
+      :canClickItem="false"
       :listData="listData"
+      :editName="'著录'"
       @passClickIndex="passDetailData"
+      @stopSelect="stopSelect"
     />
-    <UploadBtn/>
+    <UploadBtn :disabled="disabledUpload" @uploadFiles="onUploadFiles"/>
+
+  
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator'
 import UploadBtn from '@/components/public-com/UploadBtn.vue';
-import ArchList from '../../components/public-com/ArchList.vue';
+import ArchList from '@/components/public-com/ArchList.vue';
+import DesHead from '@/components/des-com/index/des-head.vue';
+import MsgBox from '@/components/public-com/MsgBox/Msg';
+import { createFileChunk, getFileMd5, uploadFile } from '@/utils/utils-upload';
+// import fileUtils from '@/utils/fileUtils';
 
 interface SomeData {
   fondsIdentifier: any;
@@ -23,54 +35,117 @@ interface SomeData {
 @Component({
   components: {
     UploadBtn,
-    ArchList
+    ArchList,
+    DesHead,
   }
 })
 export default class TempArchUpload extends Vue {
   private listData: Array<ArchItemData> = []
   private someData: SomeData | null = null;
-  getTempArchList() {
-    (this as any).$service.get('/api/api/archive/selectTemporaryArchive')
-    .then((res: any) => {
-      console.log(res)
-      res = res.data.data;
-      this.listData = res;
-    })
-    .catch((err: any) => {
-      console.log(err)
-    })
+  // 正在上传时，禁止上传
+  private disabledUpload: boolean = false;
+  // 头部栏数据
+  public headData = {
+    title: '新建',
+    leftPic: true,
+    leftUrl: "1",
+    leftText: "",
+    rightPic: false,
+    rightUrl: "",
+    rightText: "选择",
+    isShow: false,
   }
-  getDetailData(e: ArchItemData) {
-    console.log('get!', e)
-    if (!this.someData) {
-      Promise.all([
-        // 全宗号
-        this.$service.get(`/api/api/fondsIdentifier/getFondsIdentifier?id=${e.departmentId}`),
-        // 类别号
-        this.$service.get(`/api/api/type/getDossierType?id=${e.departmentId}`),
-        // 部门
-        this.$service.get(`/api/api/department/getDepartmentTree?id=${e.departmentId}`),
-      ])
-      .then(values => {
-        console.log(values)
-      })
 
-    }
-    /* this.currentData = {
-      detailData: e,
-      ...this.someData
-    }; */
+  private created() {
+    this.getTempArchList()
   }
+  // ajax获取数据
+  private getTempArchList() {
+    this.listData = []; // 清空一下，不然不会重新加载图片呜呜
+    this.$service.get('/api/api/archive/selectTemporaryArchive')
+      .then(({data: res}: any) => {
+        console.log('temp-arch-list-data', res)
+        res = res.data;
+        this.listData = res;
+      })
+      .catch((err: any) => {
+        console.log('temp-arch-list-data', err)
+      })
+  }
+  // ajax添加数据
+  private addTempArch({fileId, thumbnailFileId, zippedFileId}: any) {
+    return this.$service.post('/api/api/archive/addTemporaryArchive', [
+      {fileId, thumbnailFileId, zippedFileId}
+    ])
+  }
+  // ajax获取图片的额外数据
+  private getImageMetaData(fileId: number) {
+    return this.$service.get(`/api/api/image/getImageMetadata?fileId=${fileId}`)
+  }
+  // 上传文件
+  private onUploadFiles (file: File) {
+    MsgBox.success('文件上传中...', true)
+    this.disabledUpload = true;
+
+    const fileChunkList = createFileChunk(file);
+    const Md5 = getFileMd5(fileChunkList)
+    uploadFile(Md5, file.name, fileChunkList, file.type)
+      .then((res: any) => {
+        console.log('分片上传成功', res);
+        return this.addTempArch(res.data)
+      })
+      .then((res: any) => {
+        console.log('添加临时档案', res);
+        MsgBox.changeStatus('上传成功', true);
+        this.getTempArchList();
+      })
+      .catch((err: any) => {
+        console.log('失败', err);
+        MsgBox.changeStatus('上传失败', false);
+      })
+      .finally(() => {
+        MsgBox.closeBox();
+        this.disabledUpload = false;
+      })
+  }
+  // 将选择的档案传出去
   @Emit('passDetailData')
-  passDetailData(index: number) {
-    // this.$emit('passDetailData', this.listData[index]);
-    return this.listData[index];
+  passDetailData(indexList: Array<number>) {
+    // 开始编辑时，结束选择，启用上传
+    this.disabledUpload = false;
+    return indexList.map((value) => {
+      return this.listData[value];
+    });
+  }
+  
+  // header的左边（返回）和右边（选择）
+  public headClick({clickType}: any) {
+    if (clickType === 'left') {
+      this.$router.go(-1);
+    }
+    else {
+      if (this.listData.length) {
+        (this.$refs.archList as ArchList).onChecking()
+        this.headData.rightText = '全选'
+        // 开始选择时，禁用上传
+        this.disabledUpload = true
+      }
+      else
+        MsgBox.error('请先上传文件')
+    }
+  }
+  // 停止选择
+  public stopSelect() {
+    this.headData.rightText = '选择'
+    // 取消选择状态时，结束选择，启用上传
+    this.disabledUpload = false;
   }
 }
 </script>
 
 <style lang="scss">
   #temp-arch-upload {
+    min-height: 100vh;
     box-sizing: border-box;
     padding: 20px 25px 0;
   }

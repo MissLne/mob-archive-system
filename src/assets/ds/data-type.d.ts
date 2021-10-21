@@ -7,10 +7,13 @@ interface ArchItemData {
   fileToken: string,
   fileType:	string,
 
-  thumbnailFileId: number,
   thumbnailFileName: string,
+  thumbnailFileId: number,
   thumbnailFileToken: string,
   thumbnailFileType: string,
+
+  zippedImageFileId: number,
+  zippedImageFileToken: string,
 
   topic: string,
   categoryCodeId:	number,
@@ -28,9 +31,9 @@ interface UploadFileData {
   fileId: number,
   fileToken: string,
 
-  thumbnailContentType: string,
   thumbnailFileId: number,
   thumbnailFileToken: string,
+  thumbnailContentType: string,
 
   zippedImageFileId: number,
   zippedImageFileToken: string,
@@ -40,4 +43,21 @@ interface UploadFileData {
 
   saveData?: any,
   [key: string]: any,
+}
+
+interface MetaDataItem {
+  id: number,
+  parentId: number,
+  metadataName: string,
+  metadataValue: any,
+  child: Array<MetaDataItem>
+}
+
+interface MetaDataStruct {
+  publicMetadataStruct: Array<MetaDataItem>
+  specialMetadataStruct: Array<MetaDataItem>
+  audioMetadataStruct?: Array<MetaDataItem>
+  imageMetadataStruct?: Array<MetaDataItem>
+  videoMetadataStruct?: Array<MetaDataItem>
+  [key: string]: Array<MetaDataItem>
 }

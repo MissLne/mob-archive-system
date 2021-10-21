@@ -1,25 +1,33 @@
 <template>
   <div id="collect-files">
-    <keep-alive include="CollectFilesUpload">
-      <router-view
-        :detailData="detailDataList[0]"
-        :collectFilesType="collectFilesType"
-        :departmentNameTree="departmentNameTree"
-        @passDetailData="passDetailData"
-        @nextDetail="nextDetail"
-      ></router-view>
-    </keep-alive>
+    <transition :name="transitionName">
+      <keep-alive include="CollectFilesUpload">
+        <router-view
+          :detailData="detailDataList[0]"
+          :collectFilesType="collectFilesType"
+          :departmentNameTree="departmentNameTree"
+          @passDetailData="passDetailData"
+          @nextDetail="nextDetail"
+        ></router-view>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import { watchRouteChange } from '@/utils/utils-component'
 
 @Component
 export default class CollectFiles extends Vue {
+  private transitionName: string = ''; // 用于动画
+
   private detailDataList: Array<any> = [];
   private collectFilesType: any = null;
   private departmentNameTree: any = null;
+  created() {
+    watchRouteChange(this)
+  }
   initSelectData() {
     if (!this.collectFilesType)
       this.$service.get('/api/api/type/getCollectedFileType')
@@ -44,7 +52,7 @@ export default class CollectFiles extends Vue {
   nextDetail() {
     console.log(this.detailDataList.length)
     if (this.detailDataList.length === 1)
-      this.$router.replace({name: 'collectFilesUpload'})
+      this.$router.go(-1);
     else
       this.detailDataList.splice(0, 1);
   }
@@ -56,8 +64,5 @@ export default class CollectFiles extends Vue {
     width: 100vw;
     min-height: 100vh;
     background-image: linear-gradient(180deg, #ECF2FE, #E9F1FE);
-  }
-  .slots {
-    height: 124px;
   }
 </style>

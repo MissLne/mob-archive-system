@@ -3,7 +3,7 @@
     <!-- <button @click="onChecking">{{isChecking ? '全选' : '选择'}}</button> -->
     <ul class="list">
       <li v-for="(item, index) in listData" :key="item.fileId" class="list-item">
-        <ArchItem :itemData="item"  @onClick="passClickIndex([index])"/>
+        <ArchItem :itemData="item"  @onClick="canClickItem && passClickIndex([index])"/>
         <!-- 选择时的遮罩层 -->
         <label class="check-mask" @click="checkItem(index)" v-show="isChecking">
           <i class="check-circle" :class="{ 'checked-circle': checkList[index] }">✓</i>
@@ -13,7 +13,7 @@
     <transition name="btns-move">
       <div v-show="isChecking" class="btns-box">
         <button class="cancel-btn" @click="stopSelect">取消</button>
-        <button class="edit-btn" @click="startEdit">编辑</button>
+        <button class="edit-btn" @click="startEdit">{{editName}}</button>
       </div>
     </transition>
   </div>
@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
-import ArchItem from '@/components/temp-arch-com/ArchItem.vue'
+import ArchItem from '@/components/public-com/ArchItem.vue'
 import MsgBox from './MsgBox/Msg';
 
 @Component({
@@ -30,7 +30,9 @@ import MsgBox from './MsgBox/Msg';
   }
 })
 export default class ArchList extends Vue {
+  @Prop({default: true}) canClickItem!: boolean;
   @Prop() listData!: Array<any>;
+  @Prop({default: '编辑'}) editName!: string;
   private checkList: Array<boolean> = [];
   public isChecking: boolean = false;
 
@@ -84,6 +86,7 @@ export default class ArchList extends Vue {
 <style lang="scss">
   #arch-list {
     .list {
+      padding-bottom: 2rem; // 防止字溢出
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       row-gap: 63px;
@@ -145,22 +148,8 @@ export default class ArchList extends Vue {
         box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
         border-radius: 8px;
       }
-      // 动画
-      &.btns-move-enter,
-      &.btns-move-leave-to {
-        transform: translateY(150px);
-      }
-      &.btns-move-enter-active {
-        transition: transform 0.35s ease-out;
-      }
-      &.btns-move-leave-active {
-        transition: transform 0.25s ease-in;
-      }
-      &.btns-move-enter-to,
-      &.btns-move-left {
-        transform: translateY(0px);
-      }
     }
-    
+    // btns-box的动画
+    @import '~@/assets/css/animation/btns-move.scss';
   }
 </style>

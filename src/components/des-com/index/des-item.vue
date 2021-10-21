@@ -1,7 +1,7 @@
 <template>
   <div id="des-item">
     <div>
-      <img :src="desItem.fileToken ? desItem.fileToken : url" />
+      <van-image :src="desItem.fileToken ? desItem.fileToken : url" fit="contain"/>
       <div class="title">
         <div>{{ desItem.topic }}</div>
         <div>{{ desItem.introduce ? desItem.introduce : "暂无简介" }}</div>
@@ -15,7 +15,7 @@
         :to="{ name: 'myDes', params: { id: desItem.id, name: desItem.topic,type: typeName } }"
         >查看</router-link
       >
-      <div v-if="desItem.type === 1">查看</div>
+      <div v-if="desItem.type === 1" @click="openDetailPage">查看</div>
     </div>
     <div
       class="details"
@@ -31,6 +31,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { Image } from 'vant';
 
 @Component
 export default class DesItem extends Vue {
@@ -119,6 +120,9 @@ export default class DesItem extends Vue {
       this.isOverflow = false;
     }
     this.isShow = !this.isShow;
+  }
+  openDetailPage() {
+    this.$router.push({name: 'archDetail', params: {id: this.desItem.id}})
   }
 }
 </script>

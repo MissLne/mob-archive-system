@@ -1,8 +1,11 @@
 <template>
-  <div id="upload">
-    <input type="file" class="select-files" :disabled="disabled" @change="uploadFiles">
-    <img src="@/assets/temp-arch/upload.png" class="icon">
-  </div>
+  <transition name="upload-move">
+    <div v-show="!disabled" id="upload">
+      <input type="file" class="select-files" @change="uploadFiles">
+      <!-- :disabled="disabled" -->
+      <img src="@/assets/temp-arch/upload.png" class="icon">
+    </div>
+  </transition>
 </template>
 
 <script lang="ts">
@@ -23,8 +26,8 @@ export default class UploadBtn extends Vue {
   #upload {
     z-index: 100;
     position: fixed;
-    bottom: 50px;
-    right: 50px;
+    bottom: 100px;
+    right: 30px;
     width: 82px;
     height: 82px;
     .select-files {
@@ -36,6 +39,21 @@ export default class UploadBtn extends Vue {
     .icon {
       width: 100%;
       height: 100%;
+    }
+    // 动画
+    &.upload-move-enter,
+    &.upload-move-leave-to {
+      transform: translateY(150px);
+    }
+    &.upload-move-enter-active {
+      transition: transform 0.35s ease-out;
+    }
+    &.upload-move-leave-active {
+      transition: transform 0.25s ease-in;
+    }
+    &.upload-move-enter-to,
+    &.upload-move-left {
+      transform: translateY(0px);
     }
   }
 </style>

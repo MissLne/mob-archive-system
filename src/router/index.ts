@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
+import { component } from 'vue/types/umd'
 
 Vue.use(VueRouter)
 
@@ -44,12 +45,10 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/collect-files',
-    name: 'collectFiles',
-    redirect: '/collect-files/upload',
     component: () => import('@/views/collect-files/CollectFiles.vue'),
     children: [
       {
-        path: 'upload',
+        path: '/',
         name: 'collectFilesUpload',
         component: () => import('@/views/collect-files/CollectFilesUpload.vue'),
       },
@@ -67,19 +66,23 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/temp-arch',
-    name: 'tempArch',
-    redirect: '/temp-arch/upload',
     component: () => import('@/views/temp-arch/TempArch.vue'),
     children: [
       {
-        path: 'upload',
+        path: '/',
         name: 'tempArchUpload',
         component: () => import('@/views/temp-arch/TempArchUpload.vue'),
       },
       {
-        path: 'detail',
+        path: 'detail/:count',
         name: 'tempArchDetail',
         component: () => import('@/views/temp-arch/TempArchDetail.vue'),
+        props: true
+      },
+      {
+        path: 'detail/meta-data',
+        name: 'tempArchMetaData',
+        component: () => import('@/views/public/MetaData.vue'),
       },
     ]
   },
@@ -87,13 +90,33 @@ const routes: Array<RouteConfig> = [
     path: '/myDes',
     name: 'myDes',
     component: () => import('@/views/other/desPage/myDes.vue'),
-  }
+  },
+  {
+    path: '/arch',
+    redirect: '/arch/detail',
+    component: () => import('@/views/other/archDetail/Arch.vue'),
+    children: [
+      {
+        path: 'detail',
+        name: 'archDetail',
+        component: () => import('@/views/other/archDetail/ArchDetail.vue'),
+      },
+      {
+        path: 'meta-data',
+        name: 'archMetaData',
+        component: () => import('@/views/public/MetaData.vue'),
+      },
+    ]
+  }, 
 ]
 
 const router = new VueRouter({
   mode: 'hash',
   base: process.env.BASE_URL,
-  routes
+  routes,
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  }
 })
 
 router.beforeEach((to, from, next) => {

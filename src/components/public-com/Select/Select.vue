@@ -4,12 +4,16 @@
     ref="select-wrapper"
     class="select-wrapper"
     :style="{ 'z-index': isSpread ? 5 : 1 }"
-    :class="{ 'show-higher': myData && isSpread && isOverflow }"
-    @click="onWrapperClick"
+    :class="{ 'show-higher': isSpread && isOverflow }"
+    @click="myData && onWrapperClick($event)"
   >
     <div v-if="!myData" class="no-data-box">暂无数据</div>
-    <div v-else>
+    <div v-else class="have-data-box">
+      <!-- 点击空白区域关闭的蒙版 -->
       <div class="mask" v-show="isSpread" @click.stop="isSpread = false"></div>
+      <!-- 显示选择结果 -->
+      <span class="selected-result">{{selectedString === '' ? '无' : selectedString}}</span>
+      <!-- 选择部分 -->
       <transition name="spread">
         <div v-if="myData" v-show="isSpread" class="select-inner">
           <!-- 动画是通过max-height实现，如果最外层Select没有一直显示的话，动画会直接结束！因此isSpread=true -->
@@ -69,9 +73,9 @@ export default class Select extends Vue {
 <style lang="scss">
   .select-wrapper {
     position: relative;
-    left: -24px;
     top: -3px; // 不加这个过渡动画失效
-    width: 484px;
+    left: 0;
+    width: 430px;
     font-size: 28px;
     height: 100%;
     transition: top 0.25s ease-out;
@@ -82,29 +86,43 @@ export default class Select extends Vue {
       left: 0;
       width: 100vw;
       height: 100vh;
-      // background-color: rgba(255, 255, 255, 0.3);
     }
     .no-data-box {
       position: absolute;
       top: 23px;
-      left: 23px;
+      left: 0;
       color: rgba(102, 102, 102, 1);
     }
-    .pulldown-icon {
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      width: 27px;
-      height: 15px;
-      transition: transform 0.25s ease-out;
-    }
-    .select-inner {
-      overflow: auto;
-      max-height: 300px;
-      box-shadow: 4px 3px 7px 0px rgba(76, 108, 174, 0.59);
-    }
-    .select-inner>.select>.option-box:first-of-type>.content {
-      border: none;
+    .have-data-box {
+      height: 100%;
+      .selected-result {
+        z-index: -1;
+        position: absolute;
+        top: 23px;
+        left: 0;
+        width: 430px;
+        height: 100%;
+        // background-color: #fff; // 为了子元素的mix-blend-mode
+        color: rgba(102, 102, 102, 1);
+      }
+      .pulldown-icon {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        width: 27px;
+        height: 15px;
+        transition: transform 0.25s ease-out;
+      }
+      .select-inner {
+        position: absolute;
+        left: -24px;
+        overflow: auto;
+        max-height: 300px;
+        box-shadow: 4px 3px 7px 0px rgba(76, 108, 174, 0.59);
+      }
+      .select-inner>.select>.option-box:first-of-type>.content {
+        border: none;
+      }
     }
   }
   .show-higher {

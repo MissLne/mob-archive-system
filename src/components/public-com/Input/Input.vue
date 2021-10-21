@@ -2,6 +2,7 @@
   <div class="input-wrap">
     <input
       :type="type"
+      :disabled="disabled"
       class="input"
       :class="{ 'active': isActive, 'wrong': required && isWrong }"
       :value="outerValue"
@@ -28,6 +29,7 @@ import { Component, Vue, Prop, Model } from 'vue-property-decorator'
 @Component
 export default class Input extends Vue {
   @Prop({default: 'text'}) type!: string;
+  @Prop({default: false}) disabled!: boolean;
   @Prop({default: false}) required!: boolean;
   @Prop({default: '无'}) holder!: string;
   @Prop({default: ''}) msg!: string;
@@ -47,7 +49,7 @@ export default class Input extends Vue {
   }
 
   get isEmpty() {
-    return this.outerValue === '';
+    return !this.outerValue;
   }
 
   // 是否输入完成

@@ -1,5 +1,5 @@
 <template>
-  <div id="login">
+  <div id="login" :style="{height: initInnerHeight + 'px'}">
     <div class="container">
       <img src="@/assets/login/logo.png" class="logo">
       <h3 class="title">仓颉智慧多媒体档案系统</h3>
@@ -47,6 +47,8 @@
 </template>
 
 <script lang="ts">
+import DesHead from '@/components/des-com/index/des-head.vue';
+import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { Component, Vue } from 'vue-property-decorator';
 
 class State {
@@ -76,6 +78,13 @@ export default class Login extends Vue {
   private get complete(): boolean {
     return !this.states.un.isEmpty && !this.states.pw.isEmpty;
   }
+  // 按照用户进入页面时的窗口高度，设置页面高度，防止滑动时
+  private initInnerHeight: number = 1334;
+  created() {
+    // console.log(window.innerHeight, window.outerHeight)
+    this.initInnerHeight = window.innerHeight || 1334;
+    // console.log(this.$el);
+  }
   // 输入栏聚焦
   private onFocus({target}: {target: HTMLInputElement}, which: string) {
     let state = this.states[which];
@@ -102,11 +111,11 @@ export default class Login extends Vue {
       console.log(res)
       res = res.data;
       if (res.success) {
-        res = res.data;
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('username', res.user.name);
-        localStorage.setItem('departmentId', res.user.departmentId);
+        this.initLocalStorage(res.data);
         this.$router.replace({name: 'Home'})
+        setTimeout(() => {
+          MsgBox.success('登录成功')
+        }, 450)
       }
       else {
         const msg = (res.message as string).split('，')[1];
@@ -117,6 +126,45 @@ export default class Login extends Vue {
       }
     })
   }
+  private initLocalStorage(res: any) {
+    console.log('登录咯', res)
+    localStorage.setItem('token', res.token);
+    localStorage.setItem('username', res.user.name);
+    localStorage.setItem('departmentId', res.user.departmentId);
+    // 载入权限列表
+    localStorage.setItem('permissionList', JSON.stringify(res.permissionList));
+    // 载入元数据结构
+    this.$service.get('/api/api/archive/getFileMetadataStructTree')
+      .then(({data: res}: {data: any}) => {
+        console.log(res)
+        localStorage.setItem('struct', JSON.stringify(res.data))
+      })
+      .catch((res: any) => {
+        console.log(res);
+        MsgBox.error('获取元数据失败');
+      })
+    // 载入全宗号
+    this.$service.get(`/api/api/fondsIdentifier/getFondsIdentifier`)
+      .then(({data: res}: any) => {
+        console.log('getCollectedFileType', res)
+        if (res.success && res.code === 200)
+          localStorage.setItem('fondsIdentifier', JSON.stringify(res.data))
+      })
+    // 载入类别号
+    this.$service.get(`/api/api/type/getDossierType`)
+      .then(({data: res}: any) => {
+        console.log('getCollectedFileType', res)
+        if (res.success && res.code === 200)
+          localStorage.setItem('dossierType', JSON.stringify(res.data.children))
+      })
+    // 载入部门
+    this.$service.get(`/api/api/department/getDepartmentTree`)
+      .then(({data: res}: any) => {
+        console.log('getCollectedFileType', res)
+        if (res.success && res.code === 200)
+          localStorage.setItem('departmentNameTree', JSON.stringify([res.data]))
+      })
+  }
 }
 </script>
 
@@ -124,11 +172,14 @@ export default class Login extends Vue {
   #login {
     overflow: auto;
     width: 100vw;
-    height: 100vh;
+    // min-height: 1334px;
+    // height: 100vh;
+    height: var(--inner-height);
     background: url('../assets/login/bg.png') no-repeat;
     background-size: cover;
     background-position-x: 100%;
     font-family: PingFang SC Regular;
+    box-sizing: border-box;
     .container {
       display: flex;
       flex-direction: column;
@@ -137,7 +188,8 @@ export default class Login extends Vue {
 
       width: 612px;
       height: 942px;
-      margin: 73px auto 196px;
+      margin: 120px auto 149px;
+      // margin: auto;
       background-color: rgba(255, 255, 255, 0.9);
       box-shadow: 8px 6px 14px 0px rgba(76, 108, 174, 0.5);
       .logo {

@@ -15,13 +15,12 @@
         <ul class="inf-list">
           <li v-for="item in inputsProps" :key="item.title" class="item">
             <span class="item-title" :class="{ 'required': item.required }">{{item.title}}</span>
-            <div v-if="item.type === 'text' || item.type === 'date'">
-              <Input
-                v-model="item.value"
-                :type="item.type"
-                :required="item.required"
-                :msg="item.msg"
-              />
+            <Input
+              v-if="item.type === 'text'"
+              v-model="item.value"
+              :required="item.required"
+              :msg="item.msg"
+            />
               <!-- 人脸识别的图标 -->
               <!-- <img
                 v-if="item.title === '人物'"
@@ -31,15 +30,15 @@
                   : require('@/assets/temp-arch/manual-input.png')"
                 @click="onRecognizing"
               > -->
-            </div>
+            <InputDate
+              v-else-if="item.type === 'date'"
+              v-model="item.value"
+            />
             <div
               v-else-if="item.type === 'select'"
               class="item-input"
             >
-              <span class="select-result">
-                {{item.value === '' ? '无' : item.value}}
-                <img src="@/assets/temp-arch/pulldown-gray@2x.png" class="select-pulldown-icon">
-              </span>
+              <img src="@/assets/temp-arch/pulldown-gray@2x.png" class="select-pulldown-icon">
               
               <Select
                 v-if="item.title === '类别'"
@@ -62,13 +61,13 @@
       <div class="submit-box">
         <button
           v-if="!isSubmitted"
-          class="submit"
+          class="submit-btn"
           :style="{ 'background-color': isComplete ? '#8EBEFE' : '#D2E6FE'}"
           @click="trySubmit"
         >提交</button>
         <button
           v-else
-          class="submit"
+          class="submit-btn"
           style="background-color: #D2E6FE;"
         >该资料已提交</button>
       </div>
@@ -91,25 +90,28 @@ import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import Alerts from '@/components/tools/alerts.vue';
-import fileutils from '@/utils/fileutils';
+import { recursionGetId } from '@/utils/utils-file';
+import InputDate from '@/components/public-com/Input/InputDate.vue';
 
 @Component({
   components: {
     Select,
     Input,
     DesHead,
-    Alerts
+    Alerts,
+    InputDate
   }
 })
 export default class CollectFilesDetail extends Vue {
   @Prop() detailData!: UploadFileData;
+  // select的内容
   @Prop() collectFilesType: any;
   @Prop() departmentNameTree: any;
   get isComplete() {
     return this.inputsProps.topic.value !== '' && this.inputsProps.categoryId.value !== '';
   }
   private readonly inputsProps = {
-    topic: { title: '名称', required: true, msg: '请输入姓名', type: 'text', value: '' },
+    topic: { title: '名称', required: true, msg: '请输入题名', type: 'text', value: '' },
     people: { title: '人物', required: false, type: 'text', value: '' },
     event: { title: '事件', required: false, type: 'text', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
@@ -147,9 +149,11 @@ export default class CollectFilesDetail extends Vue {
   private isSubmitted: boolean = false;
   created() {
     console.log('detail-com is created!')
+    this.createSetting();
+  }
+  createSetting() {
     if (this.detailData.isSubmitted)
       this.isSubmitted = true;
-
     if (this.detailData.saveData)
       this.inputsValue = this.detailData.saveData;
     else if (this.detailData.fileName)
@@ -207,7 +211,7 @@ export default class CollectFilesDetail extends Vue {
   public headClick({clickType}: any) {
     if (clickType === 'left') {
       this.detailData.saveData = this.inputsValue;
-      this.$router.replace({name: 'collectFilesUpload'})
+      this.$router.go(-1)
     }
   }
   // 提交部分
@@ -226,16 +230,16 @@ export default class CollectFilesDetail extends Vue {
       people: this.inputsProps.people.value,
       event: this.inputsProps.event.value,
       time: this.inputsProps.time.value 
-        && this.inputsProps.time.value.split('/').join('-') + 'T00:00:00',
+        && this.inputsProps.time.value + 'T00:00:00',
       place: this.inputsProps.place.value,
       categoryId:
         Number.parseInt(
-          fileutils.recursionGetId(this.collectFilesType, this.inputsProps.categoryId.value, 'typeName', 'id')
+          recursionGetId(this.collectFilesType, this.inputsProps.categoryId.value, 'typeName', 'id')
         ),
         // this.inputsProps.categoryId.value,
       departmentId:
         Number.parseInt(
-          fileutils.recursionGetId(this.departmentNameTree, this.inputsProps.departmentId.value, 'departmentName', 'id')
+          recursionGetId(this.departmentNameTree, this.inputsProps.departmentId.value, 'departmentName', 'id')
         ),
         // this.inputsProps.departmentId.value,
       comment: this.inputsProps.comment.value,
@@ -271,32 +275,34 @@ export default class CollectFilesDetail extends Vue {
            */
           MsgBox.success('提交成功');
         }
+        else if (data.code === 400)
+          throw Error(data.message);
         else
           throw Error('提交失败');
       })
       .catch((err: Error) => {
-        // MsgBox.error(err.message);
-        MsgBox.error('提交失败');
+        MsgBox.error(err.message.split('，')[0]);
+        // MsgBox.error('提交失败');
       })
   }
   @Emit('nextDetail')
   nextDetail() {
+    this.createSetting()
   }
 }
 </script>
 
 <style lang="scss">
   #collect-files-detail {
+    overflow: hidden;
     width: 700px;
     height: 1335px;
     border-radius: 1px;
-    margin: auto;
+    // margin: auto;
+    padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;
     .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       width: 700px;
       height: 1208px;
       box-sizing: border-box;
@@ -324,6 +330,10 @@ export default class CollectFilesDetail extends Vue {
           }
           
         }
+        .title {
+          margin: 15px 0 29px;
+          font-size: 30px;
+        }
         .inf-list {
           margin-right: 53px;
           .item {
@@ -342,21 +352,12 @@ export default class CollectFilesDetail extends Vue {
               height: $item-height;
               border: none;
               border-bottom: 3px solid #E1E1E1;
-              .select-result {
+              .select-pulldown-icon {
                 position: absolute;
-                width: 430px;
-                // background-color: #fff; // 为了子元素的mix-blend-mode
-                color: rgba(102, 102, 102, 1);
-                height: $item-height;
-                line-height: $item-height;
-                .select-pulldown-icon {
-                  position: absolute;
-                  top: 30px;
-                  right: 0;
-                  width: 27px;
-                  height: 15px;
-                  // mix-blend-mode: difference;
-                }
+                top: 30px;
+                right: 0;
+                width: 27px;
+                height: 15px;
               }
             }
             /* .item-box {
@@ -376,7 +377,7 @@ export default class CollectFilesDetail extends Vue {
       
       .submit-box {
         margin-right: 39px;
-        .submit {
+        .submit-btn {
           width: 100%;
           height: 75px;
           border: none;

@@ -1,12 +1,12 @@
 <template>
-  <div id="temp-arch-detail">
+  <div id="arch-detail">
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
 
-    <button @click="nextDetail()">下一个</button>
-    <div class="container">
+    <div v-if="detailData" class="container">
       <PreviewBox :picSrc="detailData.picSrc"/>
       <ArchForm
+        :disabled="!isEditing"
         :inputsProps="inputsProps"
         :fondsIdentifier="fondsIdentifier"
         :dossierType="dossierType"
@@ -14,27 +14,41 @@
         :confidentialLevelArray="confidentialLevelArray"
         :retentionPeriodArray="retentionPeriodArray"
       />
-        
-      <div class="go-meta-box">
+      <div 
+        v-if="haveMetaData"
+        class="go-meta-box"
+      >
         <router-link
-          :to="{ name: 'tempArchMetaData', params: { fileType: detailData.fileType.split('/')[0] }}"
+          :to="{ name: 'archMetaData' }"
           class="go-meta"
         >查看元数据>></router-link>
       </div>
-      <CoupleBtns
-        :leftName="'删除'"
-        :rightName="'著录'"
-        class="couple-margin"
-        @leftClick="deleteFile"
-        @rightClick="addFile"
-      />
+
+      <transition name="btns-move" mode="out-in">
+        <CoupleBtns
+          v-if="!isEditing"
+          :leftName="'删除'"
+          :rightName="'编辑'"
+          class="couple-margin"
+          @leftClick="deleteFile"
+          @rightClick="editFile"
+        />
+        
+        <div v-else class="single-margin">
+          <SingleBtn
+            :name="'保存'"
+            @click="saveFile"
+          />
+        </div>
+      </transition>
+
     </div>
     <!-- <div class="bg-box"></div> -->
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator'
+import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType, initMetaData } from '@/utils/utils-file';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
@@ -54,11 +68,16 @@ import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
   }
 })
 export default class TempArchDetail extends Vue {
-  @Prop() detailData!: ArchItemData;
+  @Prop() archId!: number;
+  private detailData: ArchItemData | null = null;
   // select的内容
-  @Prop() fondsIdentifier!: Array<any>;
-  @Prop() dossierType!: Array<any>;
-  @Prop() departmentNameTree!: Array<any>;
+  private fondsIdentifier: Array<any> = [];
+  private dossierType: Array<any> = [];
+  private departmentNameTree: Array<any> = [];
+  get isAllow() {
+    return this.$store.getters.permissionList
+  }
+  // 密级列表
   private readonly confidentialLevelArray = [
     {name: '公开', id: 0},
     {name: '内部', id: 1},
@@ -66,26 +85,23 @@ export default class TempArchDetail extends Vue {
     {name: '机密', id: 3},
     {name: '秘密', id: 4}
   ];
+  // 保密期限列表
   private readonly retentionPeriodArray = [ '永久', '30年', '10年' ];
 
-  private headData: any = {
-    title: '详情',
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
-    rightPic: false,
-    rightUrl: "",
-    rightText: "",
-    isShow: false,
-  }
+  // 是否正在编辑
+  private isEditing: boolean = false;
 
+  // 表单必填项是否完成
   get isComplete() {
-    /* for (let key in this.inputsProps) {
-      
-    } */
-    return true
+    // 用循环失效，直接暴力写法了
+    return this.inputsProps.topic.value
+      && this.inputsProps.fondsIdentifierId.value
+      && this.inputsProps.categoryCodeId.value
+      && this.inputsProps.departmentId.value
+      && this.inputsProps.confidentialLevel.value
+      && this.inputsProps.retentionPeriod.value
   }
-
+  // 表单属性
   private readonly inputsProps: {[key: string]: any} = {
     topic: { title: '题名', required: true, msg: '请输入题名', type: 'text', value: '' },
     people: { title: '人物', required: false, type: 'text', value: '' },
@@ -93,20 +109,15 @@ export default class TempArchDetail extends Vue {
     place: { title: '地点', required: false, type: 'text', value: '' },
     event: { title: '事件', required: false, type: 'text', value: '' },
     fondsIdentifierId: { title: '全宗号', required: true, msg: '请输入全宗号', type: 'select', value: '' },
-    categoryCode: { title: '类别号', required: true, msg: '请输入类别号', type: 'select', value: '' },
+    categoryCodeId: { title: '类别号', required: true, msg: '请输入类别号', type: 'select', value: '' },
     departmentId: { title: '部门', required: true, msg: '请输入部门', type: 'select', value: '' },
     confidentialLevel: { title: '密级', required: true, type: 'select', value: '' },
     retentionPeriod: { title: '保密期限', required: true, type: 'radio', value: 1 },
   }
+  // 提交表单信息
   get inputsValue() {
     const obj: {[key: string]: any} = {};
     const props = this.inputsProps;
-
-    obj['archived'] = false;
-    obj['temporaryArchiveId'] = this.detailData.id;
-    obj['fileId'] = this.detailData.fileId;
-    obj['thumbnailFileId'] = this.detailData.thumbnailFileId;
-    obj['zippedFileId'] = (this.detailData as any).zippedFileId;
 
     const specialMeta = this.$store.state.metaData.tree.specialMetadataStruct[0].child as Array<MetaDataItem>;
 
@@ -120,7 +131,7 @@ export default class TempArchDetail extends Vue {
         })
     }
     obj['fondsIdentifierId'] = recursionGetId(this.fondsIdentifier, obj['fondsIdentifierId'], 'fondsName', 'id');
-    obj['categoryCode'] = recursionGetId(this.dossierType, obj['categoryCode'], 'typeName', 'id');
+    obj['categoryCodeId'] = recursionGetId(this.dossierType, obj['categoryCodeId'], 'typeName', 'id');
     obj['departmentId'] = recursionGetId(this.departmentNameTree, obj['departmentId'], 'departmentName', 'id');
     obj['confidentialLevel'] = recursionGetId(this.confidentialLevelArray, obj['confidentialLevel'], 'name', 'id');
 
@@ -135,84 +146,122 @@ export default class TempArchDetail extends Vue {
         return { metadataId: id, metadataValue }
       }
     )
+    obj['id'] = this.archId;
 
     return obj;
   }
-  // 生命周期-创建
-  private created() {
-    console.log('created', this.detailData)
-    this.createSetting();
-  }
-  // 进入页面时的设置
-  createSetting() {
-    // 清空
-    for (let key in this.inputsProps) {
-      if (key !== 'retentionPeriod') this.inputsProps[key].value = '';
-      else this.inputsProps[key].value = 1;
-    }
-    // 填上名字
-    if (this.detailData.fileName)
-      this.inputsProps.topic.value = this.detailData.fileName;
 
-    if (!(this.detailData as any).metadata) {
-      this.getImageMetaData(this.detailData.fileId)
-        .then(({data: res}: any) => {
-          res.data = res.data.map((value: any) => {
-            return {
-              id: value.metadataId,
-              metadataValue: value.metadataValue,
-            }
-          })
-          this.$set(this.detailData, 'metadata', res.data);
-          initMetaData(this, 'metadata')
-          console.log(this.$store.state.metaData.tree)
-        })
-    }
-    else
-      console.log((this.detailData as any).metadata);
+  private headData: any = {
+    title: '详情',
+    leftPic: true,
+    leftUrl: "1",
+    leftText: "",
+    rightPic: false,
+    rightUrl: "",
+    rightText: "",
+    isShow: false,
   }
-  @Emit('nextDetail')
-  nextDetail() {
-    this.createSetting();
-  }
-  // ajax著录文件
-  private addFile() {
-    this.$service.post('/api/api/archive/changeTemporaryArchiveToNormalArchive', [this.inputsValue])
-      .then(({data}: any) => {
-        console.log(data);
-        if (data.code === 200) {
-          Msg.success('著录成功');
-          this.nextDetail();
+  private created() {
+    // 获取详细数据
+    this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
+      .then(({data: res}: {data: any}) => {
+        console.log('archDetailData', res);
+        this.detailData = res.data;
+
+        if (!this.detailData) return;
+
+        if ((this.detailData.fileType as string).split('/')[0] === 'image' || 
+        (this.detailData.fileType as string).split('/')[0] === 'video') {
+          if (this.detailData.thumbnailFileToken)
+            return downloadPic(this.detailData.thumbnailFileToken, this.detailData.fileType)
+          else if (this.detailData.fileToken)
+            return downloadPic(this.detailData.fileToken, this.detailData.fileType)
         }
-        else throw Error();
-      }).catch(err => {
-        console.log(err);
-        Msg.error('删除失败')
+        else
+          return setPicByContentType(this.detailData.fileType as string)
       })
+      .then((res: any) => {
+        if (this.detailData)
+          this.$set(this.detailData, 'picSrc', res);
+        this.createSetting()
+      })
+
+    // 设置select菜单的内容
+    this.fondsIdentifier = JSON.parse(localStorage.getItem('fondsIdentifier') as string)
+    this.dossierType = JSON.parse(localStorage.getItem('dossierType') as string)
+    this.departmentNameTree = JSON.parse(localStorage.getItem('departmentNameTree') as string)
+
   }
-  // ajax获取图片的额外数据
-  private getImageMetaData(fileId: number) {
-    return this.$service.get(`/api/api/image/getImageMetadata?fileId=${fileId}`)
+  createSetting() {
+    const dData = this.detailData;
+    const props = this.inputsProps;
+    // 将获取的数据填入表单
+    fillArchDetail(dData, this.inputsProps);
+    // 获取的全宗号是数字，转为对应的字符
+    props.fondsIdentifierId.value = 
+      recursionGetId(this.fondsIdentifier, props.fondsIdentifierId.value, 'fondsIdentifier', 'fondsName');
+    // 获取的密级是数字，转为对应的字符
+    props.confidentialLevel.value =
+      this.confidentialLevelArray[props.confidentialLevel.value].name;
+    // 初始化元数据
+    console.log(dData)
+    initMetaData(this, 'metadataStructTreeBoList');
   }
-  // ajax删除文件
+
+  // 编辑
+  editFile() {
+    this.isEditing = true;
+  }
+  // 删除
   deleteFile() {
     Dialog.confirm({
       title: '确认删除',
       confirmButtonText: '是',
       cancelButtonText: '否'
     }).then(() => {
-      this.$service.post('/api/api/archive/deleteTemporaryArchive', 
-        [this.detailData.id]
-      ).then(({data}: any) => {
+      let queryStr;
+      if (this.isAllow('managerDeleteArchive') !== -1)
+        queryStr = 'managerDeleteArchive';
+      else if (this.isAllow('userDeleteArchive') !== -1)
+        queryStr = 'userDeleteArchive';
+      else
+        return;
+      
+      this.$service.post(`/api/api/archive/${queryStr}`, {
+        ids: [this.archId]
+      }).then(({data}: any) => {
         if (data.code === 200) {
           Msg.success('删除成功')
-          this.nextDetail();
+          this.$router.back();
         }
         else throw Error();
       }).catch(err => {
         Msg.error('删除失败')
       })
     }).catch(() => {})
+  }
+  // 保存
+  saveFile() {
+    console.log(this.inputsValue)
+    this.$service.post('/api/api/archive/updateArchive', this.inputsValue)
+      .then(({data: res}: any) => {
+        console.log(res)
+        if(res.code === 200)
+          Msg.success('保存成功')
+        else
+          throw Error()
+      })
+      .catch((err: any) => {
+        console.log(err)
+        Msg.error('保存失败')
+      })
+    this.isEditing = false;
+  }
+
+  // 是否存在元数据
+  get haveMetaData() {
+    const type = this.detailData?.fileType.split('/')[0];
+    return type === 'image' || type === 'audio' || type === 'video';
   }
 
   private headClick({clickType}: any) {
@@ -229,7 +278,7 @@ export default class TempArchDetail extends Vue {
 </script>
 
 <style lang="scss">
-  #temp-arch-detail {
+  #arch-detail {
     overflow: hidden;
     width: 700px;
     height: 1335px;

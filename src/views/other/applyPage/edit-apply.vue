@@ -164,9 +164,6 @@ export default class editApply extends Vue {
 </script>
 <style lang="scss">
 #editApply {
-  .slots {
-    height: 124px;
-  }
   width: 100vw;
   min-height: 100vh;
   background: #e5edfd;

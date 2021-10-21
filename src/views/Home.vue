@@ -1,10 +1,6 @@
 <template>
   <div class="home">
-    <div>
-      <!-- <keep-alive> -->
-        <router-view />
-      <!-- </keep-alive> -->
-    </div>
+    <router-view />
     <Tabbar :type="type" @changePage="changePage($event)" />
   </div>
 </template>
@@ -21,10 +17,7 @@ import Tabbar from "@/components/tools/tabbar.vue";
 export default class Home extends Vue {
   private type: number | string = 0;
   created() {
-    console.log("type");
-    this.$nextTick(() => {
-      this.type = localStorage.getItem("tabbarT")|| 0;
-    });
+    
     this.type = localStorage.getItem("tabbarT") || 0;
   }
   changePage(event: any) {
@@ -40,7 +33,7 @@ export default class Home extends Vue {
 <style lang="scss">
 .home {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: space-between;
   align-items: center;
