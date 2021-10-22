@@ -1,6 +1,6 @@
+import store from '@/store'
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import { component } from 'vue/types/umd'
 
 Vue.use(VueRouter)
 
@@ -56,11 +56,6 @@ const routes: Array<RouteConfig> = [
         path: 'detail',
         name: 'collectFilesDetail',
         component: () => import('@/views/collect-files/CollectFilesDetail.vue'),
-      },
-      {
-        path: 'face-recognition',
-        name: 'faceRecognition',
-        component: () => import('@/views/face-recognition/FaceRecognition.vue'),
       }
     ]
   },
@@ -107,7 +102,25 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
-  }, 
+  },
+  {
+    path: '/x/x/face-recognition',
+    component: () => import('@/views/face-recognition/FaceRecognition.vue'),
+    children: [
+      {
+        meta: { keepAlive: true },
+        path: '/',
+        name: 'faceList',
+        component: () => import('@/views/face-recognition/FaceList.vue'),
+      },
+      {
+        meta: { keepAlive: true },
+        path: 'detail/x',
+        name: 'faceDetail',
+        component: () => import('@/views/face-recognition/FaceDetail.vue'),
+      }
+    ]
+  }
 ]
 
 const router = new VueRouter({
@@ -121,7 +134,15 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // console.log(to, from, next);
+    if ((to.meta as any).keepAlive || (from.meta as any).keepAlive) {
+      console.log('1 set setset s')
+      store.commit('setDetailAlive', true)
+    }
+    else {
+      console.log('1 aspifs')
+      store.commit('setDetailAlive', false)
+    }
+
   if (to.name === 'login'
     || to.name?.includes('collectFiles')
     || localStorage.getItem('token')

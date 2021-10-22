@@ -39,12 +39,13 @@
           @rightClick="editFile"
         />
         
-        <div v-else class="single-margin">
-          <SingleBtn
-            :name="'保存'"
-            @click="saveFile"
-          />
-        </div>
+        <SingleBtn
+          v-else
+          :name="'保存'"
+          :isLoading="isBtnLoading"
+          class="single-margin"
+          @click="saveFile"
+        />
       </transition>
 
     </div>
@@ -82,6 +83,8 @@ export default class TempArchDetail extends Vue {
   get isAllow() {
     return this.$store.getters.permissionList
   }
+  // 提交按钮状态
+  private isBtnLoading: boolean = false;
   // 密级列表
   private readonly confidentialLevelArray = [
     {name: '公开', id: 0},
@@ -119,7 +122,7 @@ export default class TempArchDetail extends Vue {
     confidentialLevel: { title: '密级', required: true, type: 'select', value: '' },
     retentionPeriod: { title: '保密期限', required: true, type: 'radio', value: 1 },
   }
-  // 提交表单信息
+  // 提交的表单信息
   get inputsValue() {
     const obj: {[key: string]: any} = {};
     const props = this.inputsProps;
@@ -247,7 +250,8 @@ export default class TempArchDetail extends Vue {
   }
   // 保存
   saveFile() {
-    console.log(this.inputsValue)
+    // console.log(this.inputsValue)
+    this.isBtnLoading = true;
     this.$service.post('/api/api/archive/updateArchive', this.inputsValue)
       .then(({data: res}: any) => {
         console.log(res)
@@ -260,7 +264,10 @@ export default class TempArchDetail extends Vue {
         console.log(err)
         Msg.error('保存失败')
       })
-    this.isEditing = false;
+      .finally(() => {
+        this.isBtnLoading = false;
+        this.isEditing = false;
+      })
   }
 
   // 是否存在元数据

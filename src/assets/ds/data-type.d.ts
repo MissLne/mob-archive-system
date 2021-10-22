@@ -61,3 +61,14 @@ interface MetaDataStruct {
   videoMetadataStruct?: Array<MetaDataItem>
   [key: string]: Array<MetaDataItem>
 }
+
+interface FaceData {
+  department: string
+  identity: string
+  information: string
+  name: string
+  position: string
+  uid: number
+  url: string
+  [key: string]: string | number
+}

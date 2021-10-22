@@ -184,7 +184,7 @@ export default class DesItem extends Vue {
     color: #444;
     div:nth-of-type(1) {
       width: 390px;
-      height: 28px;
+      height: 33px;
       font-size: 30px;
       white-space: nowrap;
       overflow: hidden;

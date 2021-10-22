@@ -7,7 +7,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    _permissionList: [] as Array<string>
+    _permissionList: [] as Array<string>,
+    isDetailAlive: false,
   },
   getters: {
     permissionList: state => (query: string) => {
@@ -18,6 +19,9 @@ export default new Vuex.Store({
 
   },
   mutations: {
+    setDetailAlive: (state, payload) => {
+      state.isDetailAlive = payload
+    }
   },
   actions: {
   },

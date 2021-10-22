@@ -56,8 +56,8 @@ export default class TempArch extends Vue {
 </script>
 
 <style lang="scss">
-  #temp-arch {
+  /* #temp-arch {
     width: 100vw;
     min-height: 100vh;
-  }
+  } */
 </style>

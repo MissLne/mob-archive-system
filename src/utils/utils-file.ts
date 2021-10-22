@@ -33,9 +33,9 @@ export function setPicByContentType(contentType: string): string {
   const suffix = strings[strings.length - 1];
   if (suffix.includes('pdf'))
     return require('@/assets/temp-arch/pdf.png')
-  else if (suffix.includes('.document'))
+  else if (suffix.includes('.document') || suffix.includes('-word'))
     return require('@/assets/temp-arch/word.png')
-  else if (suffix.includes('.presentation'))
+  else if (suffix.includes('.presentation') || suffix.includes('-powerpoint'))
     return require('@/assets/temp-arch/ppt.png')
   else if (suffix.includes('.sheet'))
     return require('@/assets/temp-arch/excel.png')

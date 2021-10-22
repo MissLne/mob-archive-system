@@ -12,8 +12,9 @@
     </ul>
     <transition name="btns-move">
       <div v-show="isChecking" class="btns-box">
-        <button class="cancel-btn" @click="stopSelect">取消</button>
-        <button class="edit-btn" @click="startEdit">{{editName}}</button>
+        <button v-if="canCancel" class="cancel-btn" @click="stopSelect">取消</button>
+        <button v-else class="delete-btn" @click="startEdit(false)">删除</button>
+        <button class="edit-btn" @click="startEdit(true)">{{editName}}</button>
       </div>
     </transition>
   </div>
@@ -30,9 +31,12 @@ import MsgBox from './MsgBox/Msg';
   }
 })
 export default class ArchList extends Vue {
-  @Prop({default: true}) canClickItem!: boolean;
+  // 数据
   @Prop() listData!: Array<any>;
+  // 功能
+  @Prop({default: true}) canClickItem!: boolean;
   @Prop({default: '编辑'}) editName!: string;
+  @Prop({default: true}) canCancel!: boolean;
   private checkList: Array<boolean> = [];
   public isChecking: boolean = false;
 
@@ -55,13 +59,12 @@ export default class ArchList extends Vue {
   checkItem(index: number) {
     // 如果直接修改数组内元素无效，官方文档响应式原理！
     this.$set(this.checkList, index, !this.checkList[index]);
-    // console.log(this.checkList)
   }
   @Emit('stopSelect')
   stopSelect() {
     this.isChecking = false;
   }
-  startEdit() {
+  startEdit(adding: boolean = true) {
     let checkedIndex: Array<number> = [];
     this.checkList.forEach((value, index) => {
       if (value) checkedIndex.push(index);
@@ -71,13 +74,21 @@ export default class ArchList extends Vue {
       MsgBox.error('请选择至少一个文件')
     }
     else {
-      this.passClickIndex(checkedIndex)
+      if (adding)
+        this.passClickIndex(checkedIndex)
+      else
+        this.deleteClickIndex(checkedIndex)
       this.isChecking = false;
     }
   }
   /* 告诉父组件点击了哪个元素 */
   @Emit('passClickIndex')
   passClickIndex(indexList: Array<number>) {
+    return indexList;
+  }
+  /* 告诉父组件要删除哪些元素 */
+  @Emit('deleteClickIndex')
+  deleteClickIndex(indexList: Array<number>) {
     return indexList;
   }
 }
@@ -89,7 +100,7 @@ export default class ArchList extends Vue {
       padding-bottom: 2rem; // 防止字溢出
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      row-gap: 63px;
+      row-gap: 30px;
       column-gap: 45px;
       .list-item {
         position: relative;
@@ -98,7 +109,7 @@ export default class ArchList extends Vue {
           top: 0;
           left: 0;
           width: 100%;
-          height: calc(100% + 32px); //标题也要覆盖。。
+          height: 100%;
           .check-circle {
             position: absolute;
             top: 10px;
@@ -112,6 +123,7 @@ export default class ArchList extends Vue {
             font-weight: bold;
             text-align: center;
             line-height: 45px;
+            transition: all 0.15s ease-out;
           }
           .checked-circle {
             border-color: #89BCFE;
@@ -128,7 +140,8 @@ export default class ArchList extends Vue {
       justify-content: space-between;
       width: 520px;
       .cancel-btn,
-      .edit-btn {
+      .edit-btn,
+      .delete-btn {
         width: 162px;
         height: 75px;
         border: none;
@@ -146,6 +159,12 @@ export default class ArchList extends Vue {
         background: #85B8FD;
         color: #FFFFFF;
         box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
+        border-radius: 8px;
+      }
+      .delete-btn {
+        background: #FFFFFF;
+        color: rgba(255, 0, 0, 0.7);
+        box-shadow: 0px 3px 7px 0px rgba(143, 143, 143, 0.35);
         border-radius: 8px;
       }
     }

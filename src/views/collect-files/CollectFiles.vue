@@ -61,9 +61,8 @@ export default class CollectFiles extends Vue {
 </script>
 
 <style lang="scss">
-  #collect-files {
+  /* #collect-files {
     width: 100vw;
     min-height: 100vh;
-    background-image: linear-gradient(180deg, #ECF2FE, #E9F1FE);
-  }
+  } */
 </style>

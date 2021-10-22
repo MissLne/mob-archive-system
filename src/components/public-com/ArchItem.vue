@@ -1,13 +1,15 @@
 <template>
   <div class="arch-item" @click="onClick">
-    <img :src="itemData.picSrc" alt="" class="pic">
+    <!-- <img :src="itemData.picSrc" alt="" class="pic"> -->
+    <van-image :src="itemData.picSrc" fit="cover" class="pic"/>
     <h3 class="title">{{itemData.fileName}}</h3>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
-import { downloadPic } from '@/utils/utils-file'
+import { downloadPic, setPicByContentType } from '@/utils/utils-file'
+import { Image } from 'vant'
 
 @Component
 export default class ArchItem extends Vue {
@@ -18,18 +20,14 @@ export default class ArchItem extends Vue {
   }
   created() {
     // console.log(this.itemData)
-    if (this.itemData.thumbnailFileToken && this.itemData.thumbnailFileType) { // 类型为图片，不是校史征集，后台返回缩略图token
+    if (this.itemData.thumbnailFileToken && this.itemData.thumbnailFileType) {
       downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
       .then((res: any) => {
         this.$set(this.itemData, 'picSrc', res);
       })
     }
-    /* else if (this.itemData.picSrc) { // 类型为图片，是校史征集，输入itemData时，前端整了个picSrc
-      this.picSrc = this.itemData.picSrc;
-    }
-    else { // 类型不为图片，根据文件名后缀设置图片
-      this.setFileDataPic();
-    } */
+    else if (this.itemData.fileType)
+      this.$set(this.itemData, 'picSrc', setPicByContentType(this.itemData.fileType))
   }
 }
 </script>
@@ -37,25 +35,25 @@ export default class ArchItem extends Vue {
 <style lang="scss">
   .arch-item {
     overflow: hidden;
-    // 暂时想到的图片居中方案
-    display: flex;
-    justify-content: center;
-
+    // 暂时想到的图片居中方案，已被object-fit取代
+    /* display: flex;
+    justify-content: center; */
     width: 200px;
-    height: 200px;
-    background-color: #fff;
     text-align: center;
-    border-radius: 12px;
     .pic {
-      height: 100%;
+      width: 200px;
+      height: 200px;
+      // object-fit: cover;
+      background-color: #fff;
+      border-radius: 12px;
     }
     .title {
       overflow: hidden;
-      position: absolute;
-      bottom: -33px;
       width: 100%;
-      height: 23px;
-      font-size: 22px;
+      height: 25px;
+      margin-top: 8px;
+      color: rgba(51, 51, 51, 1);
+      font-size: 23px;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
