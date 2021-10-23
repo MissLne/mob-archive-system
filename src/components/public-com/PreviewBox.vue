@@ -31,7 +31,7 @@ export default class PreviewBox extends Vue {
     }
     else
       downloadPic(this.fileToken, this.fileType)
-        .then((picSrc: string) => {
+        .then((picSrc: any) => {
           this.clearPicSrc = picSrc;
           ImagePreview([this.clearPicSrc]);
         })

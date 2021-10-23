@@ -99,6 +99,7 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/other/archDetail/ArchDetail.vue'),
       },
       {
+        meta: { keepAlive: true },
         path: 'meta-data',
         name: 'archMetaData',
         component: () => import('@/views/meta-data/MetaData.vue'),
@@ -106,7 +107,7 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
-    path: '/x/x/face-recognition',
+    path: '/face-recognition/x/x',
     component: () => import('@/views/face-recognition/FaceRecognition.vue'),
     children: [
       {
@@ -124,7 +125,7 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
-    path: '/recycle-bin',
+    path: '/recycle-bin/x',
     name: 'recycleBin',
     component: () => import('@/views/recycle-bin/RecycleBin.vue'),
   }

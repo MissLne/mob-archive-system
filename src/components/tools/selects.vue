@@ -24,7 +24,7 @@ interface Item {
 @Component
 export default class Selects extends Vue {
   @Prop({}) listData!: Item;
-  private isShowList: boolean = false
+  public isShowList: boolean = false
   private isClose: boolean = false
   private isShowR:boolean = false
   created() {
@@ -94,15 +94,15 @@ export default class Selects extends Vue {
       border-top: 1px solid rgba(255, 255, 255, 0.5);
     }
   }
-  @keyframes showList {
+  /* @keyframes showList {
     from {
       transform: scaleY(0);
     }
     to {
       transform: scaleY(1);
     }
-  }
-  .close {
+  } */
+  /* .close {
     animation: cutUp 0.5s;
   }
   @keyframes cutUp {
@@ -112,15 +112,11 @@ export default class Selects extends Vue {
     to {
       transform: scaleY(0);
     }
-  }
+  } */
   .slide-down-enter,
   .slide-down-leave-to {
     transform: translateY(-100%);
   }
-/*   .slide-down-enter-to,
-  .slide-down-leave {
-    transform: translateY(0);
-  } */
   .slide-down-enter-active {
     transition: 0.35s ease-out;
   }

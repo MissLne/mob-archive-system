@@ -29,25 +29,35 @@
         >查看元数据>></router-link>
       </div>
 
-      <transition name="btns-move" mode="out-in">
+      <div v-if="status !== 4" class="btns-box">
+        <transition name="btns-move" mode="out-in">
+          <CoupleBtns
+            v-if="!isEditing"
+            :leftName="'删除'"
+            :rightName="'编辑'"
+            class="couple-margin"
+            @leftClick="deleteFile"
+            @rightClick="editFile"
+          />
+          
+          <SingleBtn
+            v-else
+            :name="'保存'"
+            :isLoading="isBtnLoading"
+            class="single-margin"
+            @click="saveFile"
+          />
+        </transition>
+      </div>
+      <div v-else class="btns-box">
         <CoupleBtns
-          v-if="!isEditing"
           :leftName="'删除'"
-          :rightName="'编辑'"
+          :rightName="'还原'"
           class="couple-margin"
-          @leftClick="deleteFile"
-          @rightClick="editFile"
+          @leftClick="recycleBinOperation('删除', 'DestroyArchive')"
+          @rightClick="recycleBinOperation('还原', 'RestoreArchive')"
         />
-        
-        <SingleBtn
-          v-else
-          :name="'保存'"
-          :isLoading="isBtnLoading"
-          class="single-margin"
-          @click="saveFile"
-        />
-      </transition>
-
+      </div>
     </div>
     <!-- <div class="bg-box"></div> -->
   </div>
@@ -56,6 +66,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType, initMetaData } from '@/utils/utils-file';
+import PermissionRequest from '@/utils/utils-request'
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
@@ -75,7 +86,10 @@ import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
 })
 export default class ArchDetail extends Vue {
   @Prop() archId!: number;
+  // 页面详细数据
   private detailData: ArchItemData | null = null;
+  // 该案卷的状态
+  private status: number = 0;
   // select的内容
   private fondsIdentifier: Array<any> = [];
   private dossierType: Array<any> = [];
@@ -170,11 +184,13 @@ export default class ArchDetail extends Vue {
     isShow: false,
   }
   private created() {
+    console.log(this.$parent)
     // 获取详细数据
     this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
       .then(({data: res}: {data: any}) => {
         console.log('archDetailData', res);
         this.detailData = res.data;
+        this.status = res.data.status;
 
         if (!this.detailData) return;
 
@@ -216,26 +232,18 @@ export default class ArchDetail extends Vue {
     initMetaData(this, 'metadataStructTreeBoList');
   }
 
-  // 编辑
+  // 著录中状态--编辑
   editFile() {
     this.isEditing = true;
   }
-  // 删除
+  // 著录中状态--删除
   deleteFile() {
     Dialog.confirm({
       title: '确认删除',
       confirmButtonText: '是',
       cancelButtonText: '否'
     }).then(() => {
-      let queryStr;
-      if (this.isAllow('managerDeleteArchive') !== -1)
-        queryStr = 'managerDeleteArchive';
-      else if (this.isAllow('userDeleteArchive') !== -1)
-        queryStr = 'userDeleteArchive';
-      else
-        return;
-      
-      this.$service.post(`/api/api/archive/${queryStr}`, {
+      PermissionRequest.post('DeleteArchive', '/api/api/archive/', {
         ids: [this.archId]
       }).then(({data}: any) => {
         if (data.code === 200) {
@@ -244,11 +252,12 @@ export default class ArchDetail extends Vue {
         }
         else throw Error();
       }).catch(err => {
+        console.log(err)
         Msg.error('删除失败')
       })
     }).catch(() => {})
   }
-  // 保存
+  // 著录中状态--保存
   saveFile() {
     // console.log(this.inputsValue)
     this.isBtnLoading = true;
@@ -268,6 +277,29 @@ export default class ArchDetail extends Vue {
         this.isBtnLoading = false;
         this.isEditing = false;
       })
+  }
+
+  // 回收站状态--操作
+ async recycleBinOperation(chineseName: string, englishName: string) {
+    try {
+      // 确认窗口
+      await Dialog.confirm({
+        title: `确认${chineseName}吗？`
+      })
+      // 请求
+      const {data} = await PermissionRequest.post(englishName, '/api/api/archive/', {
+        ids: [this.archId]
+      })
+      
+      if (data.code !== 200) throw Error(data.message)
+      Msg.success(`${chineseName}成功`)
+      this.$router.go(-1);
+
+    } catch (error: any) {
+      console.log(error)
+      if (error !== 'cancel')
+        Msg.error(`${chineseName}失败`)
+    }
   }
 
   // 是否存在元数据
@@ -315,12 +347,14 @@ export default class ArchDetail extends Vue {
           color: #8EBEFE;
         }
       }
-      .couple-margin {
-        margin-left: 40px;
-        margin-right: 90px;
-      }
-      .single-margin {
-        margin-right: 40px;
+      .btns-box {
+        .couple-margin {
+          margin-left: 40px;
+          margin-right: 90px;
+        }
+        .single-margin {
+          width: calc(100% - 40px);
+        }
       }
       @import '~@/assets/css/animation/btns-move.scss';
     }
