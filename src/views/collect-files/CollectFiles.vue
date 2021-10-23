@@ -1,6 +1,6 @@
 <template>
   <div id="collect-files">
-    <transition :name="transitionName">
+    <transition-view>
       <keep-alive include="CollectFilesUpload">
         <router-view
           :detailData="detailDataList[0]"
@@ -10,24 +10,25 @@
           @nextDetail="nextDetail"
         ></router-view>
       </keep-alive>
-    </transition>
+    </transition-view>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { watchRouteChange } from '@/utils/utils-component'
+import TransitionView from '@/components/public-com/TransitionView.vue'
 
-@Component
+@Component({
+  components: {
+    TransitionView
+  }
+})
 export default class CollectFiles extends Vue {
   private transitionName: string = ''; // 用于动画
 
   private detailDataList: Array<any> = [];
   private collectFilesType: any = null;
   private departmentNameTree: any = null;
-  created() {
-    watchRouteChange(this)
-  }
   initSelectData() {
     if (!this.collectFilesType)
       this.$service.get('/api/api/type/getCollectedFileType')
@@ -60,9 +61,8 @@ export default class CollectFiles extends Vue {
 </script>
 
 <style lang="scss">
-  #collect-files {
+  /* #collect-files {
     width: 100vw;
     min-height: 100vh;
-    background-image: linear-gradient(180deg, #ECF2FE, #E9F1FE);
-  }
+  } */
 </style>

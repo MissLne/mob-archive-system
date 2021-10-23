@@ -5,10 +5,12 @@
 
     <ArchList
       ref="archList"
+      :canCancel="false"
       :canClickItem="false"
       :listData="listData"
       :editName="'著录'"
       @passClickIndex="passDetailData"
+      @deleteClickIndex="deleteClickIndex"
       @stopSelect="stopSelect"
     />
     <UploadBtn :disabled="disabledUpload" @uploadFiles="onUploadFiles"/>
@@ -24,6 +26,8 @@ import ArchList from '@/components/public-com/ArchList.vue';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { createFileChunk, getFileMd5, uploadFile } from '@/utils/utils-upload';
+import { Dialog } from 'vant';
+import Msg from '@/components/public-com/MsgBox/Msg';
 // import fileUtils from '@/utils/fileUtils';
 
 interface SomeData {
@@ -44,6 +48,8 @@ export default class TempArchUpload extends Vue {
   private someData: SomeData | null = null;
   // 正在上传时，禁止上传
   private disabledUpload: boolean = false;
+  // 正在上传时，禁止选择
+  private disabledCheck: boolean = false;
   // 头部栏数据
   public headData = {
     title: '新建',
@@ -86,6 +92,7 @@ export default class TempArchUpload extends Vue {
   private onUploadFiles (file: File) {
     MsgBox.success('文件上传中...', true)
     this.disabledUpload = true;
+    this.disabledCheck = true;
 
     const fileChunkList = createFileChunk(file);
     const Md5 = getFileMd5(fileChunkList)
@@ -104,8 +111,9 @@ export default class TempArchUpload extends Vue {
         MsgBox.changeStatus('上传失败', false);
       })
       .finally(() => {
-        MsgBox.closeBox();
+        MsgBox.closeBox(1000);
         this.disabledUpload = false;
+        this.disabledCheck = false;
       })
   }
   // 将选择的档案传出去
@@ -117,11 +125,41 @@ export default class TempArchUpload extends Vue {
       return this.listData[value];
     });
   }
+  // 删除选择的档案
+  deleteClickIndex(indexList: Array<number>) {
+    this.disabledCheck = true;
+    Dialog.confirm({
+      title: '确认删除',
+      cancelButtonText: '否',
+      confirmButtonText: '是'
+    }).then(() => {
+      this.$service.post('/api/api/archive/deleteTemporaryArchive', 
+        indexList.map(checkedIndex => this.listData[checkedIndex].id)
+      ).then(({data: res}: any) => {
+        if (res.code === 200) {
+          Msg.success('删除成功');
+          this.getTempArchList();
+        }
+        else throw Error();
+      }).catch(() => {
+        Msg.error('删除失败');
+      })
+    }).catch(() => {
+    }).finally(() => {
+      this.disabledUpload = false;
+      this.disabledCheck = false;
+    })
+  }
   
   // header的左边（返回）和右边（选择）
   public headClick({clickType}: any) {
+    // 正在上传不给点头部
+    if (this.disabledCheck) return;
     if (clickType === 'left') {
-      this.$router.go(-1);
+      if ((this.$refs.archList as ArchList).isChecking)
+        (this.$refs.archList as ArchList).stopSelect();
+      else
+        this.$router.go(-1);
     }
     else {
       if (this.listData.length) {

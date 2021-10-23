@@ -1,6 +1,6 @@
+import store from '@/store'
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import { component } from 'vue/types/umd'
 
 Vue.use(VueRouter)
 
@@ -56,11 +56,6 @@ const routes: Array<RouteConfig> = [
         path: 'detail',
         name: 'collectFilesDetail',
         component: () => import('@/views/collect-files/CollectFilesDetail.vue'),
-      },
-      {
-        path: 'face-recognition',
-        name: 'faceRecognition',
-        component: () => import('@/views/collect-files/FaceRecognition.vue'),
       }
     ]
   },
@@ -74,22 +69,18 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/temp-arch/TempArchUpload.vue'),
       },
       {
-        path: 'detail/:count',
+        meta: { keepAlive: true },
+        path: 'detail/x',
         name: 'tempArchDetail',
         component: () => import('@/views/temp-arch/TempArchDetail.vue'),
         props: true
       },
       {
-        path: 'detail/meta-data',
+        path: 'detail/meta-data/x',
         name: 'tempArchMetaData',
-        component: () => import('@/views/public/MetaData.vue'),
+        component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
-  },
-  {
-    path: '/myDes',
-    name: 'myDes',
-    component: () => import('@/views/other/desPage/myDes.vue'),
   },
   {
     path: '/arch',
@@ -97,17 +88,47 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/views/other/archDetail/Arch.vue'),
     children: [
       {
+        path: 'my-des',
+        name: 'myDes',
+        component: () => import('@/views/other/archDetail/MyDes.vue'),
+      },
+      {
+        meta: { keepAlive: true },
         path: 'detail',
         name: 'archDetail',
         component: () => import('@/views/other/archDetail/ArchDetail.vue'),
       },
       {
+        meta: { keepAlive: true },
         path: 'meta-data',
         name: 'archMetaData',
-        component: () => import('@/views/public/MetaData.vue'),
+        component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
-  }, 
+  },
+  {
+    path: '/face-recognition/x/x',
+    component: () => import('@/views/face-recognition/FaceRecognition.vue'),
+    children: [
+      {
+        meta: { keepAlive: true },
+        path: '/',
+        name: 'faceList',
+        component: () => import('@/views/face-recognition/FaceList.vue'),
+      },
+      {
+        meta: { keepAlive: true },
+        path: 'detail/x',
+        name: 'faceDetail',
+        component: () => import('@/views/face-recognition/FaceDetail.vue'),
+      }
+    ]
+  },
+  {
+    path: '/recycle-bin/x',
+    name: 'recycleBin',
+    component: () => import('@/views/recycle-bin/RecycleBin.vue'),
+  }
 ]
 
 const router = new VueRouter({
@@ -115,12 +136,20 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
   scrollBehavior (to, from, savedPosition) {
-    return { x: 0, y: 0 }
+    // return { x: 0, y: 0 }
+    return savedPosition
   }
 })
 
 router.beforeEach((to, from, next) => {
-  // console.log(to, from, next);
+  if ((to.meta as any).keepAlive) {
+    console.log('1 set true')
+    store.commit('setDetailAlive', true)
+  }
+  else {
+    console.log('1 set false')
+    store.commit('setDetailAlive', false)
+  }
   if (to.name === 'login'
     || to.name?.includes('collectFiles')
     || localStorage.getItem('token')
@@ -128,6 +157,13 @@ router.beforeEach((to, from, next) => {
     next();
   else
     next({name: 'login'})
+})
+
+router.afterEach((to, from) => {
+  // window.history.pushState({vue123: '321euv'}, '')
+  /* console.log('length', window.history.length)
+  console.log('state', window.history.state) */
+  
 })
 
 export default router

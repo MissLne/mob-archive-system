@@ -61,7 +61,7 @@ import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue"
-import { setPicByContentType } from "@/utils/utils-file";
+import { downloadPic } from "@/utils/utils-file";
 
 interface dataType {
   size: number | undefined;
@@ -237,24 +237,9 @@ export default class Description extends Vue {
         this.count = res.data.data.total;
         this.pageData.total = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
-          if (item.hasOwnProperty("fileToken") && item.fileToken !== null && item.fileType.split('/')[0] === 'image') {
-            (this as any).$service
-              .get(`/api/api/file/download/${item.fileToken}`, {
-                responseType: "arraybuffer",
-              })
-              .then((data: any) => {
-                item.fileToken =
-                  "data:image/png;base64," +
-                  btoa(
-                    new Uint8Array(data.data).reduce(
-                      (data, byte) => data + String.fromCharCode(byte),
-                      ""
-                    )
-                  );
-              });
-          }
-          else if (item.fileType) {
-            item.fileToken = setPicByContentType(item.fileType)
+          if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
+            downloadPic(item.fileToken, item.fileType)
+              .then(res => item.fileToken = res)
           }
         });
         this.desItem = result;
@@ -355,6 +340,13 @@ export default class Description extends Vue {
     //   this.listData.title = (this as any).$localStore.getData("desData")
     // }
     this.getList();
+  }
+  scrollTop: number = 0;
+  activated() {
+    console.log('activated')
+  }
+  deactivated() {
+    console.log('deactivated', window.scrollX)
   }
 }
 </script>

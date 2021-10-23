@@ -12,11 +12,6 @@
     <UploadBtn :disabled="disabledUpload" @uploadFiles="onUploadFiles"/>
     <div v-if="!listData.length" class="uploadHint">点我上传 →</div>
 
-    <Alerts
-      v-show="alertsData.isAlerts"
-      :title="alertsData.title"
-      @sureDelete="alertsSureHandle"
-    />
   </div>
 </template>
 
@@ -27,14 +22,13 @@ import ArchList from '@/components/public-com/ArchList.vue';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { setPicSrc } from '@/utils/utils-file';
-import Alerts from '@/components/tools/alerts.vue';
+import { Dialog } from 'vant'
 
 @Component({
   components: {
     UploadBtn,
     ArchList,
     DesHead,
-    Alerts,
   }
 })
 export default class CollectFilesUpload extends Vue {
@@ -42,20 +36,8 @@ export default class CollectFilesUpload extends Vue {
   private listData: Array<any> = [];
   // 正在上传时，禁止上传
   private disabledUpload: boolean = false;
-  // 消息弹窗点击是的时候，调用的函数
-  private alertsSureHandle = ({type}: any) => {};
-  // 关于消息弹窗的数据
-  private alertsData = {
-    isAlerts: false,
-    title: '',
-    alerts(title: string) {
-      this.isAlerts = true;  
-      this.title = title;
-    },
-    close() {
-      this.isAlerts = false;
-    }
-  }
+  // 正在上传时，禁止选择
+  private disabledCheck: boolean = false;
   // 头部栏数据
   public headData = {
     title: '校史征集',
@@ -81,6 +63,7 @@ export default class CollectFilesUpload extends Vue {
 
     MsgBox.success('文件上传中...', true)
     this.disabledUpload = true;
+    this.disabledCheck = true;
 
     this.$service.post('/api/api/file/visitorUpload', formData, {
       headers: { 'content-type': 'multipart/form-data' }
@@ -107,23 +90,24 @@ export default class CollectFilesUpload extends Vue {
     .finally(() => {
       MsgBox.closeBox(1000);
       this.disabledUpload = false;
+      this.disabledCheck = false;
     })
   }
   // header的左边（返回）和右边（选择）
   public headClick({clickType}: any) {
+    // 正在上传不给点头部
+    if (this.disabledCheck) return;
     if (clickType === 'left') {
-      if (this.isAllSubmitted) {
-        this.alertsData.close()
+      if (this.isAllSubmitted)
         this.$router.go(-1);
-      }
       else {
-        this.alertsData.alerts('未提交的信息将会丢失');
-        this.alertsSureHandle = ({type}: any) => {
-          if (type === 'sure')
-            this.$router.go(-1);
-          else
-            this.alertsData.close()
-        }
+        Dialog.confirm({
+          title: '未提交的信息将会丢失',
+          cancelButtonText: '否',
+          confirmButtonText: '是',
+        }).then(() => {
+          this.$router.go(-1);
+        }).catch(() => {})
       }
     }
     else {

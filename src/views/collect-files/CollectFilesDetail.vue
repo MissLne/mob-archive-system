@@ -5,12 +5,10 @@
 
     <div class="container">
       <div class="input-box">
-        <div class="preview-box">
-          <span class="preview-title">预览</span>
-          <div class="preview-img-box">
-            <img :src="detailData.picSrc" alt="" class="preview-img">
-          </div>
-        </div>
+        <PreviewBox
+          :picSrc="detailData.picSrc"
+          :fileType="detailData.contentType"
+        />
         <h3 class="title">基础信息</h3>
         <ul class="inf-list">
           <li v-for="item in inputsProps" :key="item.title" class="item">
@@ -73,12 +71,6 @@
       </div>
 
       <div v-if="isSubmitted" class="disabled-mask"></div>
-
-      <Alerts
-        v-show="alertsData.isAlerts"
-        :title="alertsData.title"
-        @sureDelete="sureHandle"
-      />
     </div>
   </div>
 </template>
@@ -89,17 +81,18 @@ import Select from '@/components/public-com/Select/Select.vue'
 import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
-import Alerts from '@/components/tools/alerts.vue';
 import { recursionGetId } from '@/utils/utils-file';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
+import PreviewBox from '@/components/public-com/PreviewBox.vue';
+import { Dialog } from 'vant'
 
 @Component({
   components: {
     Select,
     Input,
     DesHead,
-    Alerts,
-    InputDate
+    InputDate,
+    PreviewBox
   }
 })
 export default class CollectFilesDetail extends Vue {
@@ -160,42 +153,6 @@ export default class CollectFilesDetail extends Vue {
       this.inputsProps.topic.value = this.detailData.fileName;
   }
 
-  /* private canRecognize: boolean = false;
-  onRecognizing() {
-    if (this.canRecognize) {
-      console.log('when recognize', this.detailData)
-      this.$service.get(`/api/api/face/faceRecognition/${this.detailData.fileId}`)
-        .then(({data}: any) => {
-          if (data.code !== 200) throw Error;
-          this.passFaceData(data.data);
-        })
-        .catch((err: any) => {
-          console.log(err);
-          this.canRecognize = false;
-          MsgBox.error('人脸识别失败', 1500);
-        })
-    }
-    else {
-      this.$router.push({name: 'faceRecognition'})
-    }
-  }
-  @Emit('passFaceData')
-  passFaceData(faceData: any) {
-    return faceData;
-  } */
-  
-  // 提示框
-  private alertsData = {
-    isAlerts: false,
-    title: '',
-    alerts(title: string) {
-      this.isAlerts = true;  
-      this.title = title;
-    },
-    close() {
-      this.isAlerts = false;
-    }
-  }
   private sureHandle = ({type}: any) => {};
   // 头部数据与点击事件
   public headData: any = {
@@ -217,11 +174,14 @@ export default class CollectFilesDetail extends Vue {
   // 提交部分
   trySubmit() {
     if (!this.isComplete) return;
-    this.alertsData.alerts('是否确认提交');
-    this.sureHandle = ({type}: any) => {
-      if (type === 'sure') this.submit()
-      this.alertsData.close()
-    }
+    Dialog.confirm({
+      title: '是否确认提交',
+      cancelButtonText: '否',
+      confirmButtonText: '是'
+    }).then(() => {
+      this.submit()
+    }).catch(() => {})
+
   }
   private submit() {
     const fullFileData: any = {
@@ -309,27 +269,6 @@ export default class CollectFilesDetail extends Vue {
       padding: 18px 0 29px 40px;
       background-color: #fff;
       .input-box {
-        .preview-box {
-          $preview-box-height: 186px;
-          display: flex;
-          justify-content: space-between;
-          height: $preview-box-height;
-          margin-right: 75px;
-          .preview-title {
-            line-height: $preview-box-height;
-          }
-          .preview-img-box {
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            width: 186px;
-            height: $preview-box-height;
-            .preview-img {
-              height: 100%;
-            }
-          }
-          
-        }
         .title {
           margin: 15px 0 29px;
           font-size: 30px;
@@ -374,8 +313,8 @@ export default class CollectFilesDetail extends Vue {
           }
         }
       }
-      
       .submit-box {
+        margin-top: 50px;
         margin-right: 39px;
         .submit-btn {
           width: 100%;

@@ -44,7 +44,11 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
+<<<<<<< HEAD:src/views/other/desPage/myDes.vue
 import { watchRouteChange } from "@/utils/utils-component";
+=======
+import { downloadPic } from "@/utils/utils-file";
+>>>>>>> 41325874d2cc94457ae668b69b207fbf5a0b1fd9:src/views/other/archDetail/MyDes.vue
 
 interface dataType {
   size: number | undefined;
@@ -146,20 +150,8 @@ export default class MyDes extends Vue {
 
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
-            (this as any).$service
-              .get(`/api/api/file/download/${item.fileToken}`, {
-                responseType: "arraybuffer",
-              })
-              .then((data: any) => {
-                item.fileToken =
-                  "data:image/png;base64," +
-                  btoa(
-                    new Uint8Array(data.data).reduce(
-                      (data, byte) => data + String.fromCharCode(byte),
-                      ""
-                    )
-                  );
-              });
+            downloadPic(item.fileToken, item.fileType)
+              .then(res => item.fileToken = res)
           }
         });
         this.desItem = result;

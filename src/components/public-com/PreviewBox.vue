@@ -4,16 +4,41 @@
     <img
       :src="picSrc"
       class="preview-img"
+      @click="preview"
     >
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
+import { ImagePreview } from 'vant';
+import { downloadPic } from '@/utils/utils-file';
 
 @Component
-export default class ArchForm extends Vue {
+export default class PreviewBox extends Vue {
   @Prop() picSrc!: string;
+  @Prop() fileToken!: string;
+  @Prop() fileType!: string;
+  private clearPicSrc: string = ''; // 清晰图
+  preview() {
+    if (!this.fileType || this.fileType.split('/')[0] !== 'image')
+      return;
+    else if (!this.fileToken) {
+      ImagePreview([this.picSrc])
+    }
+    else if (this.clearPicSrc) {
+      ImagePreview([this.clearPicSrc]);
+    }
+    else
+      downloadPic(this.fileToken, this.fileType)
+        .then((picSrc: any) => {
+          this.clearPicSrc = picSrc;
+          ImagePreview([this.clearPicSrc]);
+        })
+        .catch((err: any) => 
+          console.log(err)
+        )
+  }
 }
 </script>
 

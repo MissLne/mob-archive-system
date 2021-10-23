@@ -4,15 +4,20 @@
     <div class="slots"></div><!-- 占header的位置 -->
 
     <div v-if="detailData" class="container">
-      <PreviewBox :picSrc="detailData.picSrc"/>
+      <PreviewBox
+        :picSrc="detailData.picSrc"
+        :fileToken="detailData.fileToken"
+        :fileType="detailData.fileType"
+      />
       <ArchForm
-        :disabled="!isEditing"
         :inputsProps="inputsProps"
         :fondsIdentifier="fondsIdentifier"
         :dossierType="dossierType"
         :departmentNameTree="departmentNameTree"
         :confidentialLevelArray="confidentialLevelArray"
         :retentionPeriodArray="retentionPeriodArray"
+        :disabled="!isEditing"
+        :fileId="detailData.fileId"
       />
       <div 
         v-if="haveMetaData"
@@ -24,24 +29,35 @@
         >查看元数据>></router-link>
       </div>
 
-      <transition name="btns-move" mode="out-in">
-        <CoupleBtns
-          v-if="!isEditing"
-          :leftName="'删除'"
-          :rightName="'编辑'"
-          class="couple-margin"
-          @leftClick="deleteFile"
-          @rightClick="editFile"
-        />
-        
-        <div v-else class="single-margin">
+      <div v-if="status !== 4" class="btns-box">
+        <transition name="btns-move" mode="out-in">
+          <CoupleBtns
+            v-if="!isEditing"
+            :leftName="'删除'"
+            :rightName="'编辑'"
+            class="couple-margin"
+            @leftClick="deleteFile"
+            @rightClick="editFile"
+          />
+          
           <SingleBtn
+            v-else
             :name="'保存'"
+            :isLoading="isBtnLoading"
+            class="single-margin"
             @click="saveFile"
           />
-        </div>
-      </transition>
-
+        </transition>
+      </div>
+      <div v-else class="btns-box">
+        <CoupleBtns
+          :leftName="'删除'"
+          :rightName="'还原'"
+          class="couple-margin"
+          @leftClick="recycleBinOperation('删除', 'DestroyArchive')"
+          @rightClick="recycleBinOperation('还原', 'RestoreArchive')"
+        />
+      </div>
     </div>
     <!-- <div class="bg-box"></div> -->
   </div>
@@ -50,6 +66,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType, initMetaData } from '@/utils/utils-file';
+import PermissionRequest from '@/utils/utils-request'
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
@@ -67,9 +84,12 @@ import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
     SingleBtn
   }
 })
-export default class TempArchDetail extends Vue {
+export default class ArchDetail extends Vue {
   @Prop() archId!: number;
+  // 页面详细数据
   private detailData: ArchItemData | null = null;
+  // 该案卷的状态
+  private status: number = 0;
   // select的内容
   private fondsIdentifier: Array<any> = [];
   private dossierType: Array<any> = [];
@@ -77,6 +97,8 @@ export default class TempArchDetail extends Vue {
   get isAllow() {
     return this.$store.getters.permissionList
   }
+  // 提交按钮状态
+  private isBtnLoading: boolean = false;
   // 密级列表
   private readonly confidentialLevelArray = [
     {name: '公开', id: 0},
@@ -114,7 +136,7 @@ export default class TempArchDetail extends Vue {
     confidentialLevel: { title: '密级', required: true, type: 'select', value: '' },
     retentionPeriod: { title: '保密期限', required: true, type: 'radio', value: 1 },
   }
-  // 提交表单信息
+  // 提交的表单信息
   get inputsValue() {
     const obj: {[key: string]: any} = {};
     const props = this.inputsProps;
@@ -162,11 +184,13 @@ export default class TempArchDetail extends Vue {
     isShow: false,
   }
   private created() {
+    console.log(this.$parent)
     // 获取详细数据
     this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
       .then(({data: res}: {data: any}) => {
         console.log('archDetailData', res);
         this.detailData = res.data;
+        this.status = res.data.status;
 
         if (!this.detailData) return;
 
@@ -208,26 +232,18 @@ export default class TempArchDetail extends Vue {
     initMetaData(this, 'metadataStructTreeBoList');
   }
 
-  // 编辑
+  // 著录中状态--编辑
   editFile() {
     this.isEditing = true;
   }
-  // 删除
+  // 著录中状态--删除
   deleteFile() {
     Dialog.confirm({
       title: '确认删除',
       confirmButtonText: '是',
       cancelButtonText: '否'
     }).then(() => {
-      let queryStr;
-      if (this.isAllow('managerDeleteArchive') !== -1)
-        queryStr = 'managerDeleteArchive';
-      else if (this.isAllow('userDeleteArchive') !== -1)
-        queryStr = 'userDeleteArchive';
-      else
-        return;
-      
-      this.$service.post(`/api/api/archive/${queryStr}`, {
+      PermissionRequest.post('DeleteArchive', '/api/api/archive/', {
         ids: [this.archId]
       }).then(({data}: any) => {
         if (data.code === 200) {
@@ -236,13 +252,15 @@ export default class TempArchDetail extends Vue {
         }
         else throw Error();
       }).catch(err => {
+        console.log(err)
         Msg.error('删除失败')
       })
     }).catch(() => {})
   }
-  // 保存
+  // 著录中状态--保存
   saveFile() {
-    console.log(this.inputsValue)
+    // console.log(this.inputsValue)
+    this.isBtnLoading = true;
     this.$service.post('/api/api/archive/updateArchive', this.inputsValue)
       .then(({data: res}: any) => {
         console.log(res)
@@ -255,7 +273,33 @@ export default class TempArchDetail extends Vue {
         console.log(err)
         Msg.error('保存失败')
       })
-    this.isEditing = false;
+      .finally(() => {
+        this.isBtnLoading = false;
+        this.isEditing = false;
+      })
+  }
+
+  // 回收站状态--操作
+ async recycleBinOperation(chineseName: string, englishName: string) {
+    try {
+      // 确认窗口
+      await Dialog.confirm({
+        title: `确认${chineseName}吗？`
+      })
+      // 请求
+      const {data} = await PermissionRequest.post(englishName, '/api/api/archive/', {
+        ids: [this.archId]
+      })
+      
+      if (data.code !== 200) throw Error(data.message)
+      Msg.success(`${chineseName}成功`)
+      this.$router.go(-1);
+
+    } catch (error: any) {
+      console.log(error)
+      if (error !== 'cancel')
+        Msg.error(`${chineseName}失败`)
+    }
   }
 
   // 是否存在元数据
@@ -303,12 +347,14 @@ export default class TempArchDetail extends Vue {
           color: #8EBEFE;
         }
       }
-      .couple-margin {
-        margin-left: 40px;
-        margin-right: 90px;
-      }
-      .single-margin {
-        margin-right: 40px;
+      .btns-box {
+        .couple-margin {
+          margin-left: 40px;
+          margin-right: 90px;
+        }
+        .single-margin {
+          width: calc(100% - 40px);
+        }
       }
       @import '~@/assets/css/animation/btns-move.scss';
     }

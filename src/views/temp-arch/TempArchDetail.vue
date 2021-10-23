@@ -3,9 +3,13 @@
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
 
-    <button @click="nextDetail()">下一个</button>
+    <!-- <button @click="nextDetail()">下一个</button> -->
     <div class="container">
-      <PreviewBox :picSrc="detailData.picSrc"/>
+      <PreviewBox
+        :picSrc="detailData.picSrc"
+        :fileToken="detailData.fileToken"
+        :fileType="detailData.fileType"
+      />
       <ArchForm
         :inputsProps="inputsProps"
         :fondsIdentifier="fondsIdentifier"
@@ -13,6 +17,7 @@
         :departmentNameTree="departmentNameTree"
         :confidentialLevelArray="confidentialLevelArray"
         :retentionPeriodArray="retentionPeriodArray"
+        :fileId="detailData.fileId"
       />
         
       <div class="go-meta-box">
@@ -35,14 +40,13 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator'
-import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType, initMetaData } from '@/utils/utils-file';
+import { recursionGetId, initMetaData } from '@/utils/utils-file';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import PreviewBox from '@/components/public-com/PreviewBox.vue'
 import ArchForm from '@/components/public-com/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
-import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
 
 @Component({
   components: {
@@ -50,7 +54,6 @@ import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
     PreviewBox,
     ArchForm,
     CoupleBtns,
-    SingleBtn
   }
 })
 export default class TempArchDetail extends Vue {
@@ -80,10 +83,13 @@ export default class TempArchDetail extends Vue {
   }
 
   get isComplete() {
-    /* for (let key in this.inputsProps) {
-      
-    } */
-    return true
+    // 用循环失效，直接暴力写法了
+    return this.inputsProps.topic.value
+      && this.inputsProps.fondsIdentifierId.value
+      && this.inputsProps.categoryCode.value
+      && this.inputsProps.departmentId.value
+      && this.inputsProps.confidentialLevel.value
+      && this.inputsProps.retentionPeriod.value
   }
 
   private readonly inputsProps: {[key: string]: any} = {
@@ -177,6 +183,10 @@ export default class TempArchDetail extends Vue {
   }
   // ajax著录文件
   private addFile() {
+    if (!this.isComplete) {
+      Msg.error('请填写必填项');
+      return;
+    }
     this.$service.post('/api/api/archive/changeTemporaryArchiveToNormalArchive', [this.inputsValue])
       .then(({data}: any) => {
         console.log(data);
@@ -187,7 +197,7 @@ export default class TempArchDetail extends Vue {
         else throw Error();
       }).catch(err => {
         console.log(err);
-        Msg.error('删除失败')
+        Msg.error('著录失败')
       })
   }
   // ajax获取图片的额外数据
@@ -257,9 +267,6 @@ export default class TempArchDetail extends Vue {
       .couple-margin {
         margin-left: 40px;
         margin-right: 90px;
-      }
-      .single-margin {
-        margin-right: 40px;
       }
       @import '~@/assets/css/animation/btns-move.scss';
     }

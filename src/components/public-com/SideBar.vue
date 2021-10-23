@@ -3,7 +3,8 @@
     <div class="side-bar-top">
       <!-- <div>临时档案</div> -->
       <router-link :to="{ name: 'tempArchUpload' }" tag="div">临时档案</router-link>
-      <div>回收站</div>
+      <!-- <div>回收站</div> -->
+      <router-link :to="{ name: 'recycleBin' }" tag="div">回收站</router-link>
     </div>
     <div class="side-bar-foot" @click="logout">退出登录</div>
   </div>

@@ -1,11 +1,11 @@
 <template>
   <div class="couple-btns">
     <button
-      class="left-btn"
+      :class="{ 'left-btn': !colorReversal, 'right-btn': colorReversal }"
       @click="leftClick"
     >{{leftName}}</button>
     <button
-      class="right-btn"
+      :class="{ 'left-btn': colorReversal, 'right-btn': !colorReversal }"
       @click="rightClick"
     >{{rightName}}</button>
   </div>
@@ -18,6 +18,8 @@ import { Vue, Component, Prop, Emit } from "vue-property-decorator";
 export default class CoupleBtns extends Vue {
   @Prop() leftName!: string;
   @Prop() rightName!: string;
+  // 是否反转颜色。。为了回收站才加的呜呜
+  @Prop({default: false}) colorReversal!: boolean;
 
   @Emit('leftClick')
   leftClick() {}
