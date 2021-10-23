@@ -310,7 +310,10 @@ export default class ArchDetail extends Vue {
 
   private headClick({clickType}: any) {
     if (clickType === 'left') {
-      this.$router.go(-1)
+      if (this.isEditing)
+        this.isEditing = false;
+      else
+        this.$router.go(-1)
     }
   }
 

@@ -187,7 +187,7 @@ export default class Description extends Vue {
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             downloadPic(item.fileToken, item.fileType)
-              .then(res => item.fileToken = res)
+              .then((res: any) => item.fileToken = res)
           }
         });
         this.desItem = result;

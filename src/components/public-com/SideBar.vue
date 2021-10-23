@@ -38,7 +38,7 @@ export default class SideBar extends Vue {
   bottom: 0;
   left: 0;
   width: 522px;
-  height: calc(100vh - 124px);
+  min-height: calc(100% - 124px);
   background: #fff;
   box-shadow: 4px 3px 7px 0px rgba(76, 108, 174, 0.15);
   transition: .6s;
