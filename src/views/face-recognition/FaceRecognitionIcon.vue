@@ -27,7 +27,7 @@ export default class FaceRecognitionIcon extends Vue {
   @Prop() fileId!: number;
   private recognized: boolean = false;
   private isLoading: boolean = false;
-  private faceData: Array<any> = [];
+  private faceData: Array<FaceData> = [];
   getFaceData() {      
     // 尚未获得数据
     if (!this.recognized) {
@@ -37,6 +37,7 @@ export default class FaceRecognitionIcon extends Vue {
           console.log(res.data);
           if (res.code === 200) {
             this.faceData = res.data;
+            this.$store.commit('setFaceData', res.data);
             this.recognized = true;
             this.passFaceDataName();
             Msg.success('人脸识别完毕')

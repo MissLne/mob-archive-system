@@ -27,7 +27,7 @@ import TransitionView from '@/components/public-com/TransitionView.vue'
     TransitionView
   }
 })
-export default class FaceDetail extends Vue {
+export default class FaceRecognition extends Vue {
   private faceData: Array<FaceData> = [];
   private detailData: FaceData = {} as FaceData;
   public headData: any = {
@@ -41,7 +41,7 @@ export default class FaceDetail extends Vue {
     isShow: false,
   }
   created() {
-    this.faceData = JSON.parse(localStorage.getItem('faceData') as string);
+    this.faceData = this.$store.state.faceData;
   }
   public headClick({clickType}: any) {
     if (clickType === 'left') this.$router.go(-1)

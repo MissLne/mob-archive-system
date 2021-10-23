@@ -40,7 +40,7 @@ import Msg from '@/components/public-com/MsgBox/Msg';
     SingleBtn,
   }
 })
-export default class FaceRecognition extends Vue {
+export default class FaceDetail extends Vue {
   @Prop() detailData!: FaceData;
   @Prop() fileId!: string;
   // 提交按钮状态

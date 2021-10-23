@@ -9,6 +9,7 @@ export default new Vuex.Store({
   state: {
     _permissionList: [] as Array<string>,
     isDetailAlive: false,
+    faceData: [] as Array<FaceData>
   },
   getters: {
     permissionList: state => (query: string) => {
@@ -19,8 +20,11 @@ export default new Vuex.Store({
 
   },
   mutations: {
-    setDetailAlive: (state, payload) => {
-      state.isDetailAlive = payload
+    setDetailAlive: (state, isAlive) => {
+      state.isDetailAlive = isAlive
+    },
+    setFaceData: (state, array) => {
+      state.faceData = array
     }
   },
   actions: {

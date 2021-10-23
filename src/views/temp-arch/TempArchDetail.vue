@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator'
-import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType, initMetaData } from '@/utils/utils-file';
+import { recursionGetId, initMetaData } from '@/utils/utils-file';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';

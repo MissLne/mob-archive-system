@@ -3,6 +3,7 @@
     <div v-for="(item, index) in barData" :key="index">
       <router-link
         :to="item.itemLink"
+        replace
         tag="div"
         :style="{ color: type == index ? '#8EBEFE' : '' }"
         @click.native="changePage(index)"

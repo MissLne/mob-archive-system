@@ -69,6 +69,7 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/temp-arch/TempArchUpload.vue'),
       },
       {
+        meta: { keepAlive: true },
         path: 'detail/x',
         name: 'tempArchDetail',
         component: () => import('@/views/temp-arch/TempArchDetail.vue'),
@@ -92,6 +93,7 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/other/archDetail/MyDes.vue'),
       },
       {
+        meta: { keepAlive: true },
         path: 'detail',
         name: 'archDetail',
         component: () => import('@/views/other/archDetail/ArchDetail.vue'),
@@ -120,6 +122,11 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/face-recognition/FaceDetail.vue'),
       }
     ]
+  },
+  {
+    path: '/recycle-bin',
+    name: 'recycleBin',
+    component: () => import('@/views/recycle-bin/RecycleBin.vue'),
   }
 ]
 
@@ -134,15 +141,14 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if ((to.meta as any).keepAlive || (from.meta as any).keepAlive) {
-      console.log('1 set setset s')
-      store.commit('setDetailAlive', true)
-    }
-    else {
-      console.log('1 aspifs')
-      store.commit('setDetailAlive', false)
-    }
-
+  if ((to.meta as any).keepAlive) {
+    console.log('1 set true')
+    store.commit('setDetailAlive', true)
+  }
+  else {
+    console.log('1 set false')
+    store.commit('setDetailAlive', false)
+  }
   if (to.name === 'login'
     || to.name?.includes('collectFiles')
     || localStorage.getItem('token')
@@ -150,6 +156,13 @@ router.beforeEach((to, from, next) => {
     next();
   else
     next({name: 'login'})
+})
+
+router.afterEach((to, from) => {
+  // window.history.pushState({vue123: '321euv'}, '')
+  /* console.log('length', window.history.length)
+  console.log('state', window.history.state) */
+  
 })
 
 export default router

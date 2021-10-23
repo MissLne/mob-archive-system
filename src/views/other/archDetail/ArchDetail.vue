@@ -73,7 +73,7 @@ import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
     SingleBtn
   }
 })
-export default class TempArchDetail extends Vue {
+export default class ArchDetail extends Vue {
   @Prop() archId!: number;
   private detailData: ArchItemData | null = null;
   // select的内容

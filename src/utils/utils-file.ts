@@ -8,12 +8,22 @@ import Vue from "vue";
  * @returns {Promise}
  */
 export async function downloadPic(fileToken: string, fileType: string) {
-  return service.get(`/api/api/file/download/${fileToken}`, { responseType: 'arraybuffer' })
-    .then((data: any) => {
-      return data = `data:${fileType};base64,` + btoa(new Uint8Array(data.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
-    })
+  if (!fileType)
+    console.log('文件类型不能为空')
+  else if (fileType.split('/')[0] !== 'image')
+    return setPicByContentType(fileType)
+  else
+    return service.get(`/api/api/file/download/${fileToken}`, { responseType: 'arraybuffer' })
+      .then((data: any) => {
+        return data = `data:${fileType};base64,` + btoa(new Uint8Array(data.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+      })
 }
 
+/**
+ * 根据本地文件，以及后台返回的数据设置图片路径（针对校史征集）
+ * @param data 后台返回的数据
+ * @param file 本地文件
+ */
 export function setPicSrc(data: UploadFileData, file: File) {
   if (data.contentType.split('/')[0] === 'image') {
     file.arrayBuffer().then((buffer) => {

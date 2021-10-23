@@ -1,10 +1,8 @@
 <template>
   <div id="arch">
-    <keep-alive>
-      <router-view
-        :archId="archId"
-      ></router-view>
-    </keep-alive>
+    <router-view
+      :archId="archId"
+    ></router-view>
   </div>
 </template>
 

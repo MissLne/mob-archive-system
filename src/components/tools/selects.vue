@@ -1,13 +1,18 @@
 <template>
   <div id="selects">
-    <div class="title" @click.prevent="showList" :style="{'background':isShowR? '#8ebefe' : ''}">
+    <div class="title" @click.prevent="showList" :style="{'background':isShowR? '#8ebefe' : '#8ebefe'}">
       <div>{{ listData.title }}</div>
       <img src="@/assets/head/linedown.png" />
       <img src="@/assets/head/pulldown@2x.png" :style="{'transform':isShowR? 'rotate(180deg)' : ''}"/>
     </div>
-    <div class="list" v-if="isShowList" :class="{ close: isClose }">
-      <div v-for="(item, index) in listData.list" :key="index" @click="handleClick(index)">{{ item }}</div>
-    </div>
+    <transition name="slide-down">
+      <!-- <div class="list" v-show="isShowList" :class="{ close: isClose }">
+        <div v-for="(item, index) in listData.list" :key="index" @click="handleClick(index)">{{ item }}</div>
+      </div> -->
+      <div v-show="isShowList" class="list">
+        <div v-for="(item, index) in listData.list" :key="index" @click="handleClick(index)">{{ item }}</div>
+      </div>
+    </transition>
   </div>
 </template>
 <script lang="ts">
@@ -26,7 +31,7 @@ export default class Selects extends Vue {
     console.log(this.listData);
   }
   showList() {
-    if (this.isShowList) {
+    /* if (this.isShowList) {
       this.isClose = true;
       this.isShowR = !this.isShowR
       setTimeout(() => {
@@ -34,7 +39,7 @@ export default class Selects extends Vue {
         this.isClose = false;
       }, 500);
       return
-    }
+    } */
     this.isShowR = !this.isShowR
     this.isShowList = !this.isShowList;
   }
@@ -51,6 +56,7 @@ export default class Selects extends Vue {
   color: #fff;
   text-align: center;
   .title {
+    z-index: 1;
     position: relative;
     width: 240px;
     height: 70px;
@@ -74,10 +80,10 @@ export default class Selects extends Vue {
     position: absolute;
     width: 240px;
     background: #8ebefe;
-    z-index: 100;
-    transform-origin: top;
+    z-index: -1;
+    /* transform-origin: top;
     transform: scaleY();
-    animation: showList 0.5s;
+    animation: showList 0.5s; */
     div {
       box-sizing: border-box;
       width: 202px;
@@ -106,6 +112,20 @@ export default class Selects extends Vue {
     to {
       transform: scaleY(0);
     }
+  }
+  .slide-down-enter,
+  .slide-down-leave-to {
+    transform: translateY(-100%);
+  }
+/*   .slide-down-enter-to,
+  .slide-down-leave {
+    transform: translateY(0);
+  } */
+  .slide-down-enter-active {
+    transition: 0.35s ease-out;
+  }
+  .slide-down-leave-active {
+    transition: 0.35s ease-in;
   }
 }
 </style>

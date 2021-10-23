@@ -1,16 +1,14 @@
 <template>
   <div id="temp-arch">
     <transition :name="transitionName">
-      <!-- <keep-alive include="TempArchUpload"> -->
-        <router-view
-          :detailData="detailDataList[0]"
-          :fondsIdentifier="fondsIdentifier"
-          :dossierType="dossierType"
-          :departmentNameTree="departmentNameTree"
-          @passDetailData="passDetailData"
-          @nextDetail="nextDetail"
-        ></router-view>
-      <!-- </keep-alive> -->
+      <router-view
+        :detailData="detailDataList[0]"
+        :fondsIdentifier="fondsIdentifier"
+        :dossierType="dossierType"
+        :departmentNameTree="departmentNameTree"
+        @passDetailData="passDetailData"
+        @nextDetail="nextDetail"
+      ></router-view>
     </transition>
   </div>
 </template>

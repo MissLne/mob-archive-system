@@ -1,5 +1,5 @@
 <template>
-  <div id="des-item">
+  <div class="des-item">
     <div>
       <van-image :src="desItem.fileToken ? desItem.fileToken : url" fit="cover" class="thumbnail-img"/>
       <div class="title">
@@ -127,7 +127,7 @@ export default class DesItem extends Vue {
 }
 </script>
 <style lang="scss">
-#des-item {
+.des-item {
   .covers {
     position: fixed;
     top: 0;

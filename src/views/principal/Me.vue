@@ -45,6 +45,7 @@ import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue"
+import { downloadPic } from "@/utils/utils-file";
 
 interface dataType {
   size: number | undefined;
@@ -185,20 +186,8 @@ export default class Description extends Vue {
         this.pageData.total = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
-            (this as any).$service
-              .get(`/api/api/file/download/${item.fileToken}`, {
-                responseType: "arraybuffer",
-              })
-              .then((data: any) => {
-                item.fileToken =
-                  "data:image/png;base64," +
-                  btoa(
-                    new Uint8Array(data.data).reduce(
-                      (data, byte) => data + String.fromCharCode(byte),
-                      ""
-                    )
-                  );
-              });
+            downloadPic(item.fileToken, item.fileType)
+              .then(res => item.fileToken = res)
           }
         });
         this.desItem = result;

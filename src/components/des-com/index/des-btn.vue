@@ -11,7 +11,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Emit } from "vue-property-decorator";
 
 interface Item {
   total: number;
@@ -21,11 +21,11 @@ interface Item {
 export default class DesBtn extends Vue {
   @Prop({}) private totalPage!: Item;
   private page: number = 0;
-  prePage(): void {
-    this.$emit("changePage", { type: "prePage" });
+  @Emit('changePage') prePage() {
+    return { type: "prePage" }
   }
-  nextPage(): void {
-    this.$emit("changePage", { type: "nextPage" });
+  @Emit('changePage') nextPage() {
+    return { type: "nextPage" }
   }
 }
 </script>

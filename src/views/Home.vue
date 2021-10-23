@@ -1,8 +1,6 @@
 <template>
   <div class="home">
-    <keep-alive>
     <router-view/>
-    </keep-alive>
     <Tabbar :type="type" @changePage="changePage($event)" />
   </div>
 </template>
