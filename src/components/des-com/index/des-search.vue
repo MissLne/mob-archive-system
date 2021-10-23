@@ -31,7 +31,7 @@ export default class DesSearch extends Vue {
     return Str
 }
   onConfirm(e: any) {
-    // console.log(e);
+    console.log(e);
     let arr = this.GMTToStr(e).split("-")
     console.log(arr);
     arr[1].length < 2? arr[1] = '0' + arr[1] : arr[1]

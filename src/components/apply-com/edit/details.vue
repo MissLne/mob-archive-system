@@ -220,6 +220,7 @@ export default class Details extends Vue {
   }
   .success {
     margin: 0 43px 0 44px;
+    background: none;
     > div {
       > p:nth-of-type(1) {
         color: #666;

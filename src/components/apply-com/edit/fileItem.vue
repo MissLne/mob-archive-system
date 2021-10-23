@@ -8,12 +8,19 @@
       </div>
     </div>
     <div class="btn">
-      
+      <a
+          download="未命名"
+          :href="downloadUrl"
+          v-if="fileItem.downloaded"
+          ref="a-download"
+        ></a>
       <div @click="showDetail" ref="detail-wrapper">详细</div>
-      <div @click="download"
+       
+      <div
+        @click="download"
         :style="{ background: fileItem.downloaded ? '#85b8fd' : '#C4DEFF' }"
       >
-      <a download="未命名" :href="downloadUrl" v-if="fileItem.downloaded"></a>
+       
         下载
       </div>
     </div>
@@ -69,23 +76,6 @@ export default class FileItem extends Vue {
     for (let i = 0; i < this.detailData.length; i++) {
       this.detailData[i].content = this.fileItem[this.detailData[i].type];
     }
-    this.$service
-      .get(
-        `api/api/use/downloadMyUse/?useContentId=${this.fileItem.useContentId}`,
-        {
-          responseType: "arraybuffer",
-        }
-      )
-      .then((data: any) => {
-        this.downloadUrl =
-          "data:image/png;base64," +
-          btoa(
-            new Uint8Array(data.data).reduce(
-              (data, byte) => data + String.fromCharCode(byte),
-              ""
-            )
-          );
-      });
   }
   coverClose() {
     this.isShow = false;
@@ -107,6 +97,37 @@ export default class FileItem extends Vue {
   }
   download() {
     if (this.fileItem.downloaded) {
+      const ele = this.$refs["a-download"];
+      if (this.downloadUrl == "") {
+        MsgBox.success("获取资源中...", true);
+        this.$service
+          .get(
+            `api/api/use/downloadMyUse/?useContentId=${this.fileItem.useContentId}`,
+            {
+              responseType: "arraybuffer",
+            }
+          )
+          .then((data: any) => {
+            this.downloadUrl =
+              "data:image/png;base64," +
+              btoa(
+                new Uint8Array(data.data).reduce(
+                  (data, byte) => data + String.fromCharCode(byte),
+                  ""
+                )
+              );
+            MsgBox.changeStatus("获取资源成功");
+            setTimeout(() => {
+              (ele as HTMLElement).click();
+            })
+          })
+          .catch(() => {
+            MsgBox.changeStatus("获取资源失败",false)
+          })
+          .finally(() => {
+            MsgBox.closeBox(1000);
+          });
+      }
     } else {
       MsgBox.error("该文件不可下载");
     }
@@ -143,14 +164,14 @@ export default class FileItem extends Vue {
       color: #8ebefe;
       text-decoration: underline;
     }
-    > div:nth-of-type(2) { 
+    > div:nth-of-type(2) {
       a {
         top: 0;
         left: 0;
         display: inline-block;
         position: absolute;
         width: 78px;
-      height: 40px;
+        height: 40px;
       }
       position: relative;
       font-size: 22px;

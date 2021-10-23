@@ -1,36 +1,40 @@
 <template>
   <div id="myDes">
-    <Alerts
-      :title="'确认删除'"
-      v-if="alertShow"
-      @sureDelete="sureDelete($event)"
-    />
-    <DesHead
-      :headData="headData"
-      :popArr="popArr"
-      @handleClick="handleClick($event)"
-    />
-    <div class="slots"></div>
-    <div v-for="(item, index) in desItem" :key="index" class="box">
-      <DesItem v-if="desItem" :desItem="item"/>
-      <img
-        class="manySelect"
-        :src="checkList[index] ? seletList[1] : seletList[0]"
-        v-show="isShow"
-        @click="checkItem(index)"
-      />
-    </div>
-    <DesBtn
-      @changePage="changePage($event)"
-      :totalPage="pageData"
-      v-if="pageData.total"
-    />
-    <div class="slots2"></div>
-    <img src="@/assets/index/upload.png" class="upload" v-if="!isShow" />
-    <div class="select-btn" v-if="isShow">
-      <div @click="cancelSelect">取消</div>
-      <div @click="alertShow = true">删除</div>
-    </div>
+    <transition :name="transitionName">
+      <div>
+        <Alerts
+          :title="'确认删除'"
+          v-if="alertShow"
+          @sureDelete="sureDelete($event)"
+        />
+        <DesHead
+          :headData="headData"
+          :popArr="popArr"
+          @handleClick="handleClick($event)"
+        />
+        <div class="slots"></div>
+        <div v-for="(item, index) in desItem" :key="index" class="box">
+          <DesItem v-if="desItem" :desItem="item" />
+          <img
+            class="manySelect"
+            :src="checkList[index] ? seletList[1] : seletList[0]"
+            v-show="isShow"
+            @click="checkItem(index)"
+          />
+        </div>
+        <DesBtn
+          @changePage="changePage($event)"
+          :totalPage="pageData"
+          v-if="pageData.total"
+        />
+        <div class="slots2"></div>
+        <img src="@/assets/index/upload.png" class="upload" v-if="!isShow" />
+        <div class="select-btn" v-if="isShow">
+          <div @click="cancelSelect">取消</div>
+          <div @click="alertShow = true">删除</div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 <script lang="ts">
@@ -40,6 +44,7 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
+import { watchRouteChange } from "@/utils/utils-component";
 
 interface dataType {
   size: number | undefined;
@@ -59,6 +64,7 @@ type CheckItem = {
   },
 })
 export default class MyDes extends Vue {
+  private transitionName: string = ""; // 用于动画
   private seletList: any[] = [
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
@@ -99,11 +105,9 @@ export default class MyDes extends Vue {
   }
   handleClick(event: any) {
     if (event.clickType === "right") {
-      
-      if(this.$route.params.type === "我的档案" && event.isChoice) {
-
-        MsgBox.error("无法操作已入库档案")
-        return
+      if (this.$route.params.type === "我的档案" && event.isChoice) {
+        MsgBox.error("无法操作已入库档案");
+        return;
       }
       if (event.show) this.isShow = true;
       if (this.headData.isShow) {
@@ -217,6 +221,7 @@ export default class MyDes extends Vue {
     }
   }
   created() {
+    watchRouteChange(this);
     this.getList();
   }
 }
