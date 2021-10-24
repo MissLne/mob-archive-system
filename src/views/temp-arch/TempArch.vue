@@ -1,6 +1,6 @@
 <template>
   <div id="temp-arch">
-    <transition :name="transitionName">
+    <transition-view>
       <router-view
         :detailData="detailDataList[0]"
         :fondsIdentifier="fondsIdentifier"
@@ -9,24 +9,26 @@
         @passDetailData="passDetailData"
         @nextDetail="nextDetail"
       ></router-view>
-    </transition>
+    </transition-view>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { watchRouteChange } from '@/utils/utils-component'
+import TransitionView from '@/components/public-com/TransitionView.vue'
 
-@Component
+@Component({
+  components: {
+    TransitionView
+  }
+})
 export default class TempArch extends Vue {
   private detailDataList: Array<any> = [];
   private fondsIdentifier: any = null; // 全宗号
   private dossierType: any = null; // 类别号
   private departmentNameTree: any = null; // 部门
-  private transitionName: string = ''; // 用于动画
 
   created() {
-    watchRouteChange(this)
   }
   initSelectData() {
     this.fondsIdentifier = JSON.parse(localStorage.getItem('fondsIdentifier') as string)

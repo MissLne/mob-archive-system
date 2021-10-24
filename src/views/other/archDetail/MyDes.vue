@@ -1,40 +1,38 @@
 <template>
-  <div id="myDes">
-    <transition :name="transitionName">
-      <div>
-        <Alerts
-          :title="'确认删除'"
-          v-if="alertShow"
-          @sureDelete="sureDelete($event)"
+  <div id="my-des">
+    <div>
+      <Alerts
+        :title="'确认删除'"
+        v-if="alertShow"
+        @sureDelete="sureDelete($event)"
+      />
+      <DesHead
+        :headData="headData"
+        :popArr="popArr"
+        @handleClick="handleClick($event)"
+      />
+      <div class="slots"></div>
+      <div v-for="(item, index) in desItem" :key="index" class="box">
+        <DesItem v-if="desItem" :desItem="item" />
+        <img
+          class="manySelect"
+          :src="checkList[index] ? seletList[1] : seletList[0]"
+          v-show="isShow"
+          @click="checkItem(index)"
         />
-        <DesHead
-          :headData="headData"
-          :popArr="popArr"
-          @handleClick="handleClick($event)"
-        />
-        <div class="slots"></div>
-        <div v-for="(item, index) in desItem" :key="index" class="box">
-          <DesItem v-if="desItem" :desItem="item" />
-          <img
-            class="manySelect"
-            :src="checkList[index] ? seletList[1] : seletList[0]"
-            v-show="isShow"
-            @click="checkItem(index)"
-          />
-        </div>
-        <DesBtn
-          @changePage="changePage($event)"
-          :totalPage="pageData"
-          v-if="pageData.total"
-        />
-        <div class="slots2"></div>
-        <img src="@/assets/index/upload.png" class="upload" v-if="!isShow" />
-        <div class="select-btn" v-if="isShow">
-          <div @click="cancelSelect">取消</div>
-          <div @click="alertShow = true">删除</div>
-        </div>
       </div>
-    </transition>
+      <DesBtn
+        @changePage="changePage($event)"
+        :totalPage="pageData"
+        v-if="pageData.total"
+      />
+      <div class="slots2"></div>
+      <img src="@/assets/index/upload.png" class="upload" v-if="!isShow" />
+      <div class="select-btn" v-if="isShow">
+        <div @click="cancelSelect">取消</div>
+        <div @click="alertShow = true">删除</div>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -64,7 +62,6 @@ type CheckItem = {
   },
 })
 export default class MyDes extends Vue {
-  private transitionName: string = ""; // 用于动画
   private seletList: any[] = [
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
@@ -214,7 +211,7 @@ export default class MyDes extends Vue {
 }
 </script>
 <style lang="scss">
-#myDes {
+#my-des {
   .slots {
     height: 124px;
   }

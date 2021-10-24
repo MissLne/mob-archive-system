@@ -76,7 +76,7 @@ const routes: Array<RouteConfig> = [
         props: true
       },
       {
-        path: 'detail/meta-data/x',
+        path: 'meta-data/x/x',
         name: 'tempArchMetaData',
         component: () => import('@/views/meta-data/MetaData.vue'),
       },
@@ -94,19 +94,20 @@ const routes: Array<RouteConfig> = [
       },
       {
         meta: { keepAlive: true },
-        path: 'detail',
+        path: 'detail/x',
         name: 'archDetail',
         component: () => import('@/views/other/archDetail/ArchDetail.vue'),
       },
       {
         meta: { keepAlive: true },
-        path: 'meta-data',
+        path: 'meta-data/x/x',
         name: 'archMetaData',
         component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
   },
   {
+    meta: { keepAlive: true },
     path: '/face-recognition/x/x',
     component: () => import('@/views/face-recognition/FaceRecognition.vue'),
     children: [
@@ -141,15 +142,44 @@ const router = new VueRouter({
   }
 })
 
+function isture(to: any) {
+  return to.meta && to.meta.keepAlive;
+}
+
+function setMeta(to: any) {
+  if (!to.meta) {
+    to.meta = {}
+  }
+  else if (!to.meta.keepAlive) {
+    to.meta.keepAlive = true;
+  }
+  else
+    to.meta.keepAlive = false;
+}
+
 router.beforeEach((to, from, next) => {
+  /* // 刚进入页面的情况
+  if (!isture(from) && !isture(to)) {
+    console.log('前进')
+    setMeta(to);
+  }
+  // 前进
+  else if (isture(from) && !isture(to)) {
+    console.log('前进')
+    setMeta(to);
+  }
+  // 都是true，后退
+  else if (isture(from) && isture(to)) {
+    console.log('后退')
+    setMeta(from);
+  } */
   if ((to.meta as any).keepAlive) {
-    console.log('1 set true')
     store.commit('setDetailAlive', true)
   }
   else {
-    console.log('1 set false')
     store.commit('setDetailAlive', false)
   }
+  if (to.meta)
   if (to.name === 'login'
     || to.name?.includes('collectFiles')
     || localStorage.getItem('token')

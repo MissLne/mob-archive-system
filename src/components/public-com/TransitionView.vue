@@ -6,12 +6,24 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
+import { Route } from "vue-router";
 
 @Component
 export default class TransitionView extends Vue {
   private transitionName: string = '';
   @Watch('$route')
-  watchSlotRoute(to: any, from: any) {
+  watchSlotRoute(to: Route, from: Route) {
+    /* const father: any = this.$parent;
+    console.log(father)
+    if (!father.test) 123;
+    else if (!from.meta?.keepAlive && to.meta?.keepAlive) {  
+      console.log('后退！！');
+    }
+    else {
+      console.log('前进！！');
+    }
+    console.log(from.meta?.keepAlive, to.meta?.keepAlive) */
+    
     // 刚打开登录页面的时候，from为null，会有谜之动画
     if (from.name === null) return;
     else if (from.name === 'login') {
