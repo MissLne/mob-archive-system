@@ -2,8 +2,8 @@
   <div class="input-date-wrap">
     <Input
       v-model="inputData"
-      :disabled="true"
-      @click.native="show = true"
+      :disabled="disabled"
+      @click.native="disabled || (show = true)"
     />
      <van-calendar
       :color="'#85B8FD'"
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Model, Emit } from 'vue-property-decorator'
+import { Component, Vue, Model, Emit, Prop } from 'vue-property-decorator'
 import Input from './Input.vue'
 import { Calendar } from 'vant';
 @Component({
@@ -25,6 +25,7 @@ import { Calendar } from 'vant';
   }
 })
 export default class InputDate extends Vue {
+  @Prop({default: false}) disabled!: boolean;
   @Model('onConfirm', {type: String}) inputData!: string;
   private show: boolean = false;
   private minDate: Date = new Date('1958/01/01');

@@ -299,17 +299,6 @@ export default class CollectFilesDetail extends Vue {
                 height: 15px;
               }
             }
-            /* .item-box {
-              position: relative;
-              .face-recognition-icon {
-                z-index: 2;
-                position: absolute;
-                top: 19px;
-                right: 0;
-                width: 35px;
-                height: 35px;
-              }
-            } */
           }
         }
       }

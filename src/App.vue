@@ -18,7 +18,7 @@ import TransitionView from '@/components/public-com/TransitionView.vue'
 })
 export default class App extends Vue {
   get testAdd() {
-    return this.$store.state.isDetailAlive ? ['Arch', 'TempArch'] : [];
+    return this.$store.state.isDetailAlive ? ['Arch', 'TempArch', 'Home'] : ['Home'];
   }
 }
 </script>

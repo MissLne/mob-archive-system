@@ -7,15 +7,17 @@
     :class="{ 'show-higher': isSpread && isOverflow }"
     @click="myData && onWrapperClick($event)"
   >
-    <div v-if="!myData" class="no-data-box">暂无数据</div>
+    <div v-if="!myData" class="no-data-box disabled-color-transition" :class="{'disabled-color': disabled}">暂无数据</div>
     <div v-else class="have-data-box">
       <!-- 点击空白区域关闭的蒙版 -->
       <div class="mask" v-show="isSpread" @click.stop="isSpread = false"></div>
       <!-- 显示选择结果 -->
-      <span class="selected-result">{{selectedString === '' ? '无' : selectedString}}</span>
+      <span class="selected-result disabled-color-transition" :class="{'disabled-color': disabled}">
+        {{selectedString === '' ? '无' : selectedString}}
+      </span>
       <!-- 选择部分 -->
       <transition name="spread">
-        <div v-if="myData" v-show="isSpread" class="select-inner">
+        <div v-if="myData" v-show="!disabled && isSpread" class="select-inner">
           <!-- 动画是通过max-height实现，如果最外层Select没有一直显示的话，动画会直接结束！因此isSpread=true -->
           <SelectInner
             :myData="myData"
@@ -42,6 +44,7 @@ import SelectInner from './SelectInner.vue';
 })
 export default class Select extends Vue {
   @Model('catchBubble') selectedString!: string;
+  @Prop({default: false}) disabled!: boolean;
   @Prop() myData!: Array<any> | null;
   @Prop() optionVariableName!: string;
   @Prop() optionVariableKey!: string;
@@ -125,6 +128,15 @@ export default class Select extends Vue {
       }
     }
   }
+  // 禁用文本的颜色
+  .disabled-color {
+    color: #bbb !important;
+  }
+  // 禁用文本变色过渡效果
+  .disabled-color-transition {
+    transition: color 0.35s ease-out;
+  }
+  // 动画
   .show-higher {
     top: calc(-250rem / 32);
   }

@@ -118,10 +118,10 @@ export default class Selects extends Vue {
     transform: translateY(-100%);
   }
   .slide-down-enter-active {
-    transition: 0.35s ease-out;
+    transition: 0.3s ease-out;
   }
   .slide-down-leave-active {
-    transition: 0.35s ease-in;
+    transition: 0.3s ease-in;
   }
 }
 </style>

@@ -1,14 +1,19 @@
 .btns-move-enter,
 .btns-move-leave-to {
   transform: translateY(150px);
+  opacity: 0.2;
 }
 .btns-move-enter-active {
-  transition: transform 0.35s ease-out;
+  transition: 
+    transform 0.35s ease-out,
+    opacity 0.35s ease-out;
 }
 .btns-move-leave-active {
-  transition: transform 0.25s ease-in;
+  transition:
+    transform 0.25s ease-in,
+    opacity 0.25s ease-in,
 }
-.btns-move-enter-to,
+/* .btns-move-enter-to,
 .btns-move-left {
   transform: translateY(0px);
-}
+} */

@@ -73,12 +73,6 @@ const routes: Array<RouteConfig> = [
         path: 'detail/x',
         name: 'tempArchDetail',
         component: () => import('@/views/temp-arch/TempArchDetail.vue'),
-        props: true
-      },
-      {
-        path: 'meta-data/x/x',
-        name: 'tempArchMetaData',
-        component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
   },
@@ -97,12 +91,6 @@ const routes: Array<RouteConfig> = [
         path: 'detail/x',
         name: 'archDetail',
         component: () => import('@/views/other/archDetail/ArchDetail.vue'),
-      },
-      {
-        meta: { keepAlive: true },
-        path: 'meta-data/x/x',
-        name: 'archMetaData',
-        component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
   },
@@ -124,6 +112,13 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/face-recognition/FaceDetail.vue'),
       }
     ]
+  },
+  {
+    meta: { keepAlive: true },
+    path: '/meta-data/x/x/x',
+    name: 'metaData',
+    component: () => import('@/views/meta-data/MetaData.vue'),
+    props: true,
   },
   {
     path: '/recycle-bin/x',

@@ -269,6 +269,9 @@ export default class Apply extends Vue {
   created() {
     this.getList();
   }
+  deactivated() {
+    this.sideBarShow = false;
+  }
 }
 </script>
 <style lang="scss">

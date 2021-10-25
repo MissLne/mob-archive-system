@@ -1,12 +1,14 @@
 <template>
   <div class="home">
-    <router-view/>
+    <keep-alive>
+      <router-view/>
+    </keep-alive>
     <Tabbar :type="type" @changePage="changePage($event)" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import Tabbar from "@/components/tools/tabbar.vue";
 
 @Component({

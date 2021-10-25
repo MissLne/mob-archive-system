@@ -24,7 +24,7 @@
         class="go-meta-box"
       >
         <router-link
-          :to="{ name: 'archMetaData' }"
+          :to="{ name: 'metaData', params: { status } }"
           class="go-meta"
         >查看元数据>></router-link>
       </div>
@@ -326,10 +326,8 @@ export default class ArchDetail extends Vue {
 
 <style lang="scss">
   #arch-detail {
-    overflow: hidden;
     width: 700px;
     height: 1335px;
-    // margin: auto;
     padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;

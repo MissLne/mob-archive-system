@@ -296,6 +296,9 @@ export default class Description extends Vue {
     //   });
     this.getList();
   }
+  deactivated() {
+    this.sideBarShow = false;
+  }
 }
 </script>
 <style lang="scss">
