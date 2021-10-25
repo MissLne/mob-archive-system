@@ -20,7 +20,10 @@
         :fileId="detailData.fileId"
       />
         
-      <div class="go-meta-box">
+      <div
+        v-if="haveMetaData"
+        class="go-meta-box"
+      >
         <router-link
           :to="{ name: 'metaData' }"
           class="go-meta"
@@ -80,6 +83,12 @@ export default class TempArchDetail extends Vue {
     rightUrl: "",
     rightText: "",
     isShow: false,
+  }
+
+  // 是否存在元数据
+  get haveMetaData() {
+    const type = this.detailData?.fileType.split('/')[0];
+    return type === 'image' || type === 'audio' || type === 'video';
   }
 
   get isComplete() {
