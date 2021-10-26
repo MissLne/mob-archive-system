@@ -4,38 +4,25 @@
       <img src="@/assets/login/logo.png" class="logo">
       <h3 class="title">仓颉智慧多媒体档案系统</h3>
       <h3 class="title">Cangjie - Smart Multimedia File System</h3>
-      <div class="input-wrap">
-        <input
-          class="username input"
-          :class="{ active: states['un'].isActive, wrong: states['un'].isWrong }"
-          type="text"
-          @focus="onFocus($event, 'un')"
-          @blur="onBlur($event, 'un')"
-          v-model="states['un'].value"
-        >
-        <div
-          class="wrong-box"
-          :class="{ 'wrong-box-hidden': !states['un'].isWrong }"
-        >
-          {{states['un'].msg}}
-        </div>
-      </div>
-      <div class="input-wrap">
-        <input
-          class="password input"
-          :class="{ active: states['pw'].isActive, wrong: states['pw'].isWrong }"
-          :type="states['pw'].isEmpty ? 'text' : 'password'"
-          @focus="onFocus($event, 'pw')"
-          @blur="onBlur($event, 'pw')"
-          v-model="states['pw'].value"
-        >
-        <div
-          class="wrong-box"
-          :class="{ 'wrong-box-hidden': !states['pw'].isWrong }"
-        >
-          {{states['pw'].msg}}
-        </div>
-      </div>
+      <Input
+        ref="account"
+        v-model="formData.account"
+        :required="true"
+        :holder="formMsg.account"
+        :msg="formMsg.account"
+        class="login-input"
+        @focus="setAccountMsg"
+      />
+      <Input
+        ref="password"
+        v-model="formData.password"
+        :type="'password'"
+        :required="true"
+        :holder="formMsg.password"
+        :msg="formMsg.password"
+        class="login-input"
+        @focus="setPasswordMsg"
+      />
       <router-link to="/collect-files" class="collect-files-link">校史征集>></router-link>
       <img
         class="login-btn"
@@ -47,36 +34,28 @@
 </template>
 
 <script lang="ts">
-import DesHead from '@/components/des-com/index/des-head.vue';
-import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { Component, Vue } from 'vue-property-decorator';
+import Input from '@/components/public-com/Input/Input.vue'
+import MsgBox from '@/components/public-com/MsgBox/Msg';
 
-class State {
-  constructor(holder: string) {
-    this.holder = holder;
-    this.value = holder;
-    this.msg = holder;
+@Component({
+  components: {
+    Input
   }
-  readonly holder: string;
-  value: string;
-  msg: string;
-  isActive: boolean = false;
-  isWrong: boolean = false;
-  get isEmpty() {
-    return this.value === this.holder || this.value === '';
-  }
-}
-
-@Component
+})
 export default class Login extends Vue {
   // 输入框的状态类
-  private states: {[key: string]: State} = {
-    un: new State('请输入用户名'), 
-    pw: new State('请输入密码'),
+  private formData = {
+    account: '',
+    password: ''
+  }
+  private formMsg = {
+    account: '请输入用户名',
+    password: '请输入密码',
   }
   // 是否输入完成
   private get complete(): boolean {
-    return !this.states.un.isEmpty && !this.states.pw.isEmpty;
+    return this.formData.account !== ''  && this.formData.password !== '';
   }
   // 按照用户进入页面时的窗口高度，设置页面高度，防止滑动时
   private initInnerHeight: number = 1334;
@@ -85,46 +64,38 @@ export default class Login extends Vue {
     this.initInnerHeight = window.innerHeight || 1334;
     // console.log(this.$el);
   }
-  // 输入栏聚焦
-  private onFocus({target}: {target: HTMLInputElement}, which: string) {
-    let state = this.states[which];
-    state.isActive = true, state.isWrong = false, state.msg = state.holder;
-    if (state.isEmpty) state.value = '';
-
-  }
-  // 输入栏失焦
-  private onBlur({target}: {target: HTMLInputElement}, which: string) {
-    let state = this.states[which];
-    state.isActive = false;
-    if (state.isEmpty) state.isWrong = true;
-  }
 
   // 登录按钮
   private onClick(): void {
     localStorage.removeItem('token')
     if (!this.complete) return;
-    (this as any).$service.post('/api/api/user/login', {
-        account: this.states.un.value,
-        password: this.states.pw.value,
-      },
-    ).then((res: any) => {
-      console.log(res)
-      res = res.data;
-      if (res.success) {
-        this.initLocalStorage(res.data);
-        this.$router.replace({name: 'Home'})
-        setTimeout(() => {
-          MsgBox.success('登录成功')
-        }, 450)
-      }
-      else {
-        const msg = (res.message as string).split('，')[1];
-        const index = msg[0] === '账' ? 'pw' : 'un';
-        this.states[index].value = '';
-        this.states[index].isWrong = true;
-        this.states[index].msg = msg;
-      }
-    })
+    (this as any).$service.post('/api/api/user/login', this.formData)
+      .then((res: any) => {
+        console.log(res)
+        res = res.data;
+        if (res.success) {
+          this.initLocalStorage(res.data);
+          this.$router.replace({name: 'Home'})
+          setTimeout(() => {
+            MsgBox.success('登录成功')
+          }, 450)
+        }
+        else {
+          const msg = (res.message as string).split('，')[1];
+          // 账号错误还是
+          const index = msg[0] === '账' ? 'password' : 'account';
+          this.formData[index] = '';
+          (this.$refs[index] as Input).isWrong = true;
+          this.formMsg[index] = msg;
+        }
+      })
+  }
+  // 设置信息
+  setAccountMsg() {
+    this.formMsg.account = '请输入用户名'
+  }
+  setPasswordMsg() {
+    this.formMsg.password = '请输入密码'
   }
   private initLocalStorage(res: any) {
     console.log('登录咯', res)
@@ -206,52 +177,26 @@ export default class Login extends Vue {
           font-size: 24px;
         }
       }
-      .input-wrap {
-        z-index: 1; //为了防止错误提示文本被背景淹没
-        position: relative;
+      // 登录框
+      .login-input {
+        display: flex;
+        justify-content: center;
+        width: 379px;
         font-size: 24px;
-        .input {
-          width: 379px;
-          border: none;
-          border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-          background-color: transparent;
+        /deep/ input {
           color: #999;
-          text-align: center;
-          transition: border-color 0.15s ease-in, color 0.25s ease-in;
-          &.username {
-            margin-bottom: 95px;
-          }
-          &.password {
-            margin-bottom: 31px;
-          }
+          text-align: center;  
         }
-        .active {
-          border-color: rgba(0, 79, 255, 0.2);
+        /deep/ input[class~="active"] {
           color: rgba(0, 79, 255, 0.5);
-          transition-timing-function: ease-out;
         }
-        .wrong {
-          border-color: rgba(255, 0, 0, 0.2);
-          transition-timing-function: ease-out;
-        }
-        .wrong-box {
-          z-index: -1;
-          position: absolute;
-          top: 5px;
-          left: 50%;
-          color: rgba(255, 0, 0, 0.5);
-          transform: translateX(-50%);
-          transition: opacity 0.35s ease-out;
-        }
-        .wrong-box-hidden {
-          opacity: 0;
-          transition: none;
+        /deep/ .holder-box {
+          color: #999;
         }
       }
       .collect-files-link {
         align-self: flex-end;
-        margin-bottom: 60px;
-        margin-right: 119px;
+        margin: 31px 119px 60px 0;
         color: #8EBEFE;
         font-size: 20px;
       }

@@ -11,7 +11,6 @@
       @blur="onBlur"
     >
     <div
-      v-if="type === 'text'"
       class="holder-box"
       :class="{ 'holder-box-hidden': !isEmpty || isActive || showOnce }"
     >{{holder}}</div>
@@ -42,9 +41,9 @@ export default class Input extends Vue {
   @Prop({default: ''}) msg!: string;
   @Model('change', {type: String}) outerValue!: string;
 
-  isActive: boolean = false;
-  isWrong: boolean = false;
-  showOnce: boolean = false;
+  public isActive: boolean = false;
+  public isWrong: boolean = false;
+  public showOnce: boolean = false;
 
   get inputListeners() {
     const vm = this;
@@ -73,6 +72,10 @@ export default class Input extends Vue {
     this.isActive = false;
     if (this.isEmpty) this.isWrong = true;
   }
+  // 父元素的聚焦监听器
+  get parentFocus() {
+    return Object.assign(this.onFocus, this.$listeners)
+  }
 }
 </script>
 
@@ -98,21 +101,21 @@ export default class Input extends Vue {
       background-color: transparent;
       color: $holder-color;
       line-height: $height;
-      transition: border-color 0.15s ease-in, color 0.25s ease-in;
+      transition:
+        border-color 0.15s ease-in, color 0.25s ease-in,
+        color 0.35s ease-out;
+        // color用于disabled的变色
       &.username {
         margin-bottom: 95px;
       }
       &.password {
         margin-bottom: 31px;
       }
-    }
-    // 禁用的时候，改颜色！
-    .input {
-      transition: color 0.35s ease-out;
-    }
-    .input:disabled,
-    .input:disabled + div {
-      color: #bbb;
+      // 禁用的时候，改颜色！
+      &:disabled,
+      &:disabled + div {
+        color: #bbb;
+      }
     }
     .active {
       border-color: rgba(0, 79, 255, 0.2);
