@@ -184,7 +184,6 @@ export default class ArchDetail extends Vue {
     isShow: false,
   }
   private created() {
-    console.log(this.$parent)
     // 获取详细数据
     this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
       .then(({data: res}: {data: any}) => {

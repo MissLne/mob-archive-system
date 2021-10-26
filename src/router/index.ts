@@ -153,28 +153,14 @@ function setMeta(to: any) {
 }
 
 router.beforeEach((to, from, next) => {
-  /* // 刚进入页面的情况
-  if (!isture(from) && !isture(to)) {
-    console.log('前进')
-    setMeta(to);
-  }
-  // 前进
-  else if (isture(from) && !isture(to)) {
-    console.log('前进')
-    setMeta(to);
-  }
-  // 都是true，后退
-  else if (isture(from) && isture(to)) {
-    console.log('后退')
-    setMeta(from);
-  } */
   if ((to.meta as any).keepAlive) {
+    console.log('set true')
     store.commit('setDetailAlive', true)
   }
   else {
+    console.log('set false')
     store.commit('setDetailAlive', false)
   }
-  if (to.meta)
   if (to.name === 'login'
     || to.name?.includes('collectFiles')
     || localStorage.getItem('token')
@@ -182,13 +168,6 @@ router.beforeEach((to, from, next) => {
     next();
   else
     next({name: 'login'})
-})
-
-router.afterEach((to, from) => {
-  // window.history.pushState({vue123: '321euv'}, '')
-  /* console.log('length', window.history.length)
-  console.log('state', window.history.state) */
-  
 })
 
 export default router

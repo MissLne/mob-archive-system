@@ -15,6 +15,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import TransitionView from '@/components/public-com/TransitionView.vue'
 
 @Component({
+  name: 'Arch',
   components: {
     TransitionView
   }
