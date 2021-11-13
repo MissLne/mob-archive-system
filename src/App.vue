@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <!-- <span>{{$store.state.isDetailAlive + '' + temp}}</span> -->
     <transition-view>
       <div>
         <keep-alive>
@@ -21,14 +20,8 @@ import TransitionView from '@/components/public-com/TransitionView.vue'
   }
 })
 export default class App extends Vue {
-  /* @Watch('$store.state.isDetailAlive')
-  test() {
-    this.temp =  this.$store.state.isDetailAlive ? ['Arch', 'TempArch'] : [];
-  } */
-  get test() {
-    let temp =  this.$store.state.isDetailAlive ? ['Arch', 'TempArch'] : [];
-    console.log(2, temp)
-    return temp;
+  get testAdd() {
+    return this.$store.state.isDetailAlive ? ['Arch', 'TempArch', 'Home'] : ['Home'];
   }
 }
 </script>

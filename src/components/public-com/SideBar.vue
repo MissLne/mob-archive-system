@@ -1,13 +1,15 @@
 <template>
-  <div id="side-bar" :style="{transform: sideBarShow? 'translateX(0)' : 'translateX(-100%)'}">
-    <div class="side-bar-top">
-      <!-- <div>临时档案</div> -->
-      <router-link :to="{ name: 'tempArchUpload' }" tag="div">临时档案</router-link>
-      <!-- <div>回收站</div> -->
-      <router-link :to="{ name: 'recycleBin' }" tag="div">回收站</router-link>
+  <transition name="slide">
+    <div v-show="sideBarShow" id="side-bar">
+      <div class="side-bar-top">
+        <!-- <div>临时档案</div> -->
+        <router-link :to="{ name: 'tempArchUpload' }" tag="div">临时档案</router-link>
+        <!-- <div>回收站</div> -->
+        <router-link :to="{ name: 'recycleBin' }" tag="div">回收站</router-link>
+      </div>
+      <div class="side-bar-foot" @click="logout">退出登录</div>
     </div>
-    <div class="side-bar-foot" @click="logout">退出登录</div>
-  </div>
+  </transition>
 </template>
 
 <script lang="ts">
@@ -19,7 +21,7 @@ export default class SideBar extends Vue {
   @Prop({}) private sideBarShow!: boolean
   logout() {
     localStorage.clear();
-    this.$router.go(-1);
+    this.$router.replace({name: 'login'});
     setTimeout(() => {
       MsgBox.success('退出登录成功');
     }, 450)
@@ -27,7 +29,7 @@ export default class SideBar extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #side-bar {
   display: flex;
   justify-content: space-between;
@@ -38,11 +40,9 @@ export default class SideBar extends Vue {
   bottom: 0;
   left: 0;
   width: 522px;
-  height: calc(100vh - 124px);
+  min-height: calc(100% - 124px);
   background: #fff;
   box-shadow: 4px 3px 7px 0px rgba(76, 108, 174, 0.15);
-  transition: .6s;
-  transform-origin: left;
   .side-bar-top {
     div {
       width: 452px;
@@ -65,5 +65,17 @@ export default class SideBar extends Vue {
     color: #8ebefe;
     border-top: 1px solid rgba(4, 0, 0, 0.1);
   }
+  
+}
+// 动画
+.slide-enter,
+.slide-leave-to {
+  transform: translateX(-100%);
+}
+.slide-enter-active {
+  transition: all 0.45s ease-out;
+}
+.slide-leave-active {
+  transition: all 0.35s ease-in;
 }
 </style>

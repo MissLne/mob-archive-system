@@ -38,7 +38,7 @@
     />
     <div class="slots2"></div>
     <img
-      v-if="!isShow && !sideBarShow"
+      v-show="!isShow && !sideBarShow"
       src="@/assets/index/upload.png"
       class="upload"
       @click="$router.push({ name: 'tempArchUpload' })"
@@ -259,6 +259,8 @@ export default class Description extends Vue {
             downloadPic(item.fileToken, item.fileType).then(
               (res) => (item.fileToken = res)
             );
+            downloadPic(item.fileToken, item.fileType)
+              .then((res: any) => item.fileToken = res)
           }
         });
         this.desItem = result;
@@ -360,12 +362,8 @@ export default class Description extends Vue {
     // }
     this.getList();
   }
-  scrollTop: number = 0;
-  activated() {
-    console.log("activated");
-  }
   deactivated() {
-    console.log("deactivated", window.scrollX);
+    this.sideBarShow = false;
   }
 }
 </script>

@@ -77,12 +77,6 @@ const routes: Array<RouteConfig> = [
         path: 'detail/x',
         name: 'tempArchDetail',
         component: () => import('@/views/temp-arch/TempArchDetail.vue'),
-        props: true
-      },
-      {
-        path: 'detail/meta-data/x',
-        name: 'tempArchMetaData',
-        component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
   },
@@ -98,19 +92,14 @@ const routes: Array<RouteConfig> = [
       },
       {
         meta: { keepAlive: true },
-        path: 'detail',
+        path: 'detail/x',
         name: 'archDetail',
         component: () => import('@/views/other/archDetail/ArchDetail.vue'),
-      },
-      {
-        meta: { keepAlive: true },
-        path: 'meta-data',
-        name: 'archMetaData',
-        component: () => import('@/views/meta-data/MetaData.vue'),
       },
     ]
   },
   {
+    meta: { keepAlive: true },
     path: '/face-recognition/x/x',
     component: () => import('@/views/face-recognition/FaceRecognition.vue'),
     children: [
@@ -129,6 +118,13 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
+    meta: { keepAlive: true },
+    path: '/meta-data/x/x/x',
+    name: 'metaData',
+    component: () => import('@/views/meta-data/MetaData.vue'),
+    props: true,
+  },
+  {
     path: '/recycle-bin/x',
     name: 'recycleBin',
     component: () => import('@/views/recycle-bin/RecycleBin.vue'),
@@ -145,13 +141,28 @@ const router = new VueRouter({
   }
 })
 
+function isture(to: any) {
+  return to.meta && to.meta.keepAlive;
+}
+
+function setMeta(to: any) {
+  if (!to.meta) {
+    to.meta = {}
+  }
+  else if (!to.meta.keepAlive) {
+    to.meta.keepAlive = true;
+  }
+  else
+    to.meta.keepAlive = false;
+}
+
 router.beforeEach((to, from, next) => {
   if ((to.meta as any).keepAlive) {
-    console.log('1 set true')
+    console.log('set true')
     store.commit('setDetailAlive', true)
   }
   else {
-    console.log('1 set false')
+    console.log('set false')
     store.commit('setDetailAlive', false)
   }
   if (to.name === 'login'
@@ -161,13 +172,6 @@ router.beforeEach((to, from, next) => {
     next();
   else
     next({name: 'login'})
-})
-
-router.afterEach((to, from) => {
-  // window.history.pushState({vue123: '321euv'}, '')
-  /* console.log('length', window.history.length)
-  console.log('state', window.history.state) */
-  
 })
 
 export default router

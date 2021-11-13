@@ -24,8 +24,6 @@ import TransitionView from '@/components/public-com/TransitionView.vue'
   }
 })
 export default class CollectFiles extends Vue {
-  private transitionName: string = ''; // 用于动画
-
   private detailDataList: Array<any> = [];
   private collectFilesType: any = null;
   private departmentNameTree: any = null;

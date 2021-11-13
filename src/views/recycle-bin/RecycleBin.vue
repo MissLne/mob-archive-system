@@ -3,7 +3,12 @@
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div>
     <!-- 头部的下拉菜单 -->
-    <Selects ref="headerSelects" :listData="listData" class="header-selects" @handleClickS="selectsClick"/>
+    <Selects
+      ref="headerSelects"
+      :listData="listData"
+      class="header-selects"
+      @handleClickS="selectsClick"
+    />
     <!-- 文件列表 -->
     <ul class="item-list">
       <li
@@ -67,11 +72,11 @@ export default class RecycleBin extends Vue {
   private headData: any = {
     title: '回收站',
     leftPic: true,
-    leftUrl: "1",
+    leftUrl: 1,
     leftText: "",
     rightPic: true,
     rightUrl: 2,
-    rightText: "",
+    rightText: '全选',
     isShow: false,
   }
   private readonly listData: any = {
@@ -81,18 +86,42 @@ export default class RecycleBin extends Vue {
   private records: Array<any> = [];
   private pages: number = 0;
   private currentPage: number = 1;
-  private isChecking: boolean = false;
   private checkList: Array<boolean> = [];
+  private isChecking_: boolean = false;
+  get isChecking(): boolean  {
+    return this.isChecking_;
+  }
+  set isChecking(newValue: boolean) {
+    console.log('set!')
+    // 如果要变为选择
+    if (newValue) {
+      this.isChecking_ = true;
+      this.headData.rightPic = false;
+    }
+    else {
+      this.isChecking_ = false;
+      this.headData.rightPic = true;
+    }
+  }
   get checkIds() {
     // 这样写好像高级一点，不过性能好像比较差，需要遍历两遍
     /* return this.records.map(value => value.id)
       .filter((value, index) => this.checkList[index]); */
-    
     const temp = [];
     for(const key in this.records)
       if (this.checkList[key]) temp.push(this.records[key].id)
     return temp;
   }
+  // 点击全选时执行的函数
+  checkAll() {
+    if (this.checkList.includes(false))
+      this.checkList.forEach((value, index) =>
+        this.$set(this.checkList, index, true))
+    else
+      this.checkList.forEach((value, index) =>
+        this.$set(this.checkList, index, false))
+  }
+  
   created() {
     this.getPageData(this.currentPage)     
   }
@@ -121,6 +150,7 @@ export default class RecycleBin extends Vue {
       Msg.error('加载失败')
     }
   }
+  // 点击翻页按钮时执行的函数
   goPage({type}: {type: string}) {
     let newPages;
     if (type === 'prePage')
@@ -176,7 +206,10 @@ export default class RecycleBin extends Vue {
         this.$router.go(-1)
     }
     else {
-      if (this.headData.rightUrl === 2) {
+      if (this.isChecking) {
+        this.checkAll();
+      }
+      else if (this.headData.rightUrl === 2) {
         this.headData.rightUrl = 4;
         (this.$refs['headerSelects'] as Selects).isShowList = true;
       }
@@ -188,8 +221,10 @@ export default class RecycleBin extends Vue {
   }
   private selectsClick({num: index}: {num: number}) {
     this.headData.rightUrl = 2;
-    if (index === 1) this.isChecking = !this.isChecking;
-    else this.checkOperation('清空回收站', 'emptyRecycleBin', true, '确认清空回收站？该操作不可逆')
+    if (index === 1)
+      this.isChecking = !this.isChecking;
+    else 
+      this.checkOperation('清空回收站', 'emptyRecycleBin', true, '确认清空回收站？该操作不可逆')
   }
 }
 </script>

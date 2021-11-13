@@ -20,9 +20,12 @@
         :fileId="detailData.fileId"
       />
         
-      <div class="go-meta-box">
+      <div
+        v-if="haveMetaData"
+        class="go-meta-box"
+      >
         <router-link
-          :to="{ name: 'tempArchMetaData', params: { fileType: detailData.fileType.split('/')[0] }}"
+          :to="{ name: 'metaData' }"
           class="go-meta"
         >查看元数据>></router-link>
       </div>
@@ -80,6 +83,12 @@ export default class TempArchDetail extends Vue {
     rightUrl: "",
     rightText: "",
     isShow: false,
+  }
+
+  // 是否存在元数据
+  get haveMetaData() {
+    const type = this.detailData?.fileType.split('/')[0];
+    return type === 'image' || type === 'audio' || type === 'video';
   }
 
   get isComplete() {
@@ -240,10 +249,8 @@ export default class TempArchDetail extends Vue {
 
 <style lang="scss">
   #temp-arch-detail {
-    overflow: hidden;
     width: 700px;
     height: 1335px;
-    // margin: auto;
     padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;

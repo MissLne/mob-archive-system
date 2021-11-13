@@ -24,7 +24,7 @@
         class="go-meta-box"
       >
         <router-link
-          :to="{ name: 'archMetaData' }"
+          :to="{ name: 'metaData', params: { status } }"
           class="go-meta"
         >查看元数据>></router-link>
       </div>
@@ -184,7 +184,6 @@ export default class ArchDetail extends Vue {
     isShow: false,
   }
   private created() {
-    console.log(this.$parent)
     // 获取详细数据
     this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
       .then(({data: res}: {data: any}) => {
@@ -312,6 +311,10 @@ export default class ArchDetail extends Vue {
     if (clickType === 'left') {
       this.$store.commit("setDetailPage")
       this.$router.go(-1)
+      if (this.isEditing)
+        this.isEditing = false;
+      else
+        this.$router.go(-1)
     }
   }
 
@@ -324,10 +327,8 @@ export default class ArchDetail extends Vue {
 
 <style lang="scss">
   #arch-detail {
-    overflow: hidden;
     width: 700px;
     height: 1335px;
-    // margin: auto;
     padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;

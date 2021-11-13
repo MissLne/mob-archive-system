@@ -30,6 +30,8 @@ export default class PreviewBox extends Vue {
       ImagePreview([this.clearPicSrc]);
     }
     else
+      // 先亮出来，免得用户觉得没反应
+      ImagePreview([])
       downloadPic(this.fileToken, this.fileType)
         .then((picSrc: any) => {
           this.clearPicSrc = picSrc;

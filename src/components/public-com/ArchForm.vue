@@ -9,21 +9,28 @@
           <!-- {{item.value}}{{typeof item.value}} -->
         </span>
         <!-- 人脸识别图标，为了选择器能选到input才写到上面 -->
-        <FaceRecognitionIcon
-          v-if="canRecognize && item.title === '人物'"
-          class="face-icon"
-          :fileId="fileId"
-          @passFaceDataName="setFaceDataName"
-        />
+        <transition name="van-fade">
+          <FaceRecognitionIcon
+            v-if="!disabled && canRecognize && item.title === '人物'"
+            class="face-icon"
+            :fileId="fileId"
+            @passFaceDataName="setFaceDataName"
+          />
+        </transition>
         <!-- 文本输入 -->
         <Input
           v-if="item.type === 'text'"
           v-model="item.value"
           :required="item.required"
           :msg="item.msg"
+          :disabled="disabled"
         />
         <!-- 日期输入 -->
-        <InputDate v-else-if="item.type === 'date'" v-model="item.value" />
+        <InputDate
+          v-else-if="item.type === 'date'"
+          v-model="item.value"
+          :disabled="disabled"
+        />
         <!-- 下拉选择 -->
         <div v-else-if="item.type === 'select'" class="item-input">
           <img
@@ -37,6 +44,7 @@
             :myData="fondsIdentifier"
             :optionVariableName="'fondsName'"
             :optionVariableKey="'id'"
+            :disabled="disabled"
           />
           <Select
             v-else-if="item.title === '类别号'"
@@ -44,6 +52,7 @@
             :myData="dossierType"
             :optionVariableName="'typeName'"
             :optionVariableKey="'id'"
+            :disabled="disabled"
           />
           <Select
             v-else-if="item.title === '部门'"
@@ -51,6 +60,7 @@
             :myData="departmentNameTree"
             :optionVariableName="'departmentName'"
             :optionVariableKey="'id'"
+            :disabled="disabled"
           />
           <Select
             v-else
@@ -58,6 +68,7 @@
             :myData="confidentialLevelArray"
             :optionVariableName="'name'"
             :optionVariableKey="'id'"
+            :disabled="disabled"
           />
         </div>
         <!-- 多选框 -->
@@ -73,15 +84,16 @@
               type="radio"
               name="period"
               :value="labelIndex + 1"
+              :disabled="disabled"
             />
             <i class="check-circle">✓</i>
-            <span>{{ labelItem }}</span>
+            <span class="disabled-color-transition" :class="{'disabled-color': disabled}">{{ labelItem }}</span>
           </label>
         </div>
         <!-- 防止输入的遮罩层，写到下面才能挡住 -->
-        <transition name="van-fade">
+        <!-- <transition name="van-fade">
           <div class="disabled-mask" v-show="disabled"></div>
-        </transition>
+        </transition> -->
       </li>
     </ul>
   </div>
@@ -208,26 +220,15 @@ export default class ArchForm extends Vue {
           padding-right: 45px;
         }
       }
-      .disabled-mask {
-        z-index: 2;
-        position: absolute;
-        right: 0;
-        width: 430px;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.4);
-      }
-      /* .item-box {
-        position: relative;
-        .face-recognition-icon {
-          z-index: 2;
-          position: absolute;
-          top: 19px;
-          right: 0;
-          width: 35px;
-          height: 35px;
-        }
-      } */
     }
   }
+}
+// 禁用文本的颜色
+.disabled-color {
+  color: #bbb !important;
+}
+// 禁用文本变色过渡效果
+.disabled-color-transition {
+  transition: color 0.35s ease-out;
 }
 </style>

@@ -13,13 +13,18 @@
         :key="childArr.id"
         class="child-arr-box"
       >
+      <!-- 没有孩子，自己就是一个输入框 -->
         <div
           v-if="!childArr.child.length"
           class="item-box"
         >
           <h4 class="item-title">{{childArr.metadataName}}</h4>
-          <Input v-model="childArr.metadataValue"/>
+          <Input
+            v-model="childArr.metadataValue"
+            :disabled="!canSubmit"
+          />
         </div>
+      <!-- 有孩子，孩子才是输入框 -->
         <ul v-else>
           <li
             v-for="item in childArr.child"
@@ -27,14 +32,22 @@
             class="item-box"
           >
             <h4 class="item-title">{{item.metadataName}}</h4>
-            <InputDate v-if="item.metadataName.slice(-2) === '时间'" v-model="item.metadataValue"/>
-            <Input v-else v-model="item.metadataValue"/>
+            <InputDate
+              v-if="item.metadataName.slice(-2) === '时间'"
+              v-model="item.metadataValue"
+              :disabled="!canSubmit"
+            />
+            <Input
+              v-else
+              v-model="item.metadataValue"
+              :disabled="!canSubmit"
+            />
           </li>
         </ul>
       </div>
     </section>
 
-    <section class="child-arr-box">
+    <section v-if="canSubmit" class="child-arr-box">
       <SingleBtn
         :name="'提交'"
         @click="saveMetaData"
@@ -68,7 +81,6 @@ interface MetaDataStruct {
   }
 })
 export default class MetaData extends Vue {
-  fileType: string = '';
   metaDataTree: {[key: string]: any} = {} as MetaDataStruct;
   get shownTree() {
     const obj: {[key: string]: any} = {};
@@ -77,6 +89,10 @@ export default class MetaData extends Vue {
         obj[key] = this.metaDataTree[key]
     }
     return obj;
+  }
+  get canSubmit() {
+    console.log(this.$route.params.status)
+    return !this.$route.params.status || this.$route.params.status != '4';
   }
 
   created() {

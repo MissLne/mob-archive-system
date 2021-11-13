@@ -11,7 +11,6 @@
       @blur="onBlur"
     >
     <div
-      v-if="type === 'text'"
       class="holder-box"
       :class="{ 'holder-box-hidden': !isEmpty || isActive || showOnce }"
     >{{holder}}</div>
@@ -20,6 +19,9 @@
       class="wrong-box"
       :class="{ 'wrong-box-hidden': !isWrong }"
     >{{msg}}</div>
+    <!-- <transition name="van-fade">
+      <div v-show="disabled" class="disabled-mask"></div>
+    </transition> -->
   </div>
 </template>
 
@@ -29,15 +31,19 @@ import { Component, Vue, Prop, Model } from 'vue-property-decorator'
 @Component
 export default class Input extends Vue {
   @Prop({default: 'text'}) type!: string;
+  // 是否禁用
   @Prop({default: false}) disabled!: boolean;
+  // 是否必选
   @Prop({default: false}) required!: boolean;
+  // placeholder
   @Prop({default: '无'}) holder!: string;
+  // 必选消息为空时的消息
   @Prop({default: ''}) msg!: string;
   @Model('change', {type: String}) outerValue!: string;
 
-  isActive: boolean = false;
-  isWrong: boolean = false;
-  showOnce: boolean = false;
+  public isActive: boolean = false;
+  public isWrong: boolean = false;
+  public showOnce: boolean = false;
 
   get inputListeners() {
     const vm = this;
@@ -66,6 +72,10 @@ export default class Input extends Vue {
     this.isActive = false;
     if (this.isEmpty) this.isWrong = true;
   }
+  // 父元素的聚焦监听器
+  get parentFocus() {
+    return Object.assign(this.onFocus, this.$listeners)
+  }
 }
 </script>
 
@@ -91,12 +101,20 @@ export default class Input extends Vue {
       background-color: transparent;
       color: $holder-color;
       line-height: $height;
-      transition: border-color 0.15s ease-in, color 0.25s ease-in;
+      transition:
+        border-color 0.15s ease-in, color 0.25s ease-in,
+        color 0.35s ease-out;
+        // color用于disabled的变色
       &.username {
         margin-bottom: 95px;
       }
       &.password {
         margin-bottom: 31px;
+      }
+      // 禁用的时候，改颜色！
+      &:disabled,
+      &:disabled + div {
+        color: #bbb;
       }
     }
     .active {
@@ -108,10 +126,11 @@ export default class Input extends Vue {
       z-index: -1;
       position: absolute;
       bottom: 23px;
-      // left: 50%;
       color: $holder-color;
-      // transform: translateX(-50%);
-      transition: opacity 0.35s ease-out;
+      transition: 
+        opacity 0.35s ease-out,
+        color 0.35s ease-out;
+      // color用于disabled的变色
     }
     .wrong {
       border-color: rgba(255, 0, 0, 0.2);
@@ -121,9 +140,7 @@ export default class Input extends Vue {
       z-index: -1;
       position: absolute;
       bottom: 23px;
-      // left: 50%;
       color: rgba(255, 0, 0, 0.5);
-      // transform: translateX(-50%);
       transition: opacity 0.35s ease-out;
     }
     .holder-box-hidden,
@@ -132,4 +149,15 @@ export default class Input extends Vue {
       transition: none;
     }
   }
+  /* .disabled-mask {
+    // 因为人脸识别的z-index为2，而且因为使用了兄弟选择器不能改变，所以这里使用3
+    // 然而并没有用。。因为input已经在z-index=1这一层了。。
+    z-index: 3;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 430px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+  } */
 </style>
