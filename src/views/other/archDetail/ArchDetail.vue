@@ -310,6 +310,7 @@ export default class ArchDetail extends Vue {
 
   private headClick({clickType}: any) {
     if (clickType === 'left') {
+      this.$store.commit("setDetailPage")
       this.$router.go(-1)
     }
   }

@@ -22,6 +22,7 @@ import DesHead from "@/components/des-com/index/des-head.vue";
 import FileData from "@/components/apply-com/edit/fileData.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
+import store from "@/store"
 
 @Component({
   components: {
@@ -157,6 +158,7 @@ export default class editApply extends Vue {
   handleClick(event: any) {
     let obj = {};
     if (event.clickType === "left") {
+      store.commit("setDetailPage")
       this.$router.push({ name: "apply" });
     }
   }

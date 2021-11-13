@@ -17,12 +17,12 @@
         @click="checkItem(index)"
       />
     </div>
-    <transition name="delete-cancel">
+    <!-- <transition name="delete-cancel">
       <div class="select-btn" v-if="isShow">
         <div @click="cancelSelect">返回</div>
         <div @click="alertShow = true">删除</div>
       </div>
-    </transition>
+    </transition> -->
 
     <DesBtn
       @changePage="changePage($event)"
@@ -35,16 +35,21 @@
       @sureDelete="sureDelete($event)"
     />
     <img
-      v-show="!isShow && !sideBarShow"
-      src="@/assets/apply/Addapplication.png"
+      v-show="!sideBarShow"
+      :src="isShow? btnUrl[1] : btnUrl[0]"
       class="add-apply"
-      @click="toAddPage"
+      @click="toAddPage(isShow)"
     />
     <div class="slots2"></div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+Component.registerHooks([
+  "beforeRouteLeave",
+  "beforeRouteUpdate",
+  "beforeRouteEnter",
+]);
 import ApplyItem from "@/components/apply-com/index/apply-item.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
@@ -52,6 +57,7 @@ import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import SideBar from "@/components/public-com/SideBar.vue";
+import store from "@/store";
 
 @Component({
   components: {
@@ -64,10 +70,11 @@ import SideBar from "@/components/public-com/SideBar.vue";
   },
 })
 export default class Apply extends Vue {
+  private btnUrl = [require("@/assets/apply/Addapplication.png"),require("@/assets/index/delete.png")]
   public sideBarShow: boolean = false;
   private idList: Array<number> = [];
   private alertShow: boolean = false;
-  private searchText: string = "请输入时间搜索";
+  private searchText: string = "";
   private itemData: any[] = [];
   private checkList: Array<boolean> = [];
   private isShow: boolean = false;
@@ -90,6 +97,45 @@ export default class Apply extends Vue {
     rightText: "选择",
     isShow: false,
   };
+  private isFlag: boolean = false
+  // @Watch("$route")
+  // watchSlotRoute(to: any, from: any) {
+  //   if (from.name == "apply" && to.name != "editApply") {
+  //     console.log("w s ")
+  //     from.$route.meta.keepAlive = false
+
+  //   } else if (from.name == "apply" && to.name == "editApply") {
+  //     from.$route.meta.keepAlive = true
+  //     console.log("wsss")
+  //   }
+  // }
+
+  // activated() {
+  //   console.log((this as any).$route.meta.isBack);
+  // }
+  beforeRouteEnter(to: any, from: any, next: any) {
+    if (!store.state.isDetailPage) {
+      next((vm: any) => {
+        vm.doSth(vm)
+      });
+    } else {
+      next();
+    }
+  }
+  doSth(vm: any) {
+    vm.searchText = "";
+    vm.pageData.time = vm.searchText;
+    vm.pageData.current = 1;
+    vm.getList();
+  }
+  //  beforeRouteUpdate (to: any,from: any,next: any) {
+  //    console.log("to:"+to.name,"from:"+from.name,)
+  //    if (from.name != "editApply") {
+
+  //     this.created()
+  //   }
+  //   next()
+  // }
   searchThings(event: any) {
     this.pageData.time = event.searchVal;
     this.pageData.current = 1;
@@ -97,6 +143,7 @@ export default class Apply extends Vue {
     console.log(event);
   }
   onConfirm(event: any) {
+    this.searchText = event.date;
     this.pageData.time = event.date;
     this.pageData.current = 1;
     this.getList();
@@ -155,8 +202,12 @@ export default class Apply extends Vue {
       }
     }
   }
-  toAddPage() {
-    this.$router.push({ name: "addApply" });
+  toAddPage(addOrdel: boolean) {
+    if(addOrdel) {
+      this.alertShow = true
+    } else {
+      this.$router.push({ name: "addApply" });
+    }
   }
   changeStatus(arr: any[]) {
     let data = new Map([
@@ -206,10 +257,13 @@ export default class Apply extends Vue {
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
+    this.checkList.forEach((item) => {
+      if(!item) this.headData.rightText =  "全选"
+    })
   }
   cancelSelect() {
     this.isShow = false;
-
+    this.isFlag = false
     let obj = {
       leftUrl: "3",
       leftPic: true,
@@ -234,16 +288,22 @@ export default class Apply extends Vue {
         obj = {
           leftUrl: "",
           leftPic: false,
-          leftText: "取消",
+          leftText: "返回",
           rightText: "全选",
         };
         this.headData = Object.assign(this.headData, obj);
         return;
       }
-      this.initSelect(true);
-    } else {
-      if (this.headData.leftText === "取消") {
+      if(this.headData.rightText === "全选") {
+        this.initSelect(true);
+        this.headData.rightText =  "取消"
+      } else if(this.headData.rightText === "取消"){
         this.initSelect(false);
+        this.headData.rightText =  "全选"
+      }
+    } else {
+      if (this.headData.leftText === "返回") {
+        this.cancelSelect()
         return;
       }
 

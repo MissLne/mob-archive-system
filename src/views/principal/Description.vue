@@ -41,7 +41,7 @@
       v-if="!isShow && !sideBarShow"
       src="@/assets/index/upload.png"
       class="upload"
-      @click="$router.push({name: 'tempArchUpload'})"
+      @click="$router.push({ name: 'tempArchUpload' })"
     />
     <transition name="delete-cancel">
       <div class="select-btn" v-if="isShow">
@@ -60,8 +60,9 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import SideBar from "@/components/public-com/SideBar.vue"
+import SideBar from "@/components/public-com/SideBar.vue";
 import { downloadPic } from "@/utils/utils-file";
+import store from "@/store";
 
 interface dataType {
   size: number | undefined;
@@ -104,7 +105,7 @@ export default class Description extends Vue {
   ];
   public listData: Item = {
     title: "显示全部",
-    list: ["显示案卷", "显示文件"],
+    list: ["显示全部","显示案卷", "显示文件"],
   };
   public sideBarShow: boolean = false;
   private alertShow: boolean = false;
@@ -138,9 +139,26 @@ export default class Description extends Vue {
     status: 0,
     topic: [],
   };
+  beforeRouteEnter(to: any, from: any, next: any) {
+    if (!store.state.isDetailPage) {
+      next((vm: any) => {
+        vm.doSth(vm);
+      });
+    } else {
+      next();
+    }
+  }
+  doSth(vm: any) {
+    vm.searchText = "请输入题名搜索";
+    vm.getListData.type = 0;
+    vm.getListData.current = 1;
+    vm.pageData.current = 1;
+    vm.getList();
+  }
   selectHandle(event: any) {
-    this.getListData.type = event.index;
+    this.getListData.type = event.index == 0? 2 : event.index - 1;
     this.getListData.current = 1;
+    this.pageData.current = 1;
     // this.listData.title = this.listData.list[event.index];
     // (this as any).$localStore.setData("desListData",this.getListData);
     // (this as any).$localStore.setData("desData",this.listData.title);
@@ -238,8 +256,9 @@ export default class Description extends Vue {
         this.pageData.total = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
-            downloadPic(item.fileToken, item.fileType)
-              .then(res => item.fileToken = res)
+            downloadPic(item.fileToken, item.fileType).then(
+              (res) => (item.fileToken = res)
+            );
           }
         });
         this.desItem = result;
@@ -343,10 +362,10 @@ export default class Description extends Vue {
   }
   scrollTop: number = 0;
   activated() {
-    console.log('activated')
+    console.log("activated");
   }
   deactivated() {
-    console.log('deactivated', window.scrollX)
+    console.log("deactivated", window.scrollX);
   }
 }
 </script>
@@ -358,7 +377,7 @@ export default class Description extends Vue {
   }
   .delete-cancel-leave-active {
     // transition: 0.8s;
-    animation: leves .7s;
+    animation: leves 0.7s;
   }
   @keyframes leves {
     0% {

@@ -4,7 +4,7 @@
       <img src="@/assets/head/search@2x.png" />
       <input :placeholder="searchText" @input="searchThings" v-model="searchVal" v-if="!isDate"/>
       <div v-if="isDate">
-        <div @click="show = true" class="calendar-title">{{date? date : '选择搜索日期'}}</div>
+        <div @click="show = true" class="calendar-title">{{searchText? searchText : '选择搜索日期'}}</div>
       <van-calendar v-model="show" @confirm="onConfirm($event)" color="#8cbffe" :max-date="maxDate" :min-date="minDate"/>
       </div>
     </div>
@@ -31,14 +31,15 @@ export default class DesSearch extends Vue {
     return Str
 }
   onConfirm(e: any) {
+    let date = this.searchText
     console.log(e);
     let arr = this.GMTToStr(e).split("-")
     console.log(arr);
     arr[1].length < 2? arr[1] = '0' + arr[1] : arr[1]
     arr[2].length < 2? arr[2] = '0' + arr[2] : arr[2]
-    this.date = arr.join("-")
+    date = arr.join("-")
     this.show = false
-    this.$emit('onConfirm',{date: this.date})
+    this.$emit('onConfirm',{date: date})
   }
   searchThings() {
     if (this.timeout) {

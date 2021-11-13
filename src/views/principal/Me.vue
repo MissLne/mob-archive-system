@@ -46,6 +46,7 @@ import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue"
 import { downloadPic } from "@/utils/utils-file";
+import store from "@/store";
 
 interface dataType {
   size: number | undefined;
@@ -95,7 +96,7 @@ export default class Description extends Vue {
   private isShow: boolean = false;
   private searchText: string = "请输入题名搜索";
   private desItem: [] = [];
-  public popArr: string[] = ["案卷详情", "选择"];
+  public popArr: string[] = ["显示全部","案卷详情", "选择"];
   public count: number = 0;
   private _this: any = "";
   public headData: any = {
@@ -120,6 +121,22 @@ export default class Description extends Vue {
     status: 2,
     topic: [],
   };
+    beforeRouteEnter(to: any, from: any, next: any) {
+    if (!store.state.isDetailPage) {
+      next((vm: any) => {
+        vm.doSth(vm)
+      });
+    } else {
+      next();
+    }
+  }
+  doSth(vm: any) {
+    vm.searchText = "请输入题名搜索";
+     vm.getListData.type = 0;
+    vm.getListData.current = 1;
+    vm.pageData.current = 1
+    vm.getList();
+  }
   selectHandle(event: any) {
     this.getListData.type = event.index;
     this.getList();

@@ -1,6 +1,10 @@
 <template>
   <div class="home">
-    <router-view/>
+        <keep-alive>
+        <router-view v-if="$route.meta.keepAlive"></router-view>
+      </keep-alive>
+      <router-view v-if="!$route.meta.keepAlive"></router-view>
+      <!-- <router-view></router-view> -->
     <Tabbar :type="type" @changePage="changePage($event)" />
   </div>
 </template>

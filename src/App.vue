@@ -2,9 +2,12 @@
   <div id="app">
     <!-- <span>{{$store.state.isDetailAlive + '' + temp}}</span> -->
     <transition-view>
-      <keep-alive :include="test">
-        <router-view/>
+      <div>
+        <keep-alive>
+        <router-view v-if="$route.meta.keepAlive"></router-view>
       </keep-alive>
+      <router-view v-if="!$route.meta.keepAlive"></router-view>
+      </div>
     </transition-view>
   </div>
 </template>
