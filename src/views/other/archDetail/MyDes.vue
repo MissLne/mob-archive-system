@@ -42,6 +42,7 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
+import { watchRouteChange } from "@/utils/utils-component";
 import { downloadPic } from "@/utils/utils-file";
 
 interface dataType {
@@ -116,6 +117,7 @@ export default class MyDes extends Vue {
       this.initSelect(false);
       this.headData.isShow = !this.headData.isShow;
     } else {
+      this.$store.commit("setDetailPage")
       this.$router.go(-1);
     }
   }

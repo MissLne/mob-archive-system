@@ -9,7 +9,8 @@ export default new Vuex.Store({
   state: {
     _permissionList: [] as Array<string>,
     isDetailAlive: false,
-    faceData: [] as Array<FaceData>
+    faceData: [] as Array<FaceData>,
+    isDetailPage: 0
   },
   getters: {
     permissionList: state => (query: string) => {
@@ -25,6 +26,12 @@ export default new Vuex.Store({
     },
     setFaceData: (state, array) => {
       state.faceData = array
+    },
+    setDetailPage(state) {
+      state.isDetailPage = 1
+      setTimeout(() => {
+        state.isDetailPage = 0
+      },1000)
     }
   },
   actions: {

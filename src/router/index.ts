@@ -9,19 +9,23 @@ const routes: Array<RouteConfig> = [
     path: '/',
     name: 'Home',
     redirect: '/description',
+    meta: { keepAlive: true },
     component: () => import('@/views/Home.vue'),
     children: [
       {
+        meta: { keepAlive: true },
         path: 'description',
         name: 'description',
         component: () => import('@/views/principal/Description.vue')
       },
       {
+        meta: { keepAlive: true },
         path: 'apply',
         name: 'apply',
         component: () => import('@/views/principal/Apply.vue')
       },
       {
+        meta: { keepAlive: true },
         path: 'me',
         name: 'me',
         component: () => import('@/views/principal/Me.vue')
