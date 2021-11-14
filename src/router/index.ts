@@ -154,11 +154,9 @@ function setMeta(to: any) {
 
 router.beforeEach((to, from, next) => {
   if ((to.meta as any).keepAlive) {
-    console.log('set true')
     store.commit('setDetailAlive', true)
   }
   else {
-    console.log('set false')
     store.commit('setDetailAlive', false)
   }
   if (to.name === 'login'

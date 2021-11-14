@@ -76,9 +76,6 @@ export default class Login extends Vue {
         if (res.success) {
           this.initLocalStorage(res.data);
           this.$router.replace({name: 'Home'})
-          setTimeout(() => {
-            MsgBox.success('登录成功')
-          }, 450)
         }
         else {
           const msg = (res.message as string).split('，')[1];
