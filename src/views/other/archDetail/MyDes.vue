@@ -172,7 +172,12 @@ export default class MyDes extends Vue {
         });
         this.getList();
       } else {
-        return;
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
+        this.getListData.current = event.page;
+        this.pageData.current = event.page;
+        this.getList();
       }
     }
   }

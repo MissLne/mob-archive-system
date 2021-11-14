@@ -268,8 +268,8 @@ export default class Details extends Vue {
       color: #ffffff;
     }
     > div:nth-of-type(1) {
-      background: #ffffff;
-      color: #ff0000;
+      background: #85b8fd;
+      color: #ffffff;
     }
     > div:nth-of-type(1),
     .edit {

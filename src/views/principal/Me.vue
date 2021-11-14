@@ -1,6 +1,6 @@
 <template>
   <div id="description">
-    <SideBar :sideBarShow="sideBarShow"/>
+    <SideBar :sideBarShow="sideBarShow" />
     <Alerts
       :title="'确认删除'"
       v-if="alertShow"
@@ -12,10 +12,14 @@
       @handleClick="handleClick($event)"
     />
     <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
-    <myTool :count="count" :listData="listData" @selectHandle="selectHandle($event)" />
+    <myTool
+      :count="count"
+      :listData="listData"
+      @selectHandle="selectHandle($event)"
+    />
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
-      <DesItem v-if="desItem" :desItem="item"  typeName="我的档案"/>
+      <DesItem v-if="desItem" :desItem="item" typeName="我的档案" />
       <img
         class="manySelect"
         :src="checkList[index] ? seletList[1] : seletList[0]"
@@ -44,7 +48,7 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import SideBar from "@/components/public-com/SideBar.vue"
+import SideBar from "@/components/public-com/SideBar.vue";
 import { downloadPic } from "@/utils/utils-file";
 import store from "@/store";
 
@@ -77,7 +81,7 @@ type Id = {
     DesItem,
     DesBtn,
     Alerts,
-    SideBar
+    SideBar,
   },
 })
 export default class Description extends Vue {
@@ -87,16 +91,16 @@ export default class Description extends Vue {
   ];
   public listData: Item = {
     title: "显示全部",
-    list: ["显示案卷","显示文件"]
-  }
-  public sideBarShow: boolean = false
+    list: ["显示全部", "显示案卷", "显示文件"],
+  };
+  public sideBarShow: boolean = false;
   private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<Id> = [];
   private isShow: boolean = false;
   private searchText: string = "请输入题名搜索";
   private desItem: [] = [];
-  public popArr: string[] = ["显示全部","案卷详情", "选择"];
+  public popArr: string[] = ["案卷详情", "选择"];
   public count: number = 0;
   private _this: any = "";
   public headData: any = {
@@ -121,10 +125,10 @@ export default class Description extends Vue {
     status: 2,
     topic: [],
   };
-    beforeRouteEnter(to: any, from: any, next: any) {
+  beforeRouteEnter(to: any, from: any, next: any) {
     if (!store.state.isDetailPage) {
       next((vm: any) => {
-        vm.doSth(vm)
+        vm.doSth(vm);
       });
     } else {
       next();
@@ -132,14 +136,19 @@ export default class Description extends Vue {
   }
   doSth(vm: any) {
     vm.searchText = "请输入题名搜索";
-     vm.getListData.type = 0;
+    vm.getListData.type = 0;
     vm.getListData.current = 1;
-    vm.pageData.current = 1
+    vm.pageData.current = 1;
     vm.getList();
   }
   selectHandle(event: any) {
-    this.getListData.type = event.index;
+    this.getListData.type = event.index == 0 ? 2 : event.index - 1;
+    this.getListData.current = 1;
+    this.pageData.current = 1;
     this.getList();
+    this.$nextTick(() => {
+      window.scrollTo(0, 0);
+    });
   }
   initSelect(type: boolean) {
     this.checkList.forEach((value, index) => {
@@ -163,13 +172,13 @@ export default class Description extends Vue {
   }
   handleClick(event: any) {
     if (event.clickType === "right") {
-        return;
+      return;
     } else {
       if (this.headData.leftUrl == "4") {
-        this.sideBarShow = false
+        this.sideBarShow = false;
         this.headData.leftUrl = "3";
       } else {
-        this.sideBarShow = true
+        this.sideBarShow = true;
         this.headData.leftUrl = "4";
       }
     }
@@ -190,7 +199,7 @@ export default class Description extends Vue {
   }
   getList(): void {
     (this as any).$request
-      .post("/api/api/dossier/getPartDossierList", { ...this.getListData })
+      .post("/api/api/dossier/getMyStorageDossier", { ...this.getListData })
       .then((res: any) => {
         let result = res.data.data.records;
         console.log(result);
@@ -203,8 +212,9 @@ export default class Description extends Vue {
         this.pageData.total = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
-            downloadPic(item.fileToken, item.fileType)
-              .then((res: any) => item.fileToken = res)
+            downloadPic(item.fileToken, item.fileType).then(
+              (res: any) => (item.fileToken = res)
+            );
           }
         });
         this.desItem = result;
@@ -230,7 +240,12 @@ export default class Description extends Vue {
         this.pageData.current++;
         this.getList();
       } else {
-        return;
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
+       this.getListData.current = event.page;
+        this.pageData.current = event.page;
+        this.getList();
       }
     }
   }
