@@ -311,10 +311,10 @@ export default class ArchDetail extends Vue {
     if (clickType === 'left') {
       this.$store.commit("setDetailPage")
       this.$router.go(-1)
-      if (this.isEditing)
-        this.isEditing = false;
-      else
-        this.$router.go(-1)
+    //   if (this.isEditing)
+    //     this.isEditing = false;
+    //   else
+    //     this.$router.go(-1)
     }
   }
 

@@ -35,20 +35,21 @@
       @changePage="changePage($event)"
       :totalPage="pageData"
       v-if="pageData.total"
+      ref="desBtnvue"
     />
     <div class="slots2"></div>
     <img
-      v-show="!isShow && !sideBarShow"
-      src="@/assets/index/upload.png"
+      v-show="!sideBarShow"
+      :src="isShow? btnUrl[1] : btnUrl[0]"
       class="upload"
-      @click="$router.push({ name: 'tempArchUpload' })"
+      @click="toAddPage(isShow)"
     />
-    <transition name="delete-cancel">
+    <!-- <transition name="delete-cancel">
       <div class="select-btn" v-if="isShow">
         <div @click="cancelSelect">返回</div>
         <div @click="alertShow = true">删除</div>
       </div>
-    </transition>
+    </transition> -->
   </div>
 </template>
 <script lang="ts">
@@ -103,9 +104,10 @@ export default class Description extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
+  private btnUrl = [require("@/assets/index/upload.png"),require("@/assets/index/delete.png")]
   public listData: Item = {
     title: "显示全部",
-    list: ["显示全部","显示案卷", "显示文件"],
+    list: ["显示全部", "显示案卷", "显示文件"],
   };
   public sideBarShow: boolean = false;
   private alertShow: boolean = false;
@@ -139,6 +141,13 @@ export default class Description extends Vue {
     status: 0,
     topic: [],
   };
+  toAddPage(addOrdel: boolean) {
+    if(addOrdel) {
+      this.alertShow = true
+    } else {
+      this.$router.push({ name: 'tempArchUpload' })
+    }
+  }
   beforeRouteEnter(to: any, from: any, next: any) {
     if (!store.state.isDetailPage) {
       next((vm: any) => {
@@ -156,13 +165,16 @@ export default class Description extends Vue {
     vm.getList();
   }
   selectHandle(event: any) {
-    this.getListData.type = event.index == 0? 2 : event.index - 1;
+    this.getListData.type = event.index == 0 ? 2 : event.index - 1;
     this.getListData.current = 1;
     this.pageData.current = 1;
     // this.listData.title = this.listData.list[event.index];
     // (this as any).$localStore.setData("desListData",this.getListData);
     // (this as any).$localStore.setData("desData",this.listData.title);
     this.getList();
+    this.$nextTick(() => {
+      window.scrollTo(0, 0);
+    });
   }
   initSelect(type: boolean) {
     this.checkList.forEach((value, index) => {
@@ -192,16 +204,22 @@ export default class Description extends Vue {
         this.isShow = true;
         obj = {
           leftPic: false,
-          leftText: "取消",
+          leftText: "返回",
           rightText: "全选",
         };
         this.headData = Object.assign(this.headData, obj);
         return;
       }
-      this.initSelect(true);
-    } else {
-      if (this.headData.leftText === "取消") {
+       if(this.headData.rightText === "全选") {
+        this.initSelect(true);
+        this.headData.rightText =  "取消"
+      } else if(this.headData.rightText === "取消"){
         this.initSelect(false);
+        this.headData.rightText =  "全选"
+      }
+    } else {
+      if (this.headData.leftText === "返回") {
+        this.cancelSelect()
         return;
       }
 
@@ -237,6 +255,9 @@ export default class Description extends Vue {
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
+    this.checkList.forEach((item) => {
+      if(!item) this.headData.rightText =  "全选"
+    })
   }
   getList(): void {
     (this as any).$request
@@ -259,8 +280,9 @@ export default class Description extends Vue {
             downloadPic(item.fileToken, item.fileType).then(
               (res) => (item.fileToken = res)
             );
-            downloadPic(item.fileToken, item.fileType)
-              .then((res: any) => item.fileToken = res)
+            downloadPic(item.fileToken, item.fileType).then(
+              (res: any) => (item.fileToken = res)
+            );
           }
         });
         this.desItem = result;
@@ -288,7 +310,12 @@ export default class Description extends Vue {
         // (this as any).$localStore.setData("desListData",this.getListData)
         this.getList();
       } else {
-        return;
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
+        this.getListData.current = event.page;
+        this.pageData.current = event.page;
+        this.getList();
       }
     }
   }
@@ -423,33 +450,33 @@ export default class Description extends Vue {
     bottom: 100px;
     z-index: 99;
   }
-  .select-btn {
-    width: 519px;
-    z-index: 999;
-    position: fixed;
-    transform: translateX(-50%);
-    bottom: 100px;
-    left: 50%;
-    display: flex;
-    justify-content: space-between;
-    > div:nth-of-type(1),
-    > div:nth-of-type(2) {
-      width: 162px;
-      height: 75px;
-      box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
-      border-radius: 8px;
-      font-size: 42px;
-      text-align: center;
-      line-height: 75px;
-    }
-    > div:nth-of-type(1) {
-      color: #ffffff;
-      background: #85b8fd;
-    }
-    > div:nth-of-type(2) {
-      color: #ff0000;
-      background: #fff;
-    }
-  }
+  // .select-btn {
+  //   width: 519px;
+  //   z-index: 999;
+  //   position: fixed;
+  //   transform: translateX(-50%);
+  //   bottom: 100px;
+  //   left: 50%;
+  //   display: flex;
+  //   justify-content: space-between;
+  //   > div:nth-of-type(1),
+  //   > div:nth-of-type(2) {
+  //     width: 162px;
+  //     height: 75px;
+  //     box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
+  //     border-radius: 8px;
+  //     font-size: 42px;
+  //     text-align: center;
+  //     line-height: 75px;
+  //   }
+  //   > div:nth-of-type(1) {
+  //     color: #ffffff;
+  //     background: #85b8fd;
+  //   }
+  //   > div:nth-of-type(2) {
+  //     color: #ff0000;
+  //     background: #fff;
+  //   }
+  // }
 }
 </style>

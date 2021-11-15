@@ -56,7 +56,10 @@ export default class FileData extends Vue {
         this.pageData.current++;
         this.fileList = this.fileLists[this.pageData.current - 1];
       } else {
-        return;
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
+        this.pageData.current = event.page;
       }
     }
   }

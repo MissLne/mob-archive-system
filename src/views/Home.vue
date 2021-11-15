@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+     
         <keep-alive>
         <router-view v-if="$route.meta.keepAlive"></router-view>
       </keep-alive>
@@ -25,7 +26,7 @@ export default class Home extends Vue {
     this.type = localStorage.getItem("tabbarT") || 0;
   }
   changePage(event: any) {
-    localStorage.setItem("tabbarT", event.go);
+    // localStorage.setItem("tabbarT", event.go);
 
     this.$nextTick(() => {
       this.type = event.go;

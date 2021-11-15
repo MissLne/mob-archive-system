@@ -142,11 +142,13 @@ export default class Apply extends Vue {
     this.getList();
     console.log(event);
   }
-  onConfirm(event: any) {
+  async onConfirm(event: any) {
     this.searchText = event.date;
     this.pageData.time = event.date;
     this.pageData.current = 1;
     this.getList();
+    await this.getList();
+    
   }
   getList(): void {
     let data = {
@@ -172,7 +174,10 @@ export default class Apply extends Vue {
         // result.map((item, index) => {
         //   this.$set(this.itemData, index, item);
         // });
-        this.pageData.total = Math.ceil(res.data.data.total / 10);
+        this.$set(this.pageData,'total',Math.ceil(res.data.data.total / 10))
+        console.log(this.pageData.total,'total');
+        (this as any).$refs.desBtnvue.initPageData(this.pageData.total)
+        // this.pageData.total = Math.ceil(res.data.data.total / 10);
         this.checkList = new Array(this.itemData.length).fill(false);
         this.idList = [];
         for (let i = 0; i < this.itemData.length; i++) {
@@ -198,7 +203,11 @@ export default class Apply extends Vue {
         this.pageData.current++;
         this.getList();
       } else {
-        return;
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
+        this.pageData.current = event.page;
+        this.getList();
       }
     }
   }
