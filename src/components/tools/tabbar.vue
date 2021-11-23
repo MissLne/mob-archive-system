@@ -5,21 +5,20 @@
         :to="item.itemLink"
         replace
         tag="div"
-        :style="{ color: type == index ? '#8EBEFE' : '' }"
+        :style="{ color: type === index ? '#8EBEFE' : '' }"
         @click.native="changePage(index)"
       >
-        <img :src="item.imageUrl" />
+        <img :src="iUrl[index][type === index ? 1 : 0]" />
         <p>{{ item.itemName }}</p>
       </router-link>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Emit } from "vue-property-decorator";
 class Item {
   itemName: string = "";
   itemLink: string | object = "";
-  imageUrl: any;
 }
 @Component
 export default class Tabbar extends Vue {
@@ -28,47 +27,33 @@ export default class Tabbar extends Vue {
     {
       itemName: "著录中",
       itemLink: "description",
-      imageUrl: "",
     },
     {
       itemName: "借阅申请",
       itemLink: "apply",
-      imageUrl: "",
     },
     {
       itemName: "我的档案",
       itemLink: "me",
-      imageUrl: "",
     },
   ];
   private iUrl: any = [
     [
+      require("@/assets/index/descriptiongray@2x.png"),
       require("@/assets/index/description.png"),
-      require("@/assets/index/borrowing.png"),
-      require("@/assets/index/mime.png"),
     ],
     [
-      require("@/assets/index/descriptiongray@2x.png"),
+      require("@/assets/index/borrowing.png"),
       require("@/assets/index/borrowingblue@2x.png"),
-      require("@/assets/index/mime.png"),
     ],
     [
-      require("@/assets/index/descriptiongray@2x.png"),
-      require("@/assets/index/borrowing.png"),
+      require("@/assets/index/mime.png"),
       require("@/assets/index/mineblue@2x.png"),
     ],
   ];
-  created() {
-    console.log(this.type)
-    for (let i = 0; i < this.barData.length; i++) {
-      this.barData[i].imageUrl = this.iUrl[this.type][i];
-    }
-  }
+  @Emit('changePage')
   changePage(event: any) {
-    this.$emit("changePage", { go: event });
-    for (let i = 0; i < this.barData.length; i++) {
-      this.barData[i].imageUrl = this.iUrl[event][i];
-    }
+    return { go: event };
   }
 }
 </script>

@@ -11,7 +11,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import TransitionView from '@/components/public-com/TransitionView.vue'
 
 @Component({
@@ -20,9 +20,6 @@ import TransitionView from '@/components/public-com/TransitionView.vue'
   }
 })
 export default class App extends Vue {
-  get testAdd() {
-    return this.$store.state.isDetailAlive ? ['Arch', 'TempArch', 'Home'] : ['Home'];
-  }
 }
 </script>
 <style lang="scss">
