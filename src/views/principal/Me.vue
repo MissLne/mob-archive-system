@@ -84,7 +84,7 @@ type Id = {
     SideBar,
   },
 })
-export default class Description extends Vue {
+export default class Me extends Vue {
   private seletList: any[] = [
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),

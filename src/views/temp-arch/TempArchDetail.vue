@@ -52,6 +52,7 @@ import ArchForm from '@/components/public-com/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
 
 @Component({
+  name: 'TempArchDetail',
   components: {
     DesHead,
     PreviewBox,

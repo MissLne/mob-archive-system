@@ -1,7 +1,7 @@
 <template>
   <div id="arch">
     <transition-view>
-      <keep-alive>
+      <keep-alive include="MyDes">
         <router-view
           :archId="archId"
         ></router-view>
