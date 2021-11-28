@@ -29,7 +29,17 @@
         >查看元数据>></router-link>
       </div>
 
-      <div v-if="status !== 4" class="btns-box">
+      <!-- 状态（0-著录，1-预归档，2-已归档，3-过期，4-回收站，5-销毁） -->
+      <div v-if="status === 4" class="btns-box">
+        <CoupleBtns
+          :leftName="'删除'"
+          :rightName="'还原'"
+          class="couple-margin"
+          @leftClick="recycleBinOperation('删除', 'DestroyArchive')"
+          @rightClick="recycleBinOperation('还原', 'RestoreArchive')"
+        />
+      </div>
+      <div v-else-if="status !== 2" class="btns-box">
         <transition name="btns-move" mode="out-in">
           <CoupleBtns
             v-if="!isEditing"
@@ -48,15 +58,6 @@
             @click="saveFile"
           />
         </transition>
-      </div>
-      <div v-else class="btns-box">
-        <CoupleBtns
-          :leftName="'删除'"
-          :rightName="'还原'"
-          class="couple-margin"
-          @leftClick="recycleBinOperation('删除', 'DestroyArchive')"
-          @rightClick="recycleBinOperation('还原', 'RestoreArchive')"
-        />
       </div>
     </div>
     <!-- <div class="bg-box"></div> -->
