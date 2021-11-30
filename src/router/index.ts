@@ -75,7 +75,7 @@ const routes: Array<RouteConfig> = [
       {
         path: 'detail/x',
         name: 'tempArchDetail',
-        component: () => import('@/views/temp-arch/TempArchDetail.vue'),
+        component: () => import('@/views/temp-arch/TempArchDetail'),
       },
     ]
   },

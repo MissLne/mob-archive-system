@@ -30,12 +30,6 @@ import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
 // import fileUtils from '@/utils/fileUtils';
 
-interface SomeData {
-  fondsIdentifier: any;
-  dossierType: any;
-  departmentTree: any;
-}
-
 @Component({
   components: {
     UploadBtn,
@@ -45,7 +39,6 @@ interface SomeData {
 })
 export default class TempArchUpload extends Vue {
   private listData: Array<ArchItemData> = []
-  private someData: SomeData | null = null;
   // 正在上传时，禁止上传
   private disabledUpload: boolean = false;
   // 正在上传时，禁止选择
@@ -72,7 +65,8 @@ export default class TempArchUpload extends Vue {
       .then(({data: res}: any) => {
         console.log('temp-arch-list-data', res)
         res = res.data;
-        this.listData = res;
+        // this.listData = res;
+        this.listData.splice(0, this.listData.length, ...res);
       })
       .catch((err: any) => {
         console.log('temp-arch-list-data', err)
@@ -121,9 +115,7 @@ export default class TempArchUpload extends Vue {
   passDetailData(indexList: Array<number>) {
     // 开始编辑时，结束选择，启用上传
     this.disabledUpload = false;
-    return indexList.map((value) => {
-      return this.listData[value];
-    });
+    return indexList.map((value) => this.listData[value]);
   }
   // 删除选择的档案
   deleteClickIndex(indexList: Array<number>) {
