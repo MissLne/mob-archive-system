@@ -3,7 +3,7 @@
     <!-- <button @click="onChecking">{{isChecking ? '全选' : '选择'}}</button> -->
     <ul class="list">
       <li v-for="(item, index) in listData" :key="item.fileId" class="list-item">
-        <ArchItem :itemData="item"  @onClick="canClickItem && passClickIndex([index])"/>
+        <ListItem :itemData="item"  @onClick="canClickItem && passClickIndex([index])"/>
         <!-- 选择时的遮罩层 -->
         <label class="check-mask" @click="checkItem(index)" v-show="isChecking">
           <i class="check-circle" :class="{ 'checked-circle': checkList[index] }">✓</i>
@@ -22,12 +22,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
-import ArchItem from '@/components/public-com/ArchItem.vue'
+import ListItem from '@/components/public-com/ListItem.vue'
 import MsgBox from './MsgBox/Msg';
 
 @Component({
   components: {
-    ArchItem,
+    ListItem,
   }
 })
 export default class ArchList extends Vue {

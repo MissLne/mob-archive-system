@@ -2,7 +2,7 @@
   <div class="input-date-wrap">
     <Input
       v-model="inputData"
-      :disabled="disabled"
+      :disabled="disabled || show"
       @click.native="disabled || (show = true)"
     />
      <van-calendar

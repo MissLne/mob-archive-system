@@ -11,11 +11,6 @@
       />
       <ArchForm
         :inputsProps="inputsProps"
-        :fondsIdentifier="fondsIdentifier"
-        :dossierType="dossierType"
-        :departmentNameTree="departmentNameTree"
-        :confidentialLevelArray="confidentialLevelArray"
-        :retentionPeriodArray="retentionPeriodArray"
         :disabled="!isEditing"
         :fileId="detailData.fileId"
       />
@@ -95,24 +90,19 @@ export default class ArchDetail extends Vue {
   // 该案卷的状态
   private status: number = 0;
   // select的内容
-  private fondsIdentifier: Array<any> = [];
-  private dossierType: Array<any> = [];
-  private departmentNameTree: Array<any> = [];
+  get fondsIdentifier() { return this.$store.getters['selectData/fondsIdentifier'] }
+  get dossierType() { return this.$store.getters['selectData/dossierType'] }
+  get departmentNameTree() { return this.$store.getters['selectData/departmentNameTree'] }
   get isAllow() {
     return this.$store.getters.permissionList
   }
+  // 密级列表
+  get confidentialLevelArray() { return this.$store.getters['selectData/confidentialLevelArray'] };
+  // 保密期限列表
+  get retentionPeriodArray() { return this.$store.getters['selectData/retentionPeriodArray'] };
+  
   // 提交按钮状态
   private isBtnLoading: boolean = false;
-  // 密级列表
-  private readonly confidentialLevelArray = [
-    {name: '公开', id: 0},
-    {name: '内部', id: 1},
-    {name: '绝密', id: 2},
-    {name: '机密', id: 3},
-    {name: '秘密', id: 4}
-  ];
-  // 保密期限列表
-  private readonly retentionPeriodArray = [ '永久', '30年', '10年' ];
 
   // 是否正在编辑
   private isEditing: boolean = false;
@@ -176,7 +166,7 @@ export default class ArchDetail extends Vue {
 
     return obj;
   }
-
+  // header的数据和点击事件
   private headData: any = {
     title: '详情',
     leftPic: true,
@@ -187,6 +177,17 @@ export default class ArchDetail extends Vue {
     rightText: "",
     isShow: false,
   }
+  private headClick({clickType}: any) {
+    if (clickType === 'left') {
+      this.$store.commit("setDetailPage")
+      if (this.isEditing)
+        this.isEditing = false;
+      else
+        this.$router.go(-1)
+    }
+  }
+
+  // create初始化
   private created() {
     // 获取详细数据
     this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
@@ -212,12 +213,6 @@ export default class ArchDetail extends Vue {
           this.$set(this.detailData, 'picSrc', res);
         this.createSetting()
       })
-
-    // 设置select菜单的内容
-    this.fondsIdentifier = JSON.parse(localStorage.getItem('fondsIdentifier') as string)
-    this.dossierType = JSON.parse(localStorage.getItem('dossierType') as string)
-    this.departmentNameTree = JSON.parse(localStorage.getItem('departmentNameTree') as string)
-
   }
   createSetting() {
     const dData = this.detailData;
@@ -281,7 +276,6 @@ export default class ArchDetail extends Vue {
         this.isEditing = false;
       })
   }
-
   // 回收站状态--操作
  async recycleBinOperation(chineseName: string, englishName: string) {
     try {
@@ -304,26 +298,10 @@ export default class ArchDetail extends Vue {
         Msg.error(`${chineseName}失败`)
     }
   }
-
   // 是否存在元数据
   get haveMetaData() {
     const type = this.detailData?.fileType.split('/')[0];
     return type === 'image' || type === 'audio' || type === 'video';
-  }
-
-  private headClick({clickType}: any) {
-    if (clickType === 'left') {
-      this.$store.commit("setDetailPage")
-      if (this.isEditing)
-        this.isEditing = false;
-      else
-        this.$router.go(-1)
-    }
-  }
-
-  private radioIsChecked(radioIndex: number) {
-    console.log(radioIndex + 1 === this.inputsProps.retentionPeriod.value)
-    return radioIndex + 1 === this.inputsProps.retentionPeriod.value;
   }
 }
 </script>

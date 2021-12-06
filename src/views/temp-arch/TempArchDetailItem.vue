@@ -8,10 +8,6 @@
       />
       <ArchForm
         :inputsProps="inputsProps"
-        :fondsIdentifier="fondsIdentifier"
-        :dossierType="dossierType"
-        :departmentNameTree="departmentNameTree"
-        :confidentialLevelArray="confidentialLevelArray"
         :retentionPeriodArray="retentionPeriodArray"
         :fileId="detailData.fileId"
       />
@@ -57,17 +53,13 @@ import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
 export default class TempArchDetailItem extends Vue {
   @Prop() detailData!: ArchItemData;
   // select的内容
-  @Prop() fondsIdentifier!: Array<any>;
-  @Prop() dossierType!: Array<any>;
-  @Prop() departmentNameTree!: Array<any>;
-  private readonly confidentialLevelArray = [
-    {name: '公开', id: 0},
-    {name: '内部', id: 1},
-    {name: '绝密', id: 2},
-    {name: '机密', id: 3},
-    {name: '秘密', id: 4}
-  ];
-  private readonly retentionPeriodArray = [ '永久', '30年', '10年' ];
+  get fondsIdentifier() { return this.$store.getters['selectData/fondsIdentifier'] }
+  get dossierType() { return this.$store.getters['selectData/dossierType'] }
+  get departmentNameTree() { return this.$store.getters['selectData/departmentNameTree'] }
+  // 密级列表
+  get confidentialLevelArray() { return this.$store.getters['selectData/confidentialLevelArray'] };
+  // 保密期限列表
+  get retentionPeriodArray() { return this.$store.getters['selectData/retentionPeriodArray'] };
 
   // 是否存在元数据
   get haveMetaData() {

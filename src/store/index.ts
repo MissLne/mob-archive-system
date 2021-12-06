@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 // module
 import metaData from './modules/meta-data'
+import selectData from './modules/select-data'
 
 Vue.use(Vuex)
 
@@ -37,6 +38,7 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
-    metaData
+    metaData,
+    selectData,
   }
 })

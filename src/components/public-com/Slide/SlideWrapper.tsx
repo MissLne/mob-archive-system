@@ -1,17 +1,8 @@
 
 import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator'
-import Description from "@/views/principal/Description.vue";
-import Apply from "@/views/principal/Apply.vue";
-import Me from "@/views/principal/Me.vue";
 import './slide.scss'
 
-@Component({
-  components: {
-    Description,
-    Apply,
-    Me
-  },
-})
+@Component
 export default class SlideWrapper extends Vue {
   @Prop({ default: 0 }) maxLength!: number
   /* @Watch('maxLength') a() {
@@ -56,7 +47,7 @@ export default class SlideWrapper extends Vue {
       this.movePercentage = outsidePercentage;
       console.log('outside percentage!');
     }
-    if (0.5 < Math.abs(this.movePercentage) && Math.abs(this.movePercentage) <= 1) {
+    if (0.4 < Math.abs(this.movePercentage) && Math.abs(this.movePercentage) <= 1) {
       if (this.movePercentage > 0)
         this.movePercentage = this.stopGoLeft ? 0 : 1;
       else

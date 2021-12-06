@@ -3,9 +3,6 @@
     <transition-view>
       <router-view
         :detailDataList="detailDataList"
-        :fondsIdentifier="fondsIdentifier"
-        :dossierType="dossierType"
-        :departmentNameTree="departmentNameTree"
         @passDetailData="passDetailData"
       ></router-view>
     </transition-view>
@@ -26,9 +23,6 @@ import TransitionView from '@/components/public-com/TransitionView.vue'
 })
 export default class TempArch extends Vue {
   private detailDataList: Array<any> = [];
-  private fondsIdentifier: any = null; // 全宗号
-  private dossierType: any = null; // 类别号
-  private departmentNameTree: any = null; // 部门
 /* add() {
   this.detailDataList.splice(this.detailDataList.length, 0, {a: 123});
   console.log(this.detailDataList);
@@ -39,13 +33,7 @@ del() {
 } */
   created() {
   }
-  initSelectData() {
-    this.fondsIdentifier = JSON.parse(localStorage.getItem('fondsIdentifier') as string)
-    this.dossierType = JSON.parse(localStorage.getItem('dossierType') as string)
-    this.departmentNameTree = JSON.parse(localStorage.getItem('departmentNameTree') as string)
-  }
   passDetailData(data: ArchItemData[]) {
-    this.initSelectData();
     this.detailDataList = data;
     this.$router.push({
       name: 'tempArchDetail',

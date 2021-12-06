@@ -67,17 +67,6 @@ const metaData: Module<any, any> = {
      */
     flatMetaTree(state) {
       flatMetaTree(state)
-      /* const flatArr: Array<MetaDataItem> = [];
-      for (let key in state.tree) {
-        if (key !== 'specialMetadataStruct')
-          dfsTree(state.tree[key], obj => {
-            if (obj.metadataValue) {
-              flatArr.push(obj)
-            }
-          })
-      }
-      state.flatArr = flatArr;
-      console.log(flatArr) */
     }
   },
   actions: {

@@ -17,7 +17,7 @@
             @passFaceDataName="setFaceDataName"
           />
         </transition>
-        <!-- 文本输入 -->
+        <!-- 文本输入text -->
         <Input
           v-if="item.type === 'text'"
           v-model="item.value"
@@ -25,13 +25,13 @@
           :msg="item.msg"
           :disabled="disabled"
         />
-        <!-- 日期输入 -->
+        <!-- 日期输入date -->
         <InputDate
           v-else-if="item.type === 'date'"
           v-model="item.value"
           :disabled="disabled"
         />
-        <!-- 下拉选择 -->
+        <!-- 下拉选择select -->
         <div v-else-if="item.type === 'select'" class="item-input">
           <img
             src="@/assets/temp-arch/pulldown-gray@2x.png"
@@ -71,8 +71,8 @@
             :disabled="disabled"
           />
         </div>
-        <!-- 多选框 -->
-        <div v-else class="item-input all-radio-boxes">
+        <!-- 多选框radio -->
+        <div v-else-if="item.type === 'radio'" class="item-input all-radio-boxes">
           <!-- 虽然用index绑定不好，但是这是不会变的 -->
           <label
             v-for="(labelItem, labelIndex) in retentionPeriodArray"
@@ -89,6 +89,10 @@
             <i class="check-circle">✓</i>
             <span class="disabled-color-transition" :class="{'disabled-color': disabled}">{{ labelItem }}</span>
           </label>
+        </div>
+        <!-- 混合输入框 -->
+        <div v-else-if="item.type.includes(' ') > 1" class="item-input">
+          
         </div>
         <!-- 防止输入的遮罩层，写到下面才能挡住 -->
         <!-- <transition name="van-fade">
@@ -117,11 +121,15 @@ import FaceRecognitionIcon from "@/views/face-recognition/FaceRecognitionIcon.vu
 export default class ArchForm extends Vue {
   // 数据
   @Prop() inputsProps: any;
-  @Prop() fondsIdentifier!: Array<any>;
-  @Prop() dossierType!: Array<any>;
-  @Prop() departmentNameTree!: Array<any>;
-  @Prop() confidentialLevelArray!: Array<any>;
-  @Prop() retentionPeriodArray!: Array<any>;
+    // select/radio的数据
+  get fondsIdentifier() { return this.$store.getters['selectData/fondsIdentifier'] }
+  get dossierType() { return this.$store.getters['selectData/dossierType'] }
+  get departmentNameTree() { return this.$store.getters['selectData/departmentNameTree'] }
+  // 密级列表
+  get confidentialLevelArray() { return this.$store.getters['selectData/confidentialLevelArray'] };
+  // 保密期限列表
+  get retentionPeriodArray() { return this.$store.getters['selectData/retentionPeriodArray'] };
+  
   // 功能
   @Prop({default: false}) disabled!: boolean;
   @Prop({default: true}) canRecognize!: boolean;

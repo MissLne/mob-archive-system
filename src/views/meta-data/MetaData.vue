@@ -92,7 +92,8 @@ export default class MetaData extends Vue {
   }
   get canSubmit() {
     console.log(this.$route.params.status)
-    return !this.$route.params.status || this.$route.params.status != '4';
+    return !this.$route.params.status
+      || (this.$route.params.status != '4' && this.$route.params.status != '2');
   }
 
   created() {

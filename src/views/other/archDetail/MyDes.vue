@@ -33,6 +33,9 @@
         <div @click="alertShow = true">删除</div>
       </div>
     </div>
+    <des-detail
+      :desId="$route.params.id"
+    ></des-detail>
   </div>
 </template>
 <script lang="ts">
@@ -42,7 +45,7 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import { watchRouteChange } from "@/utils/utils-component";
+import DesDetail from "./DesDetail.vue"
 import { downloadPic } from "@/utils/utils-file";
 
 interface dataType {
@@ -61,6 +64,7 @@ type CheckItem = {
     DesItem,
     DesBtn,
     Alerts,
+    DesDetail
   },
 })
 export default class MyDes extends Vue {

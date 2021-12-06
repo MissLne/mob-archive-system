@@ -13,10 +13,6 @@ import DesHead from '@/components/des-com/index/des-head.vue';
 })
 export default class TempArchDetail extends Vue {
   @Prop() detailDataList!: ArchItemData[];
-  // select的内容
-  @Prop() fondsIdentifier!: Array<any>;
-  @Prop() dossierType!: Array<any>;
-  @Prop() departmentNameTree!: Array<any>;
   indexList: Array<number> = [-1, 0, -1];
 
   /* @Watch('detailDataList.length') t() {
@@ -96,9 +92,6 @@ export default class TempArchDetail extends Vue {
                 <TempArchDetailItem
                   key={this.detailDataList[i].fileId}
                   detailData={this.detailDataList[i]}
-                  fondsIdentifier={this.fondsIdentifier}
-                  dossierType={this.dossierType}
-                  departmentNameTree={this.departmentNameTree}
                   onSubmitFile={this.onSubmitFile}
                 />
               )
