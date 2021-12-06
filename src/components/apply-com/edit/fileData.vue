@@ -10,7 +10,9 @@
       <DesBtn
         @changePage="changePage($event)"
         :totalPage="pageData"
-        v-if="pageData.total"
+        :pageCur="pageCur"
+        :pageTo="pageTo"
+        v-if="pageTo"
       />
     </div>
   </div>
@@ -36,6 +38,8 @@ export default class FileData extends Vue {
     current: 1,
     total: 0,
   };
+  public pageCur: number = 1
+  public pageTo: number = 0
   public fileLists: Array<any[]> = [];
   public fileList: any[] = [];
   created() {
@@ -45,26 +49,26 @@ export default class FileData extends Vue {
   //   this.page();
   // }
   changePage(event: any): void {
-    if (event && this.pageData.current) {
-      if (event.type === "prePage" && this.pageData.current > 1) {
-        this.pageData.current--;
-        this.fileList = this.fileLists[this.pageData.current - 1];
+    if (event && this.pageCur) {
+      if (event.type === "prePage" && this.pageCur > 1) {
+        this.pageCur--;
+        this.fileList = this.fileLists[this.pageCur - 1];
       } else if (
         event.type === "nextPage" &&
-        this.pageData.current < this.pageData.total
+        this.pageCur < this.pageTo
       ) {
-        this.pageData.current++;
-        this.fileList = this.fileLists[this.pageData.current - 1];
+        this.pageCur++;
+        this.fileList = this.fileLists[this.pageCur - 1];
       } else {
         this.$nextTick(() => {
           window.scrollTo(0, 0);
         });
-        this.pageData.current = event.page;
+        this.pageCur = event.page;
       }
     }
   }
   page() {
-    this.pageData.total = Math.ceil(this.fileData.length / 5);
+    this.pageTo = Math.ceil(this.fileData.length / 5);
     this.fileLists = this.arrTrans(5, this.fileData);
     this.fileList = this.fileLists[0];
   }

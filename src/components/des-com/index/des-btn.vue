@@ -1,18 +1,18 @@
 <template>
   <div id="des-btn">
     <div class="pageBtns">
-      <div @click="prePageData(totalPage.current)" class="pagebtn">上一页</div>
+      <div @click="prePageData(pageCur)" class="pagebtn">上一页</div>
       <div class="container">
         <p
           v-for="item in arr"
           :key="item"
-          :style="{ color: totalPage.current == item ? '#85b8fd' : '#999' }"
+          :style="{ color: pageCur == item ? '#85b8fd' : '#999' }"
           @click="changePageData(item)"
         >
           {{ item }}
         </p>
       </div>
-      <div @click="nextPageData(totalPage.current)" class="pagebtn">下一页</div>
+      <div @click="nextPageData(pageCur)" class="pagebtn">下一页</div>
     </div>
   </div>
 </template>
@@ -27,6 +27,8 @@ interface Item {
 export default class DesBtn extends Vue {
   private arr: Array<number> = [];
   @Prop({}) private totalPage!: Item;
+  @Prop({}) private pageCur!: number;
+  @Prop({}) private pageTo!: number;
   private page: number = 0;
   @Emit("changePage") prePage() {
     return { type: "prePage" };
@@ -37,25 +39,28 @@ export default class DesBtn extends Vue {
   @Emit("changePage") clickPage(num: number) {
     return { type: "clickPage", page: num };
   }
-  @Watch("totalPage", { immediate: true, deep: true }) watchArr(
-    newVal: Item,
-    oldVal: Item
+  @Watch("pageTo", { immediate: true, deep: true }) watchArr(
+    newVal: number,
+    oldVal: number
   ) {
-    console.log(oldVal,newVal,123456)
-    if(oldVal != newVal) {
-      console.log("变化了！")
-      this.initPageData(newVal.total);
+    console.log(oldVal, newVal, 123456);
+    if (oldVal != newVal) {
+      console.log("变化了！");
+      this.initPageData(newVal);
     }
   }
   changePageData(page: number) {
-    let temp = this.totalPage.current;
+    let temp = this.pageCur;
     this.clickPage(page);
+    console.log(this.arr[this.arr.length - 1] == this.pageTo)
+    if(this.pageTo < 5) return
     // console.log("click", this.arr, this.arr[this.arr.length - 1]);
     if (
-      (this.arr[this.arr.length - 1] == this.totalPage.total && temp < page) ||
+      (this.arr[this.arr.length - 1] == this.pageTo && temp < page) ||
       (this.arr[0] == 1 && (page == 2 || page == 3))
-    )
+    ) {
       return;
+    }
     if (page < 3) {
       for (let i = 0; i <= 5; i++) {
         i == 5 ? this.arr.splice(i) : this.$set(this.arr, i, i + 1);
@@ -65,15 +70,16 @@ export default class DesBtn extends Vue {
     for (let i = 0; i <= 5; i++) {
       i == 5 ? this.arr.splice(i) : this.$set(this.arr, i, page + i - 2);
     }
-    this.arr.indexOf(this.totalPage.total) == -1
+    this.arr.indexOf(this.pageTo) == -1
       ? this.arr
-      : this.arr.splice(this.arr.indexOf(this.totalPage.total) + 1);
+      : this.arr.splice(this.arr.indexOf(this.pageTo) + 1);
     console.log(this.arr);
   }
   prePageData(page: number) {
+    if(this.pageCur == 1 ) return
     console.log("pre");
     this.prePage();
-    if (this.totalPage.current >= 3 && this.arr[0] >= page - 2) {
+    if (this.pageCur >= 3 && this.arr[0] >= page - 2) {
       for (let i = 0; i < 6; i++) {
         i == 5 ? this.arr.splice(i) : this.$set(this.arr, i, page + i - 3);
       }
@@ -81,15 +87,13 @@ export default class DesBtn extends Vue {
     console.log(this.arr);
   }
   nextPageData(page: number) {
+    if(this.pageCur == this.pageTo ) return
     console.log("next");
     this.nextPage();
-    page = this.totalPage.current;
-    if (
-      this.totalPage.current + 2 < this.totalPage.total &&
-      this.arr[0] < page - 2
-    ) {
+    page = this.pageCur;
+    if (this.pageCur + 2 < this.pageTo && this.arr[0] < page - 2) {
       for (let i = 0; i < 5; i++) {
-        if (page + i > this.totalPage.total) {
+        if (page + i > this.pageTo) {
           this.arr.splice(i);
           return;
         }
@@ -107,7 +111,7 @@ export default class DesBtn extends Vue {
     this.arr.splice(pageNum);
   }
   created() {
-    this.initPageData(this.totalPage.total);
+    this.initPageData(this.pageTo);
   }
 }
 </script>
@@ -132,7 +136,7 @@ export default class DesBtn extends Vue {
     justify-content: center;
     align-content: center;
     .container {
-      font-size: 12px;
+      font-size: 15px;
       line-height: 38px;
       height: 38px;
       display: flex;

@@ -34,6 +34,8 @@
     <DesBtn
       @changePage="changePage($event)"
       :totalPage="pageData"
+      :pageCur="pageCur"
+      :pageTo="pageTo"
       v-if="pageData.total"
       ref="desBtnvue"
     />
@@ -133,6 +135,8 @@ export default class Description extends Vue {
     current: 1,
     total: 0,
   };
+  public pageCur: number = 1
+  public pageTo: number = 0
   public getListData: dataType = {
     size: 10,
     current: 1,
@@ -162,12 +166,14 @@ export default class Description extends Vue {
     vm.getListData.type = 0;
     vm.getListData.current = 1;
     vm.pageData.current = 1;
+
     vm.getList();
   }
   selectHandle(event: any) {
     this.getListData.type = event.index == 0 ? 2 : event.index - 1;
     this.getListData.current = 1;
     this.pageData.current = 1;
+    this.pageCur = 1
     // this.listData.title = this.listData.list[event.index];
     // (this as any).$localStore.setData("desListData",this.getListData);
     // (this as any).$localStore.setData("desData",this.listData.title);
@@ -192,6 +198,7 @@ export default class Description extends Vue {
   searchThings(event: any) {
     let res = [event.searchVal];
     this.getListData.current = 1;
+    this.pageCur = 1
     this.getListData.topic = res;
     this.getList();
     console.log(event);
@@ -275,6 +282,7 @@ export default class Description extends Vue {
         }
         this.count = res.data.data.total;
         this.pageData.total = Math.ceil(this.count / 10);
+        this.pageTo = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             downloadPic(item.fileToken, item.fileType).then(
@@ -296,17 +304,20 @@ export default class Description extends Vue {
         });
         this.getListData.current--;
         this.pageData.current--;
+        this.pageCur--
         this.getList();
         // (this as any).$localStore.setData("desListData",this.getListData)
       } else if (
         event.type === "nextPage" &&
-        this.pageData.current < this.pageData.total
+        this.pageData.current < this.pageData.total &&
+        this.pageCur < this.pageTo
       ) {
         this.$nextTick(() => {
           window.scrollTo(0, 0);
         });
         this.getListData.current++;
         this.pageData.current++;
+        this.pageCur++
         // (this as any).$localStore.setData("desListData",this.getListData)
         this.getList();
       } else {
@@ -315,6 +326,7 @@ export default class Description extends Vue {
         });
         this.getListData.current = event.page;
         this.pageData.current = event.page;
+        this.pageCur = event.page
         this.getList();
       }
     }

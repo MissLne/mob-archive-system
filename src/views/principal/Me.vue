@@ -30,7 +30,7 @@
     <DesBtn
       @changePage="changePage($event)"
       :totalPage="pageData"
-      v-if="pageData.total"
+      v-if="pageTo"
     />
     <div class="slots2"></div>
     <div class="select-btn" v-if="isShow">
@@ -117,6 +117,8 @@ export default class Me extends Vue {
     current: 1,
     total: 0,
   };
+  public pageCur: number = 1
+  public pageTo: number = 0
   public getListData: dataType = {
     size: 10,
     current: 1,
@@ -138,13 +140,13 @@ export default class Me extends Vue {
     vm.searchText = "请输入题名搜索";
     vm.getListData.type = 0;
     vm.getListData.current = 1;
-    vm.pageData.current = 1;
+    vm.pageCur = 1;
     vm.getList();
   }
   selectHandle(event: any) {
     this.getListData.type = event.index == 0 ? 2 : event.index - 1;
     this.getListData.current = 1;
-    this.pageData.current = 1;
+    this.pageCur = 1;
     this.getList();
     this.$nextTick(() => {
       window.scrollTo(0, 0);
@@ -209,7 +211,7 @@ export default class Me extends Vue {
           this.idList.push({ id: result[i].id, type: result[i].type });
         }
         this.count = res.data.data.total;
-        this.pageData.total = Math.ceil(this.count / 10);
+        this.pageTo = Math.ceil(this.count / 10);
         result.map((item: any, index: number) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
             downloadPic(item.fileToken, item.fileType).then(
@@ -227,24 +229,24 @@ export default class Me extends Vue {
           window.scrollTo(0, 0);
         });
         this.getListData.current--;
-        this.pageData.current--;
+        this.pageCur--;
         this.getList();
       } else if (
         event.type === "nextPage" &&
-        this.pageData.current < this.pageData.total
+        this.pageCur < this.pageTo
       ) {
         this.$nextTick(() => {
           window.scrollTo(0, 0);
         });
         this.getListData.current++;
-        this.pageData.current++;
+        this.pageCur++;
         this.getList();
       } else {
         this.$nextTick(() => {
           window.scrollTo(0, 0);
         });
        this.getListData.current = event.page;
-        this.pageData.current = event.page;
+        this.pageCur = event.page;
         this.getList();
       }
     }

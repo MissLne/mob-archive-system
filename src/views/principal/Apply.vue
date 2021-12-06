@@ -27,7 +27,9 @@
     <DesBtn
       @changePage="changePage($event)"
       :totalPage="pageData"
-      v-if="pageData.total"
+      :pageCur="pageCur"
+      :pageTo="pageTo"
+      v-if="pageTo"
     />
     <Alerts
       :title="'确认删除'"
@@ -87,6 +89,8 @@ export default class Apply extends Vue {
     total: 0,
     time: "",
   };
+  public pageCur: number = 1
+  public pageTo: number = 0
   public headData: any = {
     title: "借阅申请",
     leftUrl: "3",
@@ -125,7 +129,7 @@ export default class Apply extends Vue {
   doSth(vm: any) {
     vm.searchText = "";
     vm.pageData.time = vm.searchText;
-    vm.pageData.current = 1;
+    vm.pageCur = 1;
     vm.getList();
   }
   //  beforeRouteUpdate (to: any,from: any,next: any) {
@@ -138,21 +142,21 @@ export default class Apply extends Vue {
   // }
   searchThings(event: any) {
     this.pageData.time = event.searchVal;
-    this.pageData.current = 1;
+    this.pageCur = 1;
     this.getList();
     console.log(event);
   }
   async onConfirm(event: any) {
     this.searchText = event.date;
     this.pageData.time = event.date;
-    this.pageData.current = 1;
+    this.pageCur = 1;
     this.getList();
     await this.getList();
     
   }
   getList(): void {
     let data = {
-      current: this.pageData.current,
+      current: this.pageCur,
       applyTime: this.pageData.time,
     };
     if (!this.pageData.time) {
@@ -175,7 +179,8 @@ export default class Apply extends Vue {
         //   this.$set(this.itemData, index, item);
         // });
         this.$set(this.pageData,'total',Math.ceil(res.data.data.total / 10))
-        console.log(this.pageData.total,'total');
+        this.pageTo = Math.ceil(res.data.data.total / 10)
+        console.log(this.pageTo,'total');
         this.checkList = new Array(this.itemData.length).fill(false);
         this.idList = [];
         for (let i = 0; i < this.itemData.length; i++) {
@@ -184,27 +189,27 @@ export default class Apply extends Vue {
       });
   }
   changePage(event: any): void {
-    if (event && this.pageData.current) {
-      if (event.type === "prePage" && this.pageData.current > 1) {
+    if (event && this.pageCur) {
+      if (event.type === "prePage" && this.pageCur > 1) {
         // this.$nextTick(() => {
         //   window.scrollTo(0, 0);
         // });
-        this.pageData.current--;
+        this.pageCur--;
         this.getList();
       } else if (
         event.type === "nextPage" &&
-        this.pageData.current < this.pageData.total
+        this.pageCur < this.pageData.total
       ) {
         // this.$nextTick(() => {
         //   window.scrollTo(0, 0);
         // });
-        this.pageData.current++;
+        this.pageCur++;
         this.getList();
       } else {
         // this.$nextTick(() => {
         //   window.scrollTo(0, 0);
         // });
-        this.pageData.current = event.page;
+        this.pageCur = event.page;
         this.getList();
       }
     }
