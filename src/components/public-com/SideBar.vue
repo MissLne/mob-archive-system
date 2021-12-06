@@ -14,7 +14,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import MsgBox from "./MsgBox/Msg";
 
 @Component
 export default class SideBar extends Vue {
@@ -22,9 +21,6 @@ export default class SideBar extends Vue {
   logout() {
     localStorage.clear();
     this.$router.replace({name: 'login'});
-    setTimeout(() => {
-      MsgBox.success('退出登录成功');
-    }, 450)
   }
 }
 </script>

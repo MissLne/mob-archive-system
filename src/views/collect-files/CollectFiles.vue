@@ -19,6 +19,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import TransitionView from '@/components/public-com/TransitionView.vue'
 
 @Component({
+  name: 'CollectFiles',
   components: {
     TransitionView
   }

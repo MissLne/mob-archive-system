@@ -2,14 +2,15 @@
   <div id="temp-arch">
     <transition-view>
       <router-view
-        :detailData="detailDataList[0]"
+        :detailDataList="detailDataList"
         :fondsIdentifier="fondsIdentifier"
         :dossierType="dossierType"
         :departmentNameTree="departmentNameTree"
         @passDetailData="passDetailData"
-        @nextDetail="nextDetail"
       ></router-view>
     </transition-view>
+<!--     <button @click="add">add</button>
+    <button @click="del">del</button> -->
   </div>
 </template>
 
@@ -28,7 +29,14 @@ export default class TempArch extends Vue {
   private fondsIdentifier: any = null; // 全宗号
   private dossierType: any = null; // 类别号
   private departmentNameTree: any = null; // 部门
-
+/* add() {
+  this.detailDataList.splice(this.detailDataList.length, 0, {a: 123});
+  console.log(this.detailDataList);
+}
+del() {
+  this.detailDataList.splice(0, 1);
+  console.log(this.detailDataList);
+} */
   created() {
   }
   initSelectData() {
@@ -42,16 +50,6 @@ export default class TempArch extends Vue {
     this.$router.push({
       name: 'tempArchDetail',
     })
-  }
-  nextDetail() {
-    if (this.detailDataList.length === 1)
-      this.$router.go(-1);
-    else {
-      this.detailDataList.splice(0, 1);
-      this.$router.replace({
-        name: 'tempArchDetail',
-      })
-    }
   }
 }
 </script>

@@ -12,7 +12,7 @@ function flatMetaTree(state: any) {
       })
   }
   state.flatArr = flatArr;
-  console.log(flatArr)
+  // console.log(flatArr)
 }
 
 const metaData: Module<any, any> = {
@@ -29,7 +29,7 @@ const metaData: Module<any, any> = {
      * @param payload metaData和fileType
      */
     setMetaDataTree(state, payload: {metaData: any, fileType?: string}) {
-      console.log(payload.metaData)
+      // console.log(payload.metaData)
       // 将树状数据设置好
       const fullMetaDataTree: MetaDataStruct = JSON.parse(localStorage.getItem('struct') as string);
       if (payload.fileType)

@@ -87,6 +87,7 @@ import PreviewBox from '@/components/public-com/PreviewBox.vue';
 import { Dialog } from 'vant'
 
 @Component({
+  name: 'CollectFilesDetail',
   components: {
     Select,
     Input,

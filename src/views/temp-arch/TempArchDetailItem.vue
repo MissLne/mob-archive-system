@@ -1,9 +1,5 @@
 <template>
-  <div id="temp-arch-detail">
-    <DesHead :headData="headData" @handleClick="headClick"/>
-    <div class="slots"></div><!-- 占header的位置 -->
-
-    <!-- <button @click="nextDetail()">下一个</button> -->
+  <div class="temp-arch-detail-item">
     <div class="container">
       <PreviewBox
         :picSrc="detailData.picSrc"
@@ -42,24 +38,23 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator'
+import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import { recursionGetId, initMetaData } from '@/utils/utils-file';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
-import DesHead from '@/components/des-com/index/des-head.vue';
 import PreviewBox from '@/components/public-com/PreviewBox.vue'
 import ArchForm from '@/components/public-com/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
 
 @Component({
+  name: 'TempArchDetailItem',
   components: {
-    DesHead,
     PreviewBox,
     ArchForm,
     CoupleBtns,
   }
 })
-export default class TempArchDetail extends Vue {
+export default class TempArchDetailItem extends Vue {
   @Prop() detailData!: ArchItemData;
   // select的内容
   @Prop() fondsIdentifier!: Array<any>;
@@ -73,17 +68,6 @@ export default class TempArchDetail extends Vue {
     {name: '秘密', id: 4}
   ];
   private readonly retentionPeriodArray = [ '永久', '30年', '10年' ];
-
-  private headData: any = {
-    title: '详情',
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
-    rightPic: false,
-    rightUrl: "",
-    rightText: "",
-    isShow: false,
-  }
 
   // 是否存在元数据
   get haveMetaData() {
@@ -186,10 +170,6 @@ export default class TempArchDetail extends Vue {
     else
       console.log((this.detailData as any).metadata);
   }
-  @Emit('nextDetail')
-  nextDetail() {
-    this.createSetting();
-  }
   // ajax著录文件
   private addFile() {
     if (!this.isComplete) {
@@ -201,7 +181,7 @@ export default class TempArchDetail extends Vue {
         console.log(data);
         if (data.code === 200) {
           Msg.success('著录成功');
-          this.nextDetail();
+          this.submitFile();
         }
         else throw Error();
       }).catch(err => {
@@ -214,7 +194,7 @@ export default class TempArchDetail extends Vue {
     return this.$service.get(`/api/api/image/getImageMetadata?fileId=${fileId}`)
   }
   // ajax删除文件
-  deleteFile() {
+  private deleteFile() {
     Dialog.confirm({
       title: '确认删除',
       confirmButtonText: '是',
@@ -225,7 +205,7 @@ export default class TempArchDetail extends Vue {
       ).then(({data}: any) => {
         if (data.code === 200) {
           Msg.success('删除成功')
-          this.nextDetail();
+          this.submitFile();
         }
         else throw Error();
       }).catch(err => {
@@ -233,12 +213,14 @@ export default class TempArchDetail extends Vue {
       })
     }).catch(() => {})
   }
-
-  private headClick({clickType}: any) {
-    if (clickType === 'left') {
-      this.$router.go(-1)
-    }
+  // ajax暂存文件
+  public async tempAddFile() {
+    const { data } = await this.$service.post('/api/api/archive/addTemporaryArchive', [this.inputsValue]);
+    console.log(data);
   }
+  // 文件被成功著录或删除
+  @Emit('submitFile')
+  submitFile() {}
 
   private radioIsChecked(radioIndex: number) {
     console.log(radioIndex + 1 === this.inputsProps.retentionPeriod.value)
@@ -248,7 +230,7 @@ export default class TempArchDetail extends Vue {
 </script>
 
 <style lang="scss">
-  #temp-arch-detail {
+  .temp-arch-detail-item {
     width: 700px;
     height: 1335px;
     padding: 0 25px 20px;
@@ -263,6 +245,8 @@ export default class TempArchDetail extends Vue {
       height: 1208px;
       box-sizing: border-box;
       padding: 18px 0 29px 40px;
+      /* 用于头部占位的margin，因为外层margin会影响van-calendar的位置，被迫加载内层 */
+      margin-top: 124px;
       background-color: #fff;
       .go-meta-box {
         width: 100%;

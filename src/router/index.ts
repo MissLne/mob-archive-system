@@ -73,10 +73,9 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/temp-arch/TempArchUpload.vue'),
       },
       {
-        meta: { keepAlive: true },
         path: 'detail/x',
         name: 'tempArchDetail',
-        component: () => import('@/views/temp-arch/TempArchDetail.vue'),
+        component: () => import('@/views/temp-arch/TempArchDetail'),
       },
     ]
   },
@@ -91,7 +90,6 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/other/archDetail/MyDes.vue'),
       },
       {
-        meta: { keepAlive: true },
         path: 'detail/x',
         name: 'archDetail',
         component: () => import('@/views/other/archDetail/ArchDetail.vue'),
@@ -99,18 +97,15 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
-    meta: { keepAlive: true },
     path: '/face-recognition/x/x',
     component: () => import('@/views/face-recognition/FaceRecognition.vue'),
     children: [
       {
-        meta: { keepAlive: true },
         path: '/',
         name: 'faceList',
         component: () => import('@/views/face-recognition/FaceList.vue'),
       },
       {
-        meta: { keepAlive: true },
         path: 'detail/x',
         name: 'faceDetail',
         component: () => import('@/views/face-recognition/FaceDetail.vue'),
@@ -118,7 +113,6 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
-    meta: { keepAlive: true },
     path: '/meta-data/x/x/x',
     name: 'metaData',
     component: () => import('@/views/meta-data/MetaData.vue'),
@@ -157,14 +151,13 @@ function setMeta(to: any) {
 }
 
 router.beforeEach((to, from, next) => {
-  if ((to.meta as any).keepAlive) {
-    console.log('set true')
-    store.commit('setDetailAlive', true)
+  if (['archDetail', 'tempArchDetail', 'metaData', 'faceList', 'faceDetail'].includes(to.name || '')) {
+    store.commit('setIncludeList', ['Arch', 'TempArch']);
   }
   else {
-    console.log('set false')
-    store.commit('setDetailAlive', false)
+    store.commit('setIncludeList', ['']);
   }
+  // 没有token就踢出去
   if (to.name === 'login'
     || to.name?.includes('collectFiles')
     || localStorage.getItem('token')

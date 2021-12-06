@@ -8,7 +8,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     _permissionList: [] as Array<string>,
-    isDetailAlive: false,
+    includeList: [] as Array<string>,
     faceData: [] as Array<FaceData>,
     isDetailPage: 0
   },
@@ -21,8 +21,8 @@ export default new Vuex.Store({
 
   },
   mutations: {
-    setDetailAlive: (state, isAlive) => {
-      state.isDetailAlive = isAlive
+    setIncludeList: (state, list) => {
+      state.includeList = list
     },
     setFaceData: (state, array) => {
       state.faceData = array

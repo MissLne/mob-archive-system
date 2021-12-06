@@ -29,7 +29,20 @@
         >查看元数据>></router-link>
       </div>
 
-      <div v-if="status !== 4" class="btns-box">
+      <!-- 状态（0-著录，1-预归档，2-已归档，3-过期，4-回收站，5-销毁） -->
+      <div v-if="status === 2" class="btns-box">
+        <div style="height: 20px;"></div>
+      </div>
+      <div v-else-if="status === 4" class="btns-box">
+        <CoupleBtns
+          :leftName="'删除'"
+          :rightName="'还原'"
+          class="couple-margin"
+          @leftClick="recycleBinOperation('删除', 'DestroyArchive')"
+          @rightClick="recycleBinOperation('还原', 'RestoreArchive')"
+        />
+      </div>
+      <div v-else class="btns-box">
         <transition name="btns-move" mode="out-in">
           <CoupleBtns
             v-if="!isEditing"
@@ -49,17 +62,7 @@
           />
         </transition>
       </div>
-      <div v-else class="btns-box">
-        <CoupleBtns
-          :leftName="'删除'"
-          :rightName="'还原'"
-          class="couple-margin"
-          @leftClick="recycleBinOperation('删除', 'DestroyArchive')"
-          @rightClick="recycleBinOperation('还原', 'RestoreArchive')"
-        />
-      </div>
     </div>
-    <!-- <div class="bg-box"></div> -->
   </div>
 </template>
 
@@ -76,6 +79,7 @@ import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
 import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
 
 @Component({
+  name: 'ArchDetail',
   components: {
     DesHead,
     PreviewBox,
@@ -310,11 +314,10 @@ export default class ArchDetail extends Vue {
   private headClick({clickType}: any) {
     if (clickType === 'left') {
       this.$store.commit("setDetailPage")
-      this.$router.go(-1)
-    //   if (this.isEditing)
-    //     this.isEditing = false;
-    //   else
-    //     this.$router.go(-1)
+      if (this.isEditing)
+        this.isEditing = false;
+      else
+        this.$router.go(-1)
     }
   }
 

@@ -55,6 +55,7 @@ type CheckItem = {
   show: boolean;
 };
 @Component({
+  name: 'MyDes',
   components: {
     DesHead,
     DesItem,

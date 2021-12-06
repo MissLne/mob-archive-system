@@ -1,0 +1,15 @@
+.slide-wrapper {
+  overflow-x: hidden;
+  width: 100vw;
+  .flex-wrapper {
+    display: flex;
+    height: 100vh;
+    > * {
+      flex-shrink: 0;
+      transform: translate(0%);
+    }
+  }
+}
+.tween {
+  transition: transform 0.3s;
+}
