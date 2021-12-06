@@ -1,9 +1,8 @@
 <template>
   <div id="des-btn">
     <div class="pageBtns">
-
-      <div @click="prePageData(totalPage.current)" class="btn">上一页</div>
-      <div>
+      <div @click="prePageData(totalPage.current)" class="pagebtn">上一页</div>
+      <div class="container">
         <p
           v-for="item in arr"
           :key="item"
@@ -13,12 +12,12 @@
           {{ item }}
         </p>
       </div>
-      <div @click="nextPageData(totalPage.current)" class="btn">下一页</div>
+      <div @click="nextPageData(totalPage.current)" class="pagebtn">下一页</div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Emit,Watch } from "vue-property-decorator";
+import { Component, Prop, Vue, Emit, Watch } from "vue-property-decorator";
 
 interface Item {
   total: number;
@@ -38,13 +37,20 @@ export default class DesBtn extends Vue {
   @Emit("changePage") clickPage(num: number) {
     return { type: "clickPage", page: num };
   }
-  @Watch('totalPage',{immediate: true, deep: true}) watchArr(newVal: Item,oldVal: Item) {
-    this.initPageData(newVal.total);
+  @Watch("totalPage", { immediate: true, deep: true }) watchArr(
+    newVal: Item,
+    oldVal: Item
+  ) {
+    console.log(oldVal,newVal,123456)
+    if(oldVal != newVal) {
+      console.log("变化了！")
+      this.initPageData(newVal.total);
+    }
   }
   changePageData(page: number) {
     let temp = this.totalPage.current;
     this.clickPage(page);
-    console.log("click", this.arr, this.arr[this.arr.length - 1]);
+    // console.log("click", this.arr, this.arr[this.arr.length - 1]);
     if (
       (this.arr[this.arr.length - 1] == this.totalPage.total && temp < page) ||
       (this.arr[0] == 1 && (page == 2 || page == 3))
@@ -62,6 +68,7 @@ export default class DesBtn extends Vue {
     this.arr.indexOf(this.totalPage.total) == -1
       ? this.arr
       : this.arr.splice(this.arr.indexOf(this.totalPage.total) + 1);
+    console.log(this.arr);
   }
   prePageData(page: number) {
     console.log("pre");
@@ -71,12 +78,16 @@ export default class DesBtn extends Vue {
         i == 5 ? this.arr.splice(i) : this.$set(this.arr, i, page + i - 3);
       }
     }
+    console.log(this.arr);
   }
   nextPageData(page: number) {
     console.log("next");
     this.nextPage();
     page = this.totalPage.current;
-    if (this.totalPage.current + 2 < this.totalPage.total && this.arr[0] < page - 2) {
+    if (
+      this.totalPage.current + 2 < this.totalPage.total &&
+      this.arr[0] < page - 2
+    ) {
       for (let i = 0; i < 5; i++) {
         if (page + i > this.totalPage.total) {
           this.arr.splice(i);
@@ -85,16 +96,15 @@ export default class DesBtn extends Vue {
         this.$set(this.arr, i, page + i);
       }
     }
+    console.log(this.arr);
   }
   initPageData(page: number) {
-    console.log("w s sdsddfhsjf")
-    
     let pageNum = page > 5 ? 5 : page;
     for (let i = 1; i <= pageNum; i++) {
       this.arr[i - 1] = i;
-      this.$set(this.arr,i - 1,i)
+      this.$set(this.arr, i - 1, i);
     }
-    this.arr.splice(pageNum)
+    this.arr.splice(pageNum);
   }
   created() {
     this.initPageData(this.totalPage.total);
@@ -108,22 +118,21 @@ export default class DesBtn extends Vue {
   justify-content: center;
   align-items: center;
   .pageBtns {
-    .btn {
-      width: 78px;
-      height: 38px;
+    .pagebtn {
+      padding: 8px;
       border-radius: 8px;
       background: #85b8fd;
       color: #fff;
-      font-size: 18px;
-      text-align: center;
-      line-height: 38px;
+      font-size: 16px !important;
+      // text-align: center;
+      // line-height: 38px;
       box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
     }
     display: flex;
     justify-content: center;
     align-content: center;
-    div {
-      font-size: 6px;
+    .container {
+      font-size: 12px;
       line-height: 38px;
       height: 38px;
       display: flex;

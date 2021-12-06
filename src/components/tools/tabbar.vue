@@ -26,17 +26,17 @@ export default class Tabbar extends Vue {
   @Prop({ default: 0 }) private type!: number;
   private barData: Array<Item> = [
     {
-      itemName: "著录中",
+      itemName: "著录",
       itemLink: "description",
       imageUrl: "",
     },
     {
-      itemName: "借阅申请",
+      itemName: "借阅",
       itemLink: "apply",
       imageUrl: "",
     },
     {
-      itemName: "我的档案",
+      itemName: "档案",
       itemLink: "me",
       imageUrl: "",
     },
@@ -81,7 +81,7 @@ export default class Tabbar extends Vue {
     flex-direction: column;
   }
   img {
-    width: 44px;
+    width: 36.5px;
     height: 44px;
     margin-bottom: 5px;
   }

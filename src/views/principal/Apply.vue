@@ -166,7 +166,7 @@ export default class Apply extends Vue {
       })
       .then((res: any) => {
         let result = this.changeStatus(res.data.data.records);
-        console.log(res.data.data);
+        // console.log(res.data.data);
         if (res.data.data.records.length == 0) {
           MsgBox.error("内容为空");
         }
@@ -176,8 +176,6 @@ export default class Apply extends Vue {
         // });
         this.$set(this.pageData,'total',Math.ceil(res.data.data.total / 10))
         console.log(this.pageData.total,'total');
-        (this as any).$refs.desBtnvue.initPageData(this.pageData.total)
-        // this.pageData.total = Math.ceil(res.data.data.total / 10);
         this.checkList = new Array(this.itemData.length).fill(false);
         this.idList = [];
         for (let i = 0; i < this.itemData.length; i++) {
@@ -188,24 +186,24 @@ export default class Apply extends Vue {
   changePage(event: any): void {
     if (event && this.pageData.current) {
       if (event.type === "prePage" && this.pageData.current > 1) {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
+        // this.$nextTick(() => {
+        //   window.scrollTo(0, 0);
+        // });
         this.pageData.current--;
         this.getList();
       } else if (
         event.type === "nextPage" &&
         this.pageData.current < this.pageData.total
       ) {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
+        // this.$nextTick(() => {
+        //   window.scrollTo(0, 0);
+        // });
         this.pageData.current++;
         this.getList();
       } else {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
+        // this.$nextTick(() => {
+        //   window.scrollTo(0, 0);
+        // });
         this.pageData.current = event.page;
         this.getList();
       }
