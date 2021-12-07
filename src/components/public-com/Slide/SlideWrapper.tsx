@@ -52,17 +52,18 @@ export default class SlideWrapper extends Vue {
       this.movePercentage = outsidePercentage;
       console.log('outside percentage!');
     }
-    if ((0.4 < Math.abs(this.movePercentage) && Math.abs(this.movePercentage) <= 1) ||
-    Math.abs(this.endX - this.startX) / ((new Date() as any) - (this.startTime as any)) > 1.5) {
-      if (this.movePercentage > 0)
-        this.movePercentage = this.stopGoLeft ? 0 : 1;
-      else
-        this.movePercentage = this.stopGoRight ? 0 : -1;
-    }
-    else
-      this.movePercentage = 0;
-    // 不然垂直滚动完会有延迟- -  
     if (this.isLeftRight) {
+      if ((0.4 < Math.abs(this.movePercentage) && Math.abs(this.movePercentage) <= 1) ||
+      Math.abs(this.endX - this.startX) / ((new Date() as any) - (this.startTime as any)) > 1.5) {
+        if (this.movePercentage > 0)
+          this.movePercentage = this.stopGoLeft ? 0 : 1;
+        else
+          this.movePercentage = this.stopGoRight ? 0 : -1;
+      }
+      else
+        this.movePercentage = 0;
+        
+      // 不然垂直滚动完会有延迟- -  
       this.isTween = true;
       // 与补间动画0.3s同步（本来使用transitionend，因为input的动画也会冒泡触发，担心性能问题）
       setTimeout(() => {
