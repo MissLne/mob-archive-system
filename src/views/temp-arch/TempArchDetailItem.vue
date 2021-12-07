@@ -57,9 +57,9 @@ export default class TempArchDetailItem extends Vue {
   get dossierType() { return this.$store.getters['selectData/dossierType'] }
   get departmentNameTree() { return this.$store.getters['selectData/departmentNameTree'] }
   // 密级列表
-  get confidentialLevelArray() { return this.$store.getters['selectData/confidentialLevelArray'] };
+  get confidentialLevelArray() { return this.$store.state.selectData.confidentialLevelArray };
   // 保密期限列表
-  get retentionPeriodArray() { return this.$store.getters['selectData/retentionPeriodArray'] };
+  get retentionPeriodArray() { return this.$store.state.selectData.retentionPeriodArray };
 
   // 是否存在元数据
   get haveMetaData() {
@@ -213,11 +213,6 @@ export default class TempArchDetailItem extends Vue {
   // 文件被成功著录或删除
   @Emit('submitFile')
   submitFile() {}
-
-  private radioIsChecked(radioIndex: number) {
-    console.log(radioIndex + 1 === this.inputsProps.retentionPeriod.value)
-    return radioIndex + 1 === this.inputsProps.retentionPeriod.value;
-  }
 }
 </script>
 

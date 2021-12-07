@@ -91,8 +91,19 @@
           </label>
         </div>
         <!-- 混合输入框 -->
-        <div v-else-if="item.type.includes(' ') > 1" class="item-input">
-          
+        <div v-else-if="item.type === 'UserAndTime'" class="pair-input">
+          <!-- 文本输入text -->
+          <Input
+            v-model="item.value[0]"
+            :required="item.required"
+            :msg="item.msg"
+            :disabled="disabled"
+          />
+        <!-- 日期输入date -->
+          <InputDate
+            v-model="item.value[1]"
+            :disabled="disabled"
+          />
         </div>
         <!-- 防止输入的遮罩层，写到下面才能挡住 -->
         <!-- <transition name="van-fade">
@@ -126,9 +137,9 @@ export default class ArchForm extends Vue {
   get dossierType() { return this.$store.getters['selectData/dossierType'] }
   get departmentNameTree() { return this.$store.getters['selectData/departmentNameTree'] }
   // 密级列表
-  get confidentialLevelArray() { return this.$store.getters['selectData/confidentialLevelArray'] };
+  get confidentialLevelArray() { return this.$store.state.selectData.confidentialLevelArray };
   // 保密期限列表
-  get retentionPeriodArray() { return this.$store.getters['selectData/retentionPeriodArray'] };
+  get retentionPeriodArray() { return this.$store.state.selectData.retentionPeriodArray };
   
   // 功能
   @Prop({default: false}) disabled!: boolean;
@@ -179,6 +190,12 @@ export default class ArchForm extends Vue {
           height: 15px;
           // mix-blend-mode: difference;
         }
+      }
+      .pair-input {
+        display: flex;
+        justify-content: space-between;
+        width: 430px;
+        
       }
       .all-radio-boxes {
         display: flex;

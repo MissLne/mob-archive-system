@@ -39,7 +39,7 @@ export default class Input extends Vue {
   @Prop({default: '无'}) holder!: string;
   // 必选消息为空时的消息
   @Prop({default: ''}) msg!: string;
-  @Model('change', {type: String}) outerValue!: string;
+  @Model('change', {type: [String, Number]}) outerValue!: string | number;
 
   public isActive: boolean = false;
   public isWrong: boolean = false;

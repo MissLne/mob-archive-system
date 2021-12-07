@@ -1,4 +1,3 @@
-
 import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator'
 import './slide.scss'
 
@@ -11,6 +10,9 @@ export default class SlideWrapper extends Vue {
   
   startX: number = 0;
   startY: number = 0;
+  // 为了算速度
+  startTime: Date = new Date();
+  endX: number = 0;
   movePercentage: number = 0;
   isLeftRight: any = null;
   isTween = false;
@@ -28,17 +30,20 @@ export default class SlideWrapper extends Vue {
     if (touches.length === 1) {
       this.startX = touches[0].clientX;
       this.startY = touches[0].clientY;
+      this.startTime = new Date();
     }
   }
   onTouchmove(e: TouchEvent) {
     if (e.touches.length === 1) {
       // 设定方向，一旦设定end后才会重置
-      if (this.isLeftRight === null)
+      if (this.isLeftRight === null) {
         this.isLeftRight = Math.abs(e.touches[0].clientX - this.startX) > Math.abs(e.touches[0].clientY -this.startY);
+        // 不prevent好像也可以实现，左右的时候不能上下。。
+        // if (this.isLeftRight) e.preventDefault();
+      }
       if (this.isLeftRight) {
+        this.endX = e.touches[0].clientX;
         this.movePercentage = (e.touches[0].clientX - this.startX) / window.innerWidth;      
-        // 触发之后只能左右
-        e.preventDefault();
       }
     }
   }
@@ -47,7 +52,8 @@ export default class SlideWrapper extends Vue {
       this.movePercentage = outsidePercentage;
       console.log('outside percentage!');
     }
-    if (0.4 < Math.abs(this.movePercentage) && Math.abs(this.movePercentage) <= 1) {
+    if ((0.4 < Math.abs(this.movePercentage) && Math.abs(this.movePercentage) <= 1) ||
+    Math.abs(this.endX - this.startX) / ((new Date() as any) - (this.startTime as any)) > 1.5) {
       if (this.movePercentage > 0)
         this.movePercentage = this.stopGoLeft ? 0 : 1;
       else
@@ -93,7 +99,9 @@ export default class SlideWrapper extends Vue {
           onTouchmove={this.onTouchmove}
           onTouchend={this.onTouchend}
         >
+          {this.stopGoLeft ? (<div style="width: 100vw;"></div>) : ''}
           {this.$slots['default']}
+          {this.stopGoRight ? (<div style="width: 100vw;"></div>) : ''}
         </div>
       </div>
     )

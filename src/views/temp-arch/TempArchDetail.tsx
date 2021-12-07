@@ -85,9 +85,7 @@ export default class TempArchDetail extends Vue {
         >
           {this.indexList.map((i, index) => {
             // 为了避免key冲突。。
-            if (i === -1 && index !== 1)
-              return (<div key={Math.random()} style="width: 100vw;"></div>)
-            else
+            if (!(i === -1 && index !== 1))
               return (
                 <TempArchDetailItem
                   key={this.detailDataList[i].fileId}

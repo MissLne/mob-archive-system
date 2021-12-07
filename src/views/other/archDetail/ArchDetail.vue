@@ -97,9 +97,9 @@ export default class ArchDetail extends Vue {
     return this.$store.getters.permissionList
   }
   // 密级列表
-  get confidentialLevelArray() { return this.$store.getters['selectData/confidentialLevelArray'] };
+  get confidentialLevelArray() { return this.$store.state.selectData.confidentialLevelArray };
   // 保密期限列表
-  get retentionPeriodArray() { return this.$store.getters['selectData/retentionPeriodArray'] };
+  get retentionPeriodArray() { return this.$store.state.selectData.retentionPeriodArray };
   
   // 提交按钮状态
   private isBtnLoading: boolean = false;
