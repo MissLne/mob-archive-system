@@ -10,7 +10,7 @@
         :required="true"
         :holder="formMsg.account"
         :msg="formMsg.account"
-        class="login-input"
+        class="ac-input"
         @focus="setAccountMsg"
       />
       <Input
@@ -20,7 +20,7 @@
         :required="true"
         :holder="formMsg.password"
         :msg="formMsg.password"
-        class="login-input"
+        class="pw-input"
         @focus="setPasswordMsg"
       />
       <router-link to="/collect-files" class="collect-files-link">校史征集>></router-link>
@@ -71,7 +71,6 @@ export default class Login extends Vue {
     if (!this.complete) return;
     (this as any).$service.post('/api/api/user/login', this.formData)
       .then((res: any) => {
-        console.log(res)
         res = res.data;
         if (res.success) {
           this.initLocalStorage(res.data);
@@ -95,7 +94,6 @@ export default class Login extends Vue {
     this.formMsg.password = '请输入密码'
   }
   private initLocalStorage(res: any) {
-    console.log('登录咯', res)
     localStorage.setItem('token', res.token);
     localStorage.setItem('username', res.user.name);
     localStorage.setItem('departmentId', res.user.departmentId);
@@ -175,14 +173,17 @@ export default class Login extends Vue {
         }
       }
       // 登录框
-      .login-input {
-        display: flex;
-        justify-content: center;
+      .ac-input,
+      .pw-input {
         width: 379px;
         font-size: 24px;
+        /deep/ .holder-box,
+        /deep/ .wrong-box {
+          left: 55px;
+        }
         /deep/ input {
           color: #999;
-          text-align: center;  
+          text-indent: 55px;
         }
         /deep/ input[class~="active"] {
           color: rgba(0, 79, 255, 0.5);
@@ -190,6 +191,24 @@ export default class Login extends Vue {
         /deep/ .holder-box {
           color: #999;
         }
+        &::after {
+          content: '';
+          position: absolute;
+          top: 52%;
+          left: 0;
+          width: 42px;
+          height: 42px;
+          background:
+            top left / 40px
+            no-repeat;
+          transform: translateY(-50%);
+        }
+      }
+      .ac-input::after {
+        background-image: url(../assets/login/account.svg);
+      }
+      .pw-input::after {
+        background-image: url(../assets/login/password.svg);
       }
       .collect-files-link {
         align-self: flex-end;
