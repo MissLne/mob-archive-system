@@ -76,7 +76,7 @@ export default class DesDetail extends Vue {
   .des-detail {
     box-sizing: border-box;
     width: 100vw;
-    padding: 0 25px;
+    padding: 24px 25px 0;
     .detail-form {
       background-color: #fff;
       padding: 39px 0 68px 40px;

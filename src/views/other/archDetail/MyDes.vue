@@ -5,6 +5,10 @@
       @handleClick="handleClick"
     />
     <div class="slots"></div>
+    <ul class="tabbar">
+      <li :class="{ active: index === 0 }">档案</li>
+      <li :class="{ active: index === 1 }">详情</li>
+    </ul>
     <SlideWrapper :maxLength="2" @setPages="onSetPages">
       <DesList ref="des-list"></DesList>
       <DesDetail></DesDetail>
@@ -39,18 +43,19 @@ export default class MyDes extends Vue {
     rightText: "选择",
     isShow: false,
   };
-
+  private index: number = 0;
   created() {
     this.headData.title = this.$route.params.name;
   }
 
   handleClick(e: any) {
     // 在详情页且点右边
-    if (this.headData.rightText === '' && e.clickType === 'right') return;
+    if (this.index === 1 && e.clickType === 'right') return;
     (this.$refs['des-list'] as DesList).handleClick(e);
   }
 
   onSetPages(indexList: Array<number>) {
+    this.index = indexList[1];
     if (indexList[1] === 0)
       this.headData.rightText = '选择';
     else
@@ -59,10 +64,40 @@ export default class MyDes extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   #my-des {
     overflow: auto;
     height: 100vh;
+    .tabbar {
+      display: flex;
+      justify-content: space-between;
+      width: 180px;
+      padding: 24px 30px 0;
+      li {
+        position: relative;
+        z-index: 1; // 不然会被下面盖住。。
+        width: 72px;
+        color: #999;
+        font-size: 30px;
+        text-align: center;
+        line-height: 36px;
+        &.active {
+          color: #4187E4;
+          font-size: 36px;
+        }
+        &.active::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 30%;
+          height: 5px;
+          width: 40%;
+          background-color: #4187E4;
+          border-radius: 3px;
+          transform: translateY(12px);
+        }
+      }
+    }
     .upload {
       width: 82px;
       height: 82px;
