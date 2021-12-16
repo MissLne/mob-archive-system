@@ -23,7 +23,7 @@ import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { setPicSrc } from '@/utils/utils-file';
 import { Dialog } from 'vant'
-import { visitorUpload } from '@/services/CollectFiles';
+import { visitorUpload } from '@/services/collect-files';
 
 @Component({
   components: {

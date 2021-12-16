@@ -36,7 +36,7 @@ import InputDate from '@/components/public-com/Input/InputDate.vue';
 import PreviewBox from '@/components/public-com/PreviewBox.vue';
 import ArchForm from '@/components/public-com/ArchForm.vue'
 import { Dialog } from 'vant'
-import { submitCollectedFile } from '@/services/CollectFiles';
+import { submitCollectedFile } from '@/services/collect-files';
 
 @Component({
   name: 'CollectFilesDetailItem',

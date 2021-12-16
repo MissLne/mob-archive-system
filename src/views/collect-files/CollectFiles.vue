@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { getCollectedFileType, getAllDepartmentTree } from '@/services/CollectFiles'
+import { getCollectedFileType, getAllDepartmentTree } from '@/services/collect-files'
 
 @Component({
   name: 'CollectFiles',

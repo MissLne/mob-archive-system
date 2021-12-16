@@ -36,14 +36,13 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Input from '@/components/public-com/Input/Input.vue'
-import MsgBox from '@/components/public-com/MsgBox/Msg';
 import {
   postLogin,
   getFileMetadataStructTree,
   getFondsIdentifier,
   getDossierType,
   getDepartmentTree
-} from '@/services/Login'
+} from '@/services/login-page'
 
 @Component({
   components: {
