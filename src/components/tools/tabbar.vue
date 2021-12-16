@@ -4,25 +4,28 @@
       <router-link
         :to="item.itemLink"
         replace
-        tag="div"
-        :style="{ color: type === index ? '#8EBEFE' : '' }"
-        @click.native="changePage(index)"
+        custom
+        v-slot="{ navigate, isActive }"
       >
-        <img :src="iUrl[index][type === index ? 1 : 0]" />
-        <p>{{ item.itemName }}</p>
+        <div
+          @click="navigate"
+          :style="{ color: isActive ? '#8EBEFE' : '' }"
+        >
+          <img :src="iUrl[index][isActive ? 1 : 0]" />
+          <p>{{ item.itemName }}</p>
+        </div>
       </router-link>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Emit } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 class Item {
   itemName: string = "";
   itemLink: string | object = "";
 }
 @Component
 export default class Tabbar extends Vue {
-  @Prop({ default: 0 }) private type!: number;
   private barData: Array<Item> = [
     {
       itemName: "著录",
@@ -51,10 +54,6 @@ export default class Tabbar extends Vue {
       require("@/assets/index/mineblue@2x.png"),
     ],
   ];
-  @Emit('changePage')
-  changePage(event: any) {
-    return { go: event };
-  }
 }
 </script>
 <style lang="scss">
