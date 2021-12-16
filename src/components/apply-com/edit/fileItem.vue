@@ -1,7 +1,7 @@
 <template>
   <div id="fileItem">
     <div>
-      <img :src="fileItem.fileToken ? fileItem.fileToken : url" />
+      <van-image :src="fileItem.fileToken ? fileItem.fileToken : url" fit="cover" class="thumbnail-img"/>
       <div class="title">
         <div>{{ fileItem.topic }}</div>
         <div>{{ fileItem.introduce ? fileItem.introduce : "暂无简介" }}</div>
@@ -39,6 +39,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
+import { toBase64 } from "@/utils/picture";
 
 @Component
 export default class FileItem extends Vue {
@@ -49,7 +50,7 @@ export default class FileItem extends Vue {
   private isShow: boolean = false;
   private isClose: boolean = false;
   private noname: number = 0;
-  private url = require("@/assets/index/anjuan.png");
+  private url = require("@/assets/file-type/anjuan.png");
   private detailData: any[] = [
     {
       title: "分类",
@@ -108,14 +109,7 @@ export default class FileItem extends Vue {
             }
           )
           .then((data: any) => {
-            this.downloadUrl =
-              "data:image/png;base64," +
-              btoa(
-                new Uint8Array(data.data).reduce(
-                  (data, byte) => data + String.fromCharCode(byte),
-                  ""
-                )
-              );
+            this.downloadUrl = toBase64('image/png', data.data);
             MsgBox.changeStatus("获取资源成功");
             setTimeout(() => {
               (ele as HTMLElement).click();

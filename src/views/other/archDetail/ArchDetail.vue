@@ -64,7 +64,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
-import { recursionGetId, downloadPic, fillArchDetail, setPicByContentType, initMetaData } from '@/utils/utils-file';
+import { recursionGetId, fillArchDetail, initMetaData } from '@/utils/utils-file';
+import { downloadPicture, estimateFileType, isImage, isVideo } from '@/utils/picture';
 import PermissionRequest from '@/utils/utils-request'
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
@@ -73,6 +74,7 @@ import PreviewBox from '@/components/public-com/PreviewBox.vue'
 import ArchForm from '@/components/public-com/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
 import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
+import { getArchiveDetail } from '@/services/archive'
 
 @Component({
   name: 'ArchDetail',
@@ -190,30 +192,25 @@ export default class ArchDetail extends Vue {
 
   // create初始化
   private created() {
-    // 获取详细数据
-    this.$service.get(`/api/api/archive/getArchiveDetail?id=${this.$route.params.id}`)
-      .then(({data: res}: {data: any}) => {
-        console.log('archDetailData', res);
-        this.detailData = res.data;
-        this.status = res.data.status;
+    const get = async () => {
+      const { data } = await getArchiveDetail({id: this.$route.params.id})
+      const detailData = data.data
+      const { status, fileType, thumbnailFileToken, thumbnailFileType } = detailData
 
-        if (!this.detailData) return;
+      if (isImage(fileType) || isVideo(fileType)) {
+        if (thumbnailFileToken && thumbnailFileType)
+          detailData['picSrc'] = await downloadPicture(thumbnailFileType, thumbnailFileToken);
+      }
+      else {
+        console.log(123)  ;
+        detailData['picSrc'] = estimateFileType(fileType)
+      }
 
-        if ((this.detailData.fileType as string).split('/')[0] === 'image' || 
-        (this.detailData.fileType as string).split('/')[0] === 'video') {
-          if (this.detailData.thumbnailFileToken)
-            return downloadPic(this.detailData.thumbnailFileToken, this.detailData.fileType)
-          else if (this.detailData.fileToken)
-            return downloadPic(this.detailData.fileToken, this.detailData.fileType)
-        }
-        else
-          return setPicByContentType(this.detailData.fileType as string)
-      })
-      .then((res: any) => {
-        if (this.detailData)
-          this.$set(this.detailData, 'picSrc', res);
-        this.createSetting()
-      })
+      this.status = status
+      this.detailData = detailData
+      this.createSetting()
+    }
+    get()
   }
   createSetting() {
     const dData = this.detailData;

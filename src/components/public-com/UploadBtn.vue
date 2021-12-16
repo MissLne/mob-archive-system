@@ -3,7 +3,7 @@
     <div v-show="!disabled" id="upload">
       <input type="file" class="select-files" @change="uploadFiles">
       <!-- :disabled="disabled" -->
-      <img src="@/assets/temp-arch/upload.png" class="icon">
+      <img src="@/assets/button/upload.png" class="icon">
     </div>
   </transition>
 </template>

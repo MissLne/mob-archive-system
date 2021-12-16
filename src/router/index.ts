@@ -135,21 +135,6 @@ const router = new VueRouter({
   }
 })
 
-function isture(to: any) {
-  return to.meta && to.meta.keepAlive;
-}
-
-function setMeta(to: any) {
-  if (!to.meta) {
-    to.meta = {}
-  }
-  else if (!to.meta.keepAlive) {
-    to.meta.keepAlive = true;
-  }
-  else
-    to.meta.keepAlive = false;
-}
-
 router.beforeEach((to, from, next) => {
   if (['archDetail', 'tempArchDetail', 'metaData', 'faceList', 'faceDetail'].includes(to.name || '')) {
     store.commit('setIncludeList', ['Arch', 'TempArch']);

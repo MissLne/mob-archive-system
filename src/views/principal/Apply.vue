@@ -72,7 +72,7 @@ import store from "@/store";
   },
 })
 export default class Apply extends Vue {
-  private btnUrl = [require("@/assets/apply/Addapplication.png"),require("@/assets/index/delete.png")]
+  private btnUrl = [require("@/assets/button/add-application.png"),require("@/assets/button/delete.png")]
   public sideBarShow: boolean = false;
   private idList: Array<number> = [];
   private alertShow: boolean = false;

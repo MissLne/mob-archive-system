@@ -21,9 +21,9 @@ import UploadBtn from '@/components/public-com/UploadBtn.vue';
 import ArchList from '@/components/public-com/ArchList.vue';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
-import { setPicSrc } from '@/utils/utils-file';
 import { Dialog } from 'vant'
 import { visitorUpload } from '@/services/collect-files';
+import { isImage, toBase64, estimateFileType } from '@/utils/picture'
 
 @Component({
   components: {
@@ -70,15 +70,19 @@ export default class CollectFilesUpload extends Vue {
       const { data } = await visitorUpload(formData);
       if (data.code !== 200)
         throw Error(data.message);
-    
-      console.log('上传成功', data);
       MsgBox.changeStatus('上传成功');
       
       const fileData: UploadFileData = data.data;
+      // 设置一下名字
+      fileData.fileName = file.name;
+      // 如果是图片
+      if (isImage(file.type))
+        fileData.picSrc = toBase64(file.type, await file.arrayBuffer())
+      // 如果不是图片
+      else
+        fileData.picSrc = estimateFileType(file.type)
+      // 处理完毕，插入数据列表
       this.listData.splice(0, 0, fileData);
-      this.$set(this.listData[0], 'fileName', file.name)
-      setPicSrc(fileData, file);
-      
     } catch (error: any) {
       console.log('上传失败', error.message)
       MsgBox.changeStatus('上传失败', false);
@@ -127,9 +131,7 @@ export default class CollectFilesUpload extends Vue {
   passDetailData(indexList: Array<number>) {
     // 开始编辑时，结束选择，启用上传
     this.disabledUpload = false;
-    return indexList.map((value) => {
-      return this.listData[value];
-    });
+    return indexList.map(value => this.listData[value]);
   }
 }
 </script>

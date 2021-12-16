@@ -23,6 +23,7 @@ import FileData from "@/components/apply-com/edit/fileData.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import store from "@/store"
+import { getSrcCertainly } from "@/utils/picture";
 
 @Component({
   components: {
@@ -79,23 +80,8 @@ export default class editApply extends Vue {
       .get("/api/api/use/getMyUseResultByUseApplyId", this.$route.params)
       .then((res: any) => {
         let result = res.data.data;
-        result.map((item: any, index: number) => {
-          if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
-            this.$service
-              .get(`/api/api/file/download/${item.fileToken}`, {
-                responseType: "arraybuffer",
-              })
-              .then((data: any) => {
-                item.fileToken =
-                  "data:image/png;base64," +
-                  btoa(
-                    new Uint8Array(data.data).reduce(
-                      (data, byte) => data + String.fromCharCode(byte),
-                      ""
-                    )
-                  );
-              });
-          }
+        result.forEach(async (item: any) => {
+          item.fileToken = await getSrcCertainly(item.fileType, item.fileToken)
         });
         this.fileData = result;
       });

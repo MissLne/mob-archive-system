@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
-import { downloadPic, setPicByContentType } from '@/utils/utils-file'
+import { downloadPicture, estimateFileType } from '@/utils/picture'
 import { Image } from 'vant'
 
 @Component
@@ -19,15 +19,15 @@ export default class ArchItem extends Vue {
   onClick() {
   }
   created() {
-    // console.log(this.itemData)
-    if (this.itemData.thumbnailFileToken && this.itemData.thumbnailFileType) {
-      downloadPic(this.itemData.thumbnailFileToken, this.itemData.thumbnailFileType)
-      .then((res: any) => {
-        this.$set(this.itemData, 'picSrc', res);
-      })
+    const setPicture = async () => {
+      const { thumbnailFileToken, thumbnailFileType, fileType } = this.itemData
+      
+      if (thumbnailFileToken && thumbnailFileType)
+        this.$set(this.itemData, 'picSrc', await downloadPicture(thumbnailFileType, thumbnailFileToken));
+      else if (this.itemData.fileType)
+        this.$set(this.itemData, 'picSrc', estimateFileType(fileType))
     }
-    else if (this.itemData.fileType)
-      this.$set(this.itemData, 'picSrc', setPicByContentType(this.itemData.fileType))
+    setPicture();
   }
 }
 </script>

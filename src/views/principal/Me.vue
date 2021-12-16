@@ -49,7 +49,7 @@ import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue";
-import { downloadPic } from "@/utils/utils-file";
+import { getSrcCertainly } from "@/utils/picture";
 import store from "@/store";
 
 interface dataType {
@@ -212,9 +212,9 @@ export default class Me extends Vue {
         }
         this.count = res.data.data.total;
         this.pageTo = Math.ceil(this.count / 10);
-        result.map((item: any, index: number) => {
+        result.forEach((item: any) => {
           if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
-            downloadPic(item.fileToken, item.fileType).then(
+            getSrcCertainly(item.fileType, item.fileToken).then(
               (res: any) => (item.fileToken = res)
             );
           }

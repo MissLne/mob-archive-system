@@ -6,13 +6,14 @@
       class="preview-img"
       @click="preview"
     >
+    <!-- <video :src="picSrc" controls></video> -->
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ImagePreview } from 'vant';
-import { downloadPic } from '@/utils/utils-file';
+import { getSrcCertainly, isImage, isVideo } from '@/utils/picture';
 
 @Component
 export default class PreviewBox extends Vue {
@@ -20,28 +21,27 @@ export default class PreviewBox extends Vue {
   @Prop() fileToken!: string;
   @Prop() fileType!: string;
   private clearPicSrc: string = ''; // 清晰图
-  preview() {
-    if (!this.fileType || this.fileType.split('/')[0] !== 'image')
-      return;
-    else if (!this.fileToken) {
-      ImagePreview([this.picSrc])
+  async preview() {
+    if (!this.fileType) return;
+    if (isVideo(this.fileType)) {
+
     }
-    else if (this.clearPicSrc) {
-      ImagePreview([this.clearPicSrc]);
+    else if (isImage(this.fileType)) {
+      if (!this.fileToken) {
+        ImagePreview([this.picSrc])
+      }
+      else if (this.clearPicSrc) {
+        ImagePreview([this.clearPicSrc]);
+      }
+      else
+        // 先亮出来，免得用户觉得没反应
+        ImagePreview([])
+        const picSrc = await getSrcCertainly(this.fileType, this.fileToken) as string
+        this.clearPicSrc = picSrc;
+        ImagePreview([this.clearPicSrc]);
+      }
     }
-    else
-      // 先亮出来，免得用户觉得没反应
-      ImagePreview([])
-      downloadPic(this.fileToken, this.fileType)
-        .then((picSrc: any) => {
-          this.clearPicSrc = picSrc;
-          ImagePreview([this.clearPicSrc]);
-        })
-        .catch((err: any) => 
-          console.log(err)
-        )
   }
-}
 </script>
 
 <style lang="scss">

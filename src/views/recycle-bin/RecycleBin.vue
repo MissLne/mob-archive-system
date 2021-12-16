@@ -54,10 +54,11 @@ import DesItem from '@/components/des-com/index/des-item.vue'
 import DesBtn from '@/components/des-com/index/des-btn.vue'
 import Selects from '@/components/tools/selects.vue';
 import Msg from '@/components/public-com/MsgBox/Msg';
-import { downloadPic } from '@/utils/utils-file';
+import { getSrcCertainly } from '@/utils/picture';
 import PermissionRequest from '@/utils/utils-request'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue';
 import { Dialog } from 'vant';
+import { getPartDossierList } from '@/services/dossier';
 
 @Component({
   components: {
@@ -127,7 +128,8 @@ export default class RecycleBin extends Vue {
   }
   async getPageData(current: number) {
     try {
-      const {data} = await this.$service.post('/api/api/dossier/getPartDossierList', {
+      
+      const { data } = await getPartDossierList({
         current,
         size: 10,
         status: 4,
@@ -139,7 +141,7 @@ export default class RecycleBin extends Vue {
       this.checkList = new Array(this.records.length).fill(false);
 
       for (const value of this.records) {
-        value.fileToken = await downloadPic(value.fileToken, value.fileType)
+        value.fileToken = await getSrcCertainly(value.fileType, value.fileToken)
       }
       this.currentPage = current
       // 用forEach的话大的catch捕获不了

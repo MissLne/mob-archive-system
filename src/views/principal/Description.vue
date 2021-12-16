@@ -64,8 +64,9 @@ import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue";
-import { downloadPic } from "@/utils/utils-file";
+import { getSrcCertainly } from "@/utils/picture";
 import store from "@/store";
+import { getPartDossierList } from "@/services/dossier";
 
 interface dataType {
   size: number | undefined;
@@ -106,7 +107,7 @@ export default class Description extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
-  private btnUrl = [require("@/assets/index/upload.png"),require("@/assets/index/delete.png")]
+  private btnUrl = [require("@/assets/button/upload.png"),require("@/assets/button/delete.png")]
   public listData: Item = {
     title: "显示全部",
     list: ["显示全部", "显示案卷", "显示文件"],
@@ -266,35 +267,27 @@ export default class Description extends Vue {
       if(!item) this.headData.rightText =  "全选"
     })
   }
-  getList(): void {
-    (this as any).$request
-      .post("/api/api/dossier/getPartDossierList", { ...this.getListData })
-      .then((res: any) => {
-        let result = res.data.data.records;
-        if (res.data.data.records.length == 0) {
-          MsgBox.error("内容为空");
-        }
-        console.log(result);
-        this.idList = [];
-        this.checkList = new Array(result.length).fill(false);
-        for (let i = 0; i < result.length; i++) {
-          this.idList.push({ id: result[i].id, type: result[i].type });
-        }
-        this.count = res.data.data.total;
-        this.pageData.total = Math.ceil(this.count / 10);
-        this.pageTo = Math.ceil(this.count / 10);
-        result.map((item: any, index: number) => {
-          if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
-            downloadPic(item.fileToken, item.fileType).then(
-              (res) => (item.fileToken = res)
-            );
-            downloadPic(item.fileToken, item.fileType).then(
-              (res: any) => (item.fileToken = res)
-            );
-          }
-        });
-        this.desItem = result;
-      });
+  async getList() {
+    const { data } = await getPartDossierList({ ...this.getListData });
+    let result = data.data.records;
+    if (data.data.records.length == 0) {
+      MsgBox.error("内容为空");
+    }
+    console.log(result);
+    this.idList = [];
+    // 初始化 选择状态数组
+    this.checkList = new Array(result.length).fill(false);
+    for (let i = 0; i < result.length; i++) {
+      this.idList.push({ id: result[i].id, type: result[i].type });
+    }
+    this.count = data.data.total;
+    this.pageData.total = Math.ceil(this.count / 10);
+    this.pageTo = Math.ceil(this.count / 10);
+
+    result.forEach(async (item: any) =>
+      item.fileToken = await getSrcCertainly(item.fileType, item.fileToken)
+    );
+    this.desItem = result;
   }
   changePage(event: any): void {
     if (event && this.getListData.current) {

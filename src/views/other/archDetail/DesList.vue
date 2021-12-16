@@ -34,7 +34,8 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import { downloadPic } from "@/utils/utils-file";
+import { getSrcCertainly } from "@/utils/picture";
+import { getArchiveList } from "@/services/archive";
 
 interface dataType {
   size: number | undefined;
@@ -100,29 +101,24 @@ export default class DesList extends Vue {
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
   }
-  getList(): void {
-    (this as any).$request
-      .get("/api/api/archive/getArchiveList", {
-        ...this.getListData,
-        id: this.$route.params.id,
-      })
-      .then((res: any) => {
-        let result = res.data.data.records;
-        this.checkList = new Array(result.length).fill(false);
-        for (let i = 0; i < result.length; i++) {
-          this.idList.push(result[i].id);
-        }
-        this.count = res.data.data.total;
-        this.pageData.total = Math.ceil(this.count / 10);
+  async getList() {
+    const { data } = await getArchiveList({
+      ...this.getListData,
+      id: this.$route.params.id,
+    })
+    let result = data.data.records;
+    // 初始化 选择状态数组
+    this.checkList = new Array(result.length).fill(false);
+    for (let i = 0; i < result.length; i++) {
+      this.idList.push(result[i].id);
+    }
+    this.count = data.data.total;
+    this.pageData.total = Math.ceil(this.count / 10);
 
-        result.map((item: any, index: number) => {
-          if (item.hasOwnProperty("fileToken") && item.fileToken !== null) {
-            downloadPic(item.fileToken, item.fileType)
-              .then((res: any) => item.fileToken = res)
-          }
-        });
-        this.desItem = result;
-      });
+    result.forEach(async (item: any) =>
+      item.fileToken = await getSrcCertainly(item.fileType, item.fileToken)
+    );
+    this.desItem = result;
   }
   changePage(event: any): void {
     if (event && this.getListData.current) {

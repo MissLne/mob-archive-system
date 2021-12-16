@@ -47,7 +47,7 @@ export default class DesItem extends Vue {
   private isShow: boolean = false;
   private isClose: boolean = false;
   private noname: number = 0;
-  private url = require("@/assets/index/anjuan.png");
+  private url = require("@/assets/file-type/anjuan.png");
   private isOverflow: boolean = false;
   private detailData: any[] = [
     {
