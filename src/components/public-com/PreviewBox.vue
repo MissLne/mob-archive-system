@@ -21,6 +21,11 @@ export default class PreviewBox extends Vue {
   @Prop() fileToken!: string;
   @Prop() fileType!: string;
   private clearPicSrc: string = ''; // 清晰图
+  // 摧毁之前，释放一下对象url的内存
+  beforeDestroy() {
+    URL.revokeObjectURL(this.picSrc)
+    URL.revokeObjectURL(this.clearPicSrc)
+  }
   async preview() {
     if (!this.fileType) return;
     if (isVideo(this.fileType)) {

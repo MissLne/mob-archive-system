@@ -23,7 +23,7 @@ export const estimateFileType = (contentType: string) => {
 }
 
 /**
- * Blob生成对象URL
+ * Blob生成对象URL，需要注意释放url
  * @param buffer 
  * @returns 对象URL
  */

@@ -29,6 +29,10 @@ export default class ArchItem extends Vue {
     }
     setPicture();
   }
+  // 摧毁之前，释放一下对象url的内存
+  beforeDestroy() {
+    URL.revokeObjectURL(this.itemData.picSrc as any)
+  }
 }
 </script>
 

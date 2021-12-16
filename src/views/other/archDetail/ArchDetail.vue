@@ -195,14 +195,15 @@ export default class ArchDetail extends Vue {
     const get = async () => {
       const { data } = await getArchiveDetail({id: this.$route.params.id})
       const detailData = data.data
-      const { status, fileType, thumbnailFileToken, thumbnailFileType } = detailData
+      const { status, fileType, fileToken, thumbnailFileToken } = detailData
 
-      if (isImage(fileType) || isVideo(fileType)) {
-        if (thumbnailFileToken)
-          detailData['picSrc'] = await downloadPicture(thumbnailFileToken);
+      if (isImage(fileType)) {
+        detailData['picSrc'] = await downloadPicture(thumbnailFileToken ?? fileToken);
+      }
+      else if (isVideo(fileType) && thumbnailFileToken) {
+        detailData['picSrc'] = await downloadPicture(thumbnailFileToken);
       }
       else {
-        console.log(123)  ;
         detailData['picSrc'] = estimateFileType(fileType)
       }
 
