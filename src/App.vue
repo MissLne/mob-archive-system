@@ -1,25 +1,20 @@
 <template>
   <div id="app">
-    <transition-view>
-      <div>
-        <keep-alive>
-          <router-view v-if="$route.meta.keepAlive"></router-view>
-        </keep-alive>
-        <keep-alive :include="$store.state.includeList">
-          <router-view v-if="!$route.meta.keepAlive"></router-view>
-        </keep-alive>
-      </div>
-    </transition-view>
+    <div>
+      <keep-alive>
+        <router-view v-if="$route.meta.keepAlive"></router-view>
+      </keep-alive>
+      <keep-alive :include="$store.state.includeList">
+        <router-view v-if="!$route.meta.keepAlive"></router-view>
+      </keep-alive>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import TransitionView from '@/components/public-com/TransitionView.vue'
 
 @Component({
-  components: {
-    TransitionView
-  }
+  components: {}
 })
 export default class App extends Vue {
 }

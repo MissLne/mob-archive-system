@@ -2,29 +2,24 @@
   <div id="face-recognition">
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div>
-
-    <transition-view>
-      <keep-alive>
-        <router-view
-          :faceData="faceData"
-          :detailData="detailData"
-          @passDetailData="passDetailData"
-          class="router-view-box"
-        />
-      </keep-alive>
-    </transition-view>
+    <keep-alive>
+      <router-view
+        :faceData="faceData"
+        :detailData="detailData"
+        @passDetailData="passDetailData"
+        class="router-view-box"
+      />
+    </keep-alive>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import DesHead from '@/components/des-com/index/des-head.vue'
-import TransitionView from '@/components/public-com/TransitionView.vue'
 
 @Component({
   components: {
-    DesHead,
-    TransitionView
+    DesHead
   }
 })
 export default class FaceRecognition extends Vue {

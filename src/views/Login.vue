@@ -37,6 +37,13 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Input from '@/components/public-com/Input/Input.vue'
 import MsgBox from '@/components/public-com/MsgBox/Msg';
+import {
+  postLogin,
+  getFileMetadataStructTree,
+  getFondsIdentifier,
+  getDossierType,
+  getDepartmentTree
+} from '@/services/Login'
 
 @Component({
   components: {
@@ -67,24 +74,23 @@ export default class Login extends Vue {
 
   // 登录按钮
   private onClick(): void {
-    localStorage.removeItem('token')
     if (!this.complete) return;
-    (this as any).$service.post('/api/api/user/login', this.formData)
-      .then((res: any) => {
-        res = res.data;
-        if (res.success) {
-          this.initLocalStorage(res.data);
-          this.$router.replace({name: 'Home'})
-        }
-        else {
-          const msg = (res.message as string).split('，')[1];
-          // 账号错误还是
-          const index = msg[0] === '账' ? 'password' : 'account';
-          this.formData[index] = '';
-          (this.$refs[index] as Input).isWrong = true;
-          this.formMsg[index] = msg;
-        }
-      })
+    const login = async () => {
+      const { data } = await postLogin(this.formData);
+      if (data.success) {
+        this.initLocalStorage(data.data);
+        this.$router.replace({name: 'Home'})
+      }
+      else {
+        const msg = (data.message as string).split('，')[1];
+        // 账号错误还是
+        const index = msg[0] === '账' ? 'password' : 'account';
+        this.formData[index] = '';
+        (this.$refs[index] as Input).isWrong = true;
+        this.formMsg[index] = msg;
+      }
+    }
+    login();
   }
   // 设置信息
   setAccountMsg() {
@@ -93,50 +99,40 @@ export default class Login extends Vue {
   setPasswordMsg() {
     this.formMsg.password = '请输入密码'
   }
-  private initLocalStorage(res: any) {
+  private async initLocalStorage(res: any) {
     localStorage.setItem('token', res.token);
     localStorage.setItem('username', res.user.name);
     localStorage.setItem('departmentId', res.user.departmentId);
     // 载入权限列表
     localStorage.setItem('permissionList', JSON.stringify(res.permissionList));
+
+    const [{
+      data: metaDataStructTree,
+      data: fondsIdentifier,
+      data: dossierType,
+      data: departmentTree,
+    }] = await Promise.all([
+      getFileMetadataStructTree(),
+      getFondsIdentifier(),
+      getDossierType(),
+      getDepartmentTree(),
+    ])
     // 载入元数据结构
-    this.$service.get('/api/api/archive/getFileMetadataStructTree')
-      .then(({data: res}: {data: any}) => {
-        console.log(res)
-        localStorage.setItem('struct', JSON.stringify(res.data))
-      })
-      .catch((res: any) => {
-        console.log(res);
-        MsgBox.error('获取元数据失败');
-      })
+    localStorage.setItem('struct', JSON.stringify(metaDataStructTree.data))
     // 载入全宗号
-    this.$service.get(`/api/api/fondsIdentifier/getFondsIdentifier`)
-      .then(({data: res}: any) => {
-        console.log('getCollectedFileType', res)
-        if (res.success && res.code === 200)
-          localStorage.setItem('fondsIdentifier', JSON.stringify(res.data))
-      })
+    localStorage.setItem('fondsIdentifier', JSON.stringify(fondsIdentifier.data))
     // 载入类别号
-    this.$service.get(`/api/api/type/getDossierType`)
-      .then(({data: res}: any) => {
-        console.log('getCollectedFileType', res)
-        if (res.success && res.code === 200)
-          localStorage.setItem('dossierType', JSON.stringify(res.data.children))
-      })
+    localStorage.setItem('dossierType', JSON.stringify(dossierType.data.children))
     // 载入部门
-    this.$service.get(`/api/api/department/getDepartmentTree`)
-      .then(({data: res}: any) => {
-        console.log('getCollectedFileType', res)
-        if (res.success && res.code === 200)
-          localStorage.setItem('departmentNameTree', JSON.stringify([res.data]))
-      })
+    localStorage.setItem('departmentNameTree', JSON.stringify([departmentTree.data]))
   }
 }
 </script>
 
 <style lang="scss" scoped>
   #login {
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     width: 100vw;
     // min-height: 1334px;
     // height: 100vh;

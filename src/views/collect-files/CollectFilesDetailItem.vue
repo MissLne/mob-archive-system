@@ -68,20 +68,21 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import Select from '@/components/public-com/Select/Select.vue'
 import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
-import DesHead from '@/components/des-com/index/des-head.vue';
 import { recursionGetId } from '@/utils/utils-file';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
 import PreviewBox from '@/components/public-com/PreviewBox.vue';
+import ArchForm from '@/components/public-com/ArchForm.vue'
 import { Dialog } from 'vant'
+import { submitCollectedFile } from '@/services/CollectFiles';
 
 @Component({
   name: 'CollectFilesDetailItem',
   components: {
     Select,
     Input,
-    DesHead,
     InputDate,
-    PreviewBox
+    PreviewBox,
+    ArchForm
   }
 })
 export default class CollectFilesDetailItem extends Vue {
@@ -154,7 +155,7 @@ export default class CollectFilesDetailItem extends Vue {
     }).catch(() => {})
 
   }
-  private submit() {
+  private async submit() {
     const fullFileData: any = {
       // "id": "资料文件的id（新增情况下不需要填写）",
       topic: this.inputsProps.topic.value,
@@ -191,29 +192,28 @@ export default class CollectFilesDetailItem extends Vue {
     for (const key in fullFileData) {
       if (fullFileData[key] && fullFileData[key] !== '') test[key] = fullFileData[key];
     }
-
-    this.$service.post(`/api/api/collectedFile/${urlSuffix}`, test)
-      .then(({data}: any) => {
-        console.log('success!success!success!', data)
-        if (data.code === 200) {
-          this.submitFile();
-          // this.detailData.isSubmitted = true;
-          // this.detailData.saveData = this.inputsValue;
-          this.$set(this.detailData, 'isSubmitted', true);
-          this.$set(this.detailData, 'saveData', this.inputsValue);
-          /**
-           * 此处如果返回id，将其赋给this.detailData.newFileId
-           */
-          MsgBox.success('提交成功');
-        }
-        else if (data.code === 400)
-          throw Error(data.message);
-        else
-          throw Error('提交失败');
-      })
-      .catch((err: Error) => {
-        MsgBox.error(err.message.split('，')[0]);
-      })
+    
+    try {
+      const { data } = await submitCollectedFile(urlSuffix, test);
+      console.log('success!success!success!', data)
+      if (data.code === 200) {
+        this.submitFile();
+        // this.detailData.isSubmitted = true;
+        // this.detailData.saveData = this.inputsValue;
+        this.$set(this.detailData, 'isSubmitted', true);
+        this.$set(this.detailData, 'saveData', this.inputsValue);
+        /**
+         * 此处如果返回id，将其赋给this.detailData.newFileId
+         */
+        MsgBox.success('提交成功');
+      }
+      else if (data.code === 400)
+        throw Error(data.message);
+      else
+        throw Error('提交失败');
+    } catch (error: any) {
+      MsgBox.error(error.message.split('，')[0]);
+    }
   }
   // 文件被成功著录或删除
   @Emit('submitFile')

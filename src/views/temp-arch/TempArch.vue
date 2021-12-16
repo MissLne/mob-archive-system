@@ -1,11 +1,9 @@
 <template>
   <div id="temp-arch">
-    <transition-view>
       <router-view
         :detailDataList="detailDataList"
         @passDetailData="passDetailData"
       ></router-view>
-    </transition-view>
 <!--     <button @click="add">add</button>
     <button @click="del">del</button> -->
   </div>
@@ -13,13 +11,10 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import TransitionView from '@/components/public-com/TransitionView.vue'
 
 @Component({
   name: 'TempArch',
-  components: {
-    TransitionView
-  }
+  components: {}
 })
 export default class TempArch extends Vue {
   private detailDataList: Array<any> = [];

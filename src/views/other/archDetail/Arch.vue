@@ -1,24 +1,19 @@
 <template>
   <div id="arch">
-    <transition-view>
-      <keep-alive include="MyDes">
-        <router-view
-          :archId="archId"
-        ></router-view>
-      </keep-alive>
-    </transition-view>
+    <keep-alive include="MyDes">
+      <router-view
+        :archId="archId"
+      ></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import TransitionView from '@/components/public-com/TransitionView.vue'
 
 @Component({
   name: 'Arch',
-  components: {
-    TransitionView
-  }
+  components: {}
 })
 export default class Arch extends Vue {
   private archId!: number;

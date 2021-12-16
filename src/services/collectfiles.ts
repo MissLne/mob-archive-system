@@ -1,15 +1,36 @@
 import service from '@/utils/http'
 
-export const getCollectedFileType = (options?: any) => {
+// 获取下拉菜单数据
+export const getCollectedFileType = () => {
   return service({
     url: '/api/api/type/getCollectedFileType',
     method: 'GET',
   })
 }
 
-export const getAllDepartmentTree = (options?: any) => {
+// 获取下拉菜单数据
+export const getAllDepartmentTree = () => {
   return service({
     url: '/api/api/department/getAllDepartmentNameTree',
     method: 'GET',
+  })
+}
+
+// 上传文件
+export const visitorUpload = (data: any) => {
+  return service({
+    url: '/api/api/file/visitorUpload',
+    method: 'POST',
+    headers: { 'content-type': 'multipart/form-data' },
+    data: data,
+  })
+}
+
+// 提交文件
+export const submitCollectedFile = (urlSuffix: string, data: any) => {
+  return service({
+    url: `/api/api/collectedFile/${urlSuffix}`,
+    method: 'POST',
+    data: data
   })
 }

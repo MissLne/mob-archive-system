@@ -23,6 +23,7 @@ import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { setPicSrc } from '@/utils/utils-file';
 import { Dialog } from 'vant'
+import { visitorUpload } from '@/services/CollectFiles';
 
 @Component({
   components: {
@@ -57,7 +58,7 @@ export default class CollectFilesUpload extends Vue {
     return true;
   }
   // 上传文件
-  private onUploadFiles (file: File) {
+  private async onUploadFiles (file: File) {
     const formData = new FormData();
     formData.append('multipartFile', file);
 
@@ -65,33 +66,27 @@ export default class CollectFilesUpload extends Vue {
     this.disabledUpload = true;
     this.disabledCheck = true;
 
-    this.$service.post('/api/api/file/visitorUpload', formData, {
-      headers: { 'content-type': 'multipart/form-data' }
-    })
-    .then(({data: res}: any) => {
-      if (res.code === 200) {
-        console.log('上传成功', res);
-        MsgBox.changeStatus('上传成功');
-        
-        const data: UploadFileData = res.data;
-        this.listData.splice(0, 0, data);
-        // this.$set(data, 'fileName', file.name)
-        this.$set(this.listData[0], 'fileName', file.name)
-        setPicSrc(data, file);
-      }
-      else
-        throw Error(res.message);
-    })
-    .catch((err: Error) => {
-      console.log('上传失败', err.message)
-      // MsgBox.changeStatus(err.message, false);
+    try {
+      const { data } = await visitorUpload(formData);
+      if (data.code !== 200)
+        throw Error(data.message);
+    
+      console.log('上传成功', data);
+      MsgBox.changeStatus('上传成功');
+      
+      const fileData: UploadFileData = data.data;
+      this.listData.splice(0, 0, fileData);
+      this.$set(this.listData[0], 'fileName', file.name)
+      setPicSrc(fileData, file);
+      
+    } catch (error: any) {
+      console.log('上传失败', error.message)
       MsgBox.changeStatus('上传失败', false);
-    })
-    .finally(() => {
+    } finally {
       MsgBox.closeBox(1000);
       this.disabledUpload = false;
       this.disabledCheck = false;
-    })
+    }
   }
   // header的左边（返回）和右边（选择）
   public headClick({clickType}: any) {
