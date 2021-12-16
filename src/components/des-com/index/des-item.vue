@@ -8,14 +8,21 @@
       </div>
     </div>
     <div class="btn">
-      <div @click="showDetail" ref="detail-wrapper">详细</div>
+      <div
+        ref="detail-wrapper"
+        class="show-detail"
+        @click="showDetail"
+      >详细</div>
       <router-link
         v-if="desItem.type === 0"
-        tag="div"
-        :to="{ name: 'myDes', params: { id: desItem.id, name: desItem.topic,type: typeName } }"
-        >查看</router-link
-      >
-      <div v-if="desItem.type === 1" @click="openDetailPage">查看</div>
+        :to="{ name: 'myDes', params: { id: desItem.id, name: desItem.topic, type: typeName } }"
+        class="go-detail-anchor"
+      >查看</router-link>
+      <router-link
+        v-else-if="desItem.type === 1"
+        :to="{ name: 'archDetail', params: { id: desItem.id } }"
+        class="go-detail-anchor"
+      >查看</router-link>
     </div>
     <div
       class="details"
@@ -121,9 +128,6 @@ export default class DesItem extends Vue {
     }
     this.isShow = !this.isShow;
   }
-  openDetailPage() {
-    this.$router.push({name: 'archDetail', params: {id: this.desItem.id}})
-  }
 }
 </script>
 <style lang="scss">
@@ -152,13 +156,12 @@ export default class DesItem extends Vue {
   .btn {
     display: flex;
     align-items: center;
-    > div:nth-of-type(1) {
+    .show-detail {
       font-size: 22px;
       color: #8ebefe;
       text-decoration: underline;
-      // z-index: 100;
     }
-    > div:nth-of-type(2) {
+    .go-detail-anchor {
       font-size: 22px;
       width: 78px;
       height: 40px;
@@ -168,7 +171,6 @@ export default class DesItem extends Vue {
       background: #85b8fd;
       border-radius: 8px;
       margin-left: 54px;
-      // z-index: 100;
     }
   }
   .thumbnail-img {
