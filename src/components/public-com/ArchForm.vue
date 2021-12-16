@@ -63,10 +63,19 @@
             :disabled="disabled"
           />
           <Select
-            v-else
+            v-else-if="item.title === '密级'"
             v-model="item.value"
             :myData="confidentialLevelArray"
             :optionVariableName="'name'"
+            :optionVariableKey="'id'"
+            :disabled="disabled"
+          />
+          <!-- 校史征集专供 -->
+          <Select
+            v-else-if="item.title === '类别'"
+            v-model="item.value"
+            :myData="collectFilesType"
+            :optionVariableName="'typeName'"
             :optionVariableKey="'id'"
             :disabled="disabled"
           />
@@ -135,15 +144,22 @@ export default class ArchForm extends Vue {
     // select/radio的数据
   get fondsIdentifier() { return this.$store.getters['selectData/fondsIdentifier'] }
   get dossierType() { return this.$store.getters['selectData/dossierType'] }
-  get departmentNameTree() { return this.$store.getters['selectData/departmentNameTree'] }
+  get departmentNameTree() {
+    if (localStorage.getItem('token') === null)
+      return this.$store.getters['selectData/allDepartmentNameTree']
+    else
+      return this.$store.getters['selectData/departmentNameTree']
+  }
   // 密级列表
   get confidentialLevelArray() { return this.$store.state.selectData.confidentialLevelArray };
   // 保密期限列表
   get retentionPeriodArray() { return this.$store.state.selectData.retentionPeriodArray };
-  
+
+  get collectFilesType() { return this.$store.getters['selectData/collectFilesType'] };
+
   // 功能
   @Prop({default: false}) disabled!: boolean;
-  @Prop({default: true}) canRecognize!: boolean;
+  @Prop({default: false}) canRecognize!: boolean;
   // 人脸识别用
   @Prop() fileId!: number;
 

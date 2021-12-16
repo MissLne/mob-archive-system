@@ -1,49 +1,14 @@
 <template>
   <div id="collect-files-detail">
     <div class="container">
-      <div class="input-box">
-        <PreviewBox
-          :picSrc="detailData.picSrc"
-          :fileType="detailData.contentType"
-        />
-        <h3 class="title">基础信息</h3>
-        <ul class="inf-list">
-          <li v-for="item in inputsProps" :key="item.title" class="item">
-            <span class="item-title" :class="{ 'required': item.required }">{{item.title}}</span>
-            <Input
-              v-if="item.type === 'text'"
-              v-model="item.value"
-              :required="item.required"
-              :msg="item.msg"
-            />
-            <InputDate
-              v-else-if="item.type === 'date'"
-              v-model="item.value"
-            />
-            <div
-              v-else-if="item.type === 'select'"
-              class="item-input"
-            >
-              <img src="@/assets/temp-arch/pulldown-gray@2x.png" class="select-pulldown-icon">
-              
-              <Select
-                v-if="item.title === '类别'"
-                v-model="item.value"
-                :myData="collectFilesType"
-                :optionVariableName="'typeName'"
-                :optionVariableKey="'id'"
-              />
-              <Select
-                v-else
-                v-model="item.value"
-                :myData="allDepartmentNameTree"
-                :optionVariableName="'departmentName'"
-                :optionVariableKey="'id'"
-              />
-            </div>
-          </li>
-        </ul>
-      </div>
+      <PreviewBox
+        :picSrc="detailData.picSrc"
+        :fileType="detailData.contentType"
+      />
+      <ArchForm
+        :inputsProps="inputsProps"
+        :disabled="isSubmitted"
+      />
       <div class="submit-box">
         <button
           v-if="!isSubmitted"
@@ -57,8 +22,6 @@
           style="background-color: #D2E6FE;"
         >该资料已提交</button>
       </div>
-
-      <div v-if="isSubmitted" class="disabled-mask"></div>
     </div>
   </div>
 </template>
@@ -168,12 +131,10 @@ export default class CollectFilesDetailItem extends Vue {
         Number.parseInt(
           recursionGetId(this.collectFilesType, this.inputsProps.categoryId.value, 'typeName', 'id')
         ),
-        // this.inputsProps.categoryId.value,
       departmentId:
         Number.parseInt(
           recursionGetId(this.allDepartmentNameTree, this.inputsProps.departmentId.value, 'departmentName', 'id')
         ),
-        // this.inputsProps.departmentId.value,
       comment: this.inputsProps.comment.value,
       sourse: this.inputsProps.sourse.value,
       "fileId": this.detailData.fileId,
@@ -198,8 +159,6 @@ export default class CollectFilesDetailItem extends Vue {
       console.log('success!success!success!', data)
       if (data.code === 200) {
         this.submitFile();
-        // this.detailData.isSubmitted = true;
-        // this.detailData.saveData = this.inputsValue;
         this.$set(this.detailData, 'isSubmitted', true);
         this.$set(this.detailData, 'saveData', this.inputsValue);
         /**
@@ -286,14 +245,6 @@ export default class CollectFilesDetailItem extends Vue {
           transition: background-color 0.15s ease-out
         }
       }
-    }
-    .disabled-mask {
-      z-index: 1000;
-      position: fixed;
-      top: 124px;
-      left: 0;
-      width: 100%;
-      height: calc(100% - 124px);
     }
   }
 </style>

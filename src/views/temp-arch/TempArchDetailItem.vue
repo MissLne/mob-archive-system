@@ -9,6 +9,7 @@
       <ArchForm
         :inputsProps="inputsProps"
         :fileId="detailData.fileId"
+        :canRecognize="canRecognize"
       />
         
       <div
@@ -64,6 +65,10 @@ export default class TempArchDetailItem extends Vue {
   get haveMetaData() {
     const type = this.detailData?.fileType.split('/')[0];
     return type === 'image' || type === 'audio' || type === 'video';
+  }
+  // 是否可以人脸识别
+  get canRecognize() {
+    return this.detailData?.fileType.split('/')[0] === 'image';
   }
 
   get isComplete() {

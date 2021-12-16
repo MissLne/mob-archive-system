@@ -51,7 +51,6 @@ export default class FaceRecognition extends Vue {
 
 <style lang="scss">
   #face-recognition {
-    
     .router-view-box {
       position: absolute;
       top: 124px;

@@ -106,12 +106,12 @@ export default class Login extends Vue {
     // 载入权限列表
     localStorage.setItem('permissionList', JSON.stringify(res.permissionList));
 
-    const [{
-      data: metaDataStructTree,
-      data: fondsIdentifier,
-      data: dossierType,
-      data: departmentTree,
-    }] = await Promise.all([
+    const [
+      { data: metaDataStructTree },
+      { data: fondsIdentifier },
+      { data: dossierType },
+      { data: departmentTree },
+    ] = await Promise.all([
       getFileMetadataStructTree(),
       getFondsIdentifier(),
       getDossierType(),
