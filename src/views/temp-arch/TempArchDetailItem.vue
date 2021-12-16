@@ -8,7 +8,6 @@
       />
       <ArchForm
         :inputsProps="inputsProps"
-        :retentionPeriodArray="retentionPeriodArray"
         :fileId="detailData.fileId"
       />
         

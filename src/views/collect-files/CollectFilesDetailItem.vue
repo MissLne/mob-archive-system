@@ -1,8 +1,5 @@
 <template>
   <div id="collect-files-detail">
-    <DesHead :headData="headData" @handleClick="headClick"/>
-    <div class="slots"></div><!-- 占header的位置 -->
-
     <div class="container">
       <div class="input-box">
         <PreviewBox
@@ -19,15 +16,6 @@
               :required="item.required"
               :msg="item.msg"
             />
-              <!-- 人脸识别的图标 -->
-              <!-- <img
-                v-if="item.title === '人物'"
-                class="face-recognition-icon"
-                :src="canRecognize
-                  ? require('@/assets/temp-arch/face-recognition.png')
-                  : require('@/assets/temp-arch/manual-input.png')"
-                @click="onRecognizing"
-              > -->
             <InputDate
               v-else-if="item.type === 'date'"
               v-model="item.value"
@@ -48,7 +36,7 @@
               <Select
                 v-else
                 v-model="item.value"
-                :myData="departmentNameTree"
+                :myData="allDepartmentNameTree"
                 :optionVariableName="'departmentName'"
                 :optionVariableKey="'id'"
               />
@@ -87,7 +75,7 @@ import PreviewBox from '@/components/public-com/PreviewBox.vue';
 import { Dialog } from 'vant'
 
 @Component({
-  name: 'CollectFilesDetail',
+  name: 'CollectFilesDetailItem',
   components: {
     Select,
     Input,
@@ -96,11 +84,11 @@ import { Dialog } from 'vant'
     PreviewBox
   }
 })
-export default class CollectFilesDetail extends Vue {
+export default class CollectFilesDetailItem extends Vue {
   @Prop() detailData!: UploadFileData;
   // select的内容
-  @Prop() collectFilesType: any;
-  @Prop() departmentNameTree: any;
+  get collectFilesType() { return this.$store.getters['selectData/collectFilesType'] };
+  get allDepartmentNameTree() { return this.$store.getters['selectData/allDepartmentNameTree'] };
   get isComplete() {
     return this.inputsProps.topic.value !== '' && this.inputsProps.categoryId.value !== '';
   }
@@ -153,25 +141,7 @@ export default class CollectFilesDetail extends Vue {
     else if (this.detailData.fileName)
       this.inputsProps.topic.value = this.detailData.fileName;
   }
-
-  private sureHandle = ({type}: any) => {};
-  // 头部数据与点击事件
-  public headData: any = {
-    title: '详情',
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
-    rightPic: false,
-    rightUrl: "",
-    rightText: "",
-    isShow: false,
-  }
-  public headClick({clickType}: any) {
-    if (clickType === 'left') {
-      this.detailData.saveData = this.inputsValue;
-      this.$router.go(-1)
-    }
-  }
+  
   // 提交部分
   trySubmit() {
     if (!this.isComplete) return;
@@ -200,7 +170,7 @@ export default class CollectFilesDetail extends Vue {
         // this.inputsProps.categoryId.value,
       departmentId:
         Number.parseInt(
-          recursionGetId(this.departmentNameTree, this.inputsProps.departmentId.value, 'departmentName', 'id')
+          recursionGetId(this.allDepartmentNameTree, this.inputsProps.departmentId.value, 'departmentName', 'id')
         ),
         // this.inputsProps.departmentId.value,
       comment: this.inputsProps.comment.value,
@@ -226,7 +196,7 @@ export default class CollectFilesDetail extends Vue {
       .then(({data}: any) => {
         console.log('success!success!success!', data)
         if (data.code === 200) {
-          this.nextDetail();
+          this.submitFile();
           // this.detailData.isSubmitted = true;
           // this.detailData.saveData = this.inputsValue;
           this.$set(this.detailData, 'isSubmitted', true);
@@ -243,13 +213,11 @@ export default class CollectFilesDetail extends Vue {
       })
       .catch((err: Error) => {
         MsgBox.error(err.message.split('，')[0]);
-        // MsgBox.error('提交失败');
       })
   }
-  @Emit('nextDetail')
-  nextDetail() {
-    this.createSetting()
-  }
+  // 文件被成功著录或删除
+  @Emit('submitFile')
+  submitFile() {}
 }
 </script>
 
@@ -268,6 +236,8 @@ export default class CollectFilesDetail extends Vue {
       height: 1208px;
       box-sizing: border-box;
       padding: 18px 0 29px 40px;
+      /* 用于头部占位的margin，因为外层margin会影响van-calendar的位置，被迫加载内层 */
+      margin-top: 124px;
       background-color: #fff;
       .input-box {
         .title {

@@ -3,6 +3,10 @@ import { Module } from "vuex";
 const selectData: Module<any, any> = {
   namespaced: true,
   state: {
+    // 校史征集的
+    _allDepartmentNameTree: [],
+    _collectFilesType: [],
+    // 登录后的
     _fondsIdentifier: [],
     _dossierType: [],
     _departmentNameTree: [],
@@ -31,6 +35,16 @@ const selectData: Module<any, any> = {
         state._departmentNameTree = JSON.parse(localStorage.getItem('departmentNameTree') as string)
       return state._departmentNameTree;
     },
+    allDepartmentNameTree: state => {
+      if (state._allDepartmentNameTree.length === 0)
+        state._allDepartmentNameTree = JSON.parse(localStorage.getItem('allDepartmentNameTree') as string)
+      return state._allDepartmentNameTree;
+    },
+    collectFilesType: state => {
+      if (state._collectFilesType.length === 0)
+        state._collectFilesType = JSON.parse(localStorage.getItem('collectFilesType') as string)
+      return state._collectFilesType;
+    }
   },
 }
 export default selectData;

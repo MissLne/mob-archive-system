@@ -59,7 +59,7 @@ const routes: Array<RouteConfig> = [
       {
         path: 'detail',
         name: 'collectFilesDetail',
-        component: () => import('@/views/collect-files/CollectFilesDetail.vue'),
+        component: () => import('@/views/collect-files/CollectFilesDetail'),
       }
     ]
   },
