@@ -23,18 +23,17 @@ export const estimateFileType = (contentType: string) => {
 }
 
 /**
- * 将ArrayBuffer转为base64
- * @param fileType 文件MIME类型
+ * Blob生成对象URL
  * @param buffer 
- * @returns 图片的base64编码
+ * @returns 对象URL
  */
-export const toBase64 = (fileType: string, buffer: ArrayBuffer) => {
-  return `data:${fileType};base64,${
-    btoa(
+export const toBase64 = (blob: Blob) => {
+  return URL.createObjectURL(blob);
+    // 原写法：将arraybuffer转为base64
+    /* btoa(
       new Uint8Array(buffer)
         .reduce((data, byte) => data + String.fromCharCode(byte), '')
-    )
-  }` 
+    ) */
 }
 
 /**
@@ -55,13 +54,12 @@ export const isVideo = (contentType: string) => {
 
 /**
  * 下载图片
- * @param fileType 文件MIME类型
  * @param fileToken 文件token
  * @return 图片的base64编码
  */
-export const downloadPicture = async (fileType: string, fileToken: string) => {
-  const { data } = await download(fileToken, 'arraybuffer');
-  return toBase64(fileType, data);
+export const downloadPicture = async (fileToken: string) => {
+  const { data } = await download(fileToken, 'blob');
+  return toBase64(data);
 }
 
 /**
@@ -72,7 +70,7 @@ export const downloadPicture = async (fileType: string, fileToken: string) => {
  */
 export const getSrcCertainly = async (fileType: string, fileToken?: string) => {
   if (isImage(fileType) && fileToken)
-    return await downloadPicture(fileType, fileToken)
+    return await downloadPicture(fileToken)
   else
     return estimateFileType(fileType)
 }

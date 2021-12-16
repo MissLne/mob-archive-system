@@ -20,10 +20,10 @@ export default class ArchItem extends Vue {
   }
   created() {
     const setPicture = async () => {
-      const { thumbnailFileToken, thumbnailFileType, fileType } = this.itemData
+      const { thumbnailFileToken, fileType } = this.itemData
       
-      if (thumbnailFileToken && thumbnailFileType)
-        this.$set(this.itemData, 'picSrc', await downloadPicture(thumbnailFileType, thumbnailFileToken));
+      if (thumbnailFileToken)
+        this.$set(this.itemData, 'picSrc', await downloadPicture(thumbnailFileToken));
       else if (this.itemData.fileType)
         this.$set(this.itemData, 'picSrc', estimateFileType(fileType))
     }

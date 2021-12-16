@@ -198,8 +198,8 @@ export default class ArchDetail extends Vue {
       const { status, fileType, thumbnailFileToken, thumbnailFileType } = detailData
 
       if (isImage(fileType) || isVideo(fileType)) {
-        if (thumbnailFileToken && thumbnailFileType)
-          detailData['picSrc'] = await downloadPicture(thumbnailFileType, thumbnailFileToken);
+        if (thumbnailFileToken)
+          detailData['picSrc'] = await downloadPicture(thumbnailFileToken);
       }
       else {
         console.log(123)  ;

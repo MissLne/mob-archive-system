@@ -109,7 +109,7 @@ export default class FileItem extends Vue {
             }
           )
           .then((data: any) => {
-            this.downloadUrl = toBase64('image/png', data.data);
+            this.downloadUrl = toBase64(data.data);
             MsgBox.changeStatus("获取资源成功");
             setTimeout(() => {
               (ele as HTMLElement).click();

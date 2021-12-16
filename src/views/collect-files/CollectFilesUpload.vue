@@ -77,7 +77,7 @@ export default class CollectFilesUpload extends Vue {
       fileData.fileName = file.name;
       // 如果是图片
       if (isImage(file.type))
-        fileData.picSrc = toBase64(file.type, await file.arrayBuffer())
+        fileData.picSrc = toBase64(file)
       // 如果不是图片
       else
         fileData.picSrc = estimateFileType(file.type)
