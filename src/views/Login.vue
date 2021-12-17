@@ -42,7 +42,7 @@ import {
   getFondsIdentifier,
   getDossierType,
   getDepartmentTree
-} from '@/services/login-page'
+} from '@/services/login'
 
 @Component({
   components: {

@@ -33,6 +33,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator'
 import Input from '@/components/public-com/Input/Input.vue';
 import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
 import Msg from '@/components/public-com/MsgBox/Msg';
+import { faceInformationEntry } from '@/services/face-recognition'
 
 @Component({
   components: {
@@ -62,24 +63,23 @@ export default class FaceDetail extends Vue {
     }
   }
   
-  private submit() {
+  private async submit() {
     if (!this.isComplete) return;
     this.isBtnLoading = true;
-    this.$service.post('/api/api/face/faceInformationEntry', {
-      ...this.detailData,
-      id: this.detailData.uid,
-    })
-    .then(({data: res}: any) => {
-      if (res.code === 200)
+    try {
+      const { data: { code } } = await faceInformationEntry({
+        ...this.detailData,
+        id: this.detailData.uid,
+      })
+      if (code === 200)
         Msg.success('人物信息完善成功')
-      else throw Error()
-    })
-    .catch(() => {
-      Msg.error('人物信息完善失败')
-    })
-    .finally(() => {
+      else
+        throw Error()
+    } catch (error) {
+        Msg.error('人物信息完善失败')    
+    } finally {
       this.isBtnLoading = false;
-    })
+    }
   }
 }
 </script>

@@ -12,6 +12,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import ArchForm from '@/components/public-com/ArchForm.vue'
 import { recursionGetId } from '@/utils/utils-file';
+import { getDossierDetail } from '@/services/dossier';
 
 @Component({
   components: {
@@ -41,7 +42,8 @@ export default class DesDetail extends Vue {
   }
   async getDossierDetail() {
     const desId = this.$route.params.id;
-    let { data } = await this.$service.get(`/api/api/dossier/getDossierDetail?id=${desId}`);
+    
+    let { data } = await getDossierDetail({ id: desId });
     console.log('des detail data', data);
     if (data.code !== 200) return;
     // 获取到的数据

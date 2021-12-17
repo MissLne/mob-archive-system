@@ -74,7 +74,7 @@ import PreviewBox from '@/components/public-com/PreviewBox.vue'
 import ArchForm from '@/components/public-com/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
 import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
-import { getArchiveDetail } from '@/services/archive'
+import { getArchiveDetail, updateArchive } from '@/services/archive'
 
 @Component({
   name: 'ArchDetail',
@@ -255,25 +255,22 @@ export default class ArchDetail extends Vue {
     }).catch(() => {})
   }
   // 著录中状态--保存
-  saveFile() {
+  async saveFile() {
     // console.log(this.inputsValue)
-    this.isBtnLoading = true;
-    this.$service.post('/api/api/archive/updateArchive', this.inputsValue)
-      .then(({data: res}: any) => {
-        console.log(res)
-        if(res.code === 200)
-          Msg.success('保存成功')
-        else
-          throw Error()
-      })
-      .catch((err: any) => {
-        console.log(err)
-        Msg.error('保存失败')
-      })
-      .finally(() => {
-        this.isBtnLoading = false;
-        this.isEditing = false;
-      })
+    try {
+      this.isBtnLoading = true;
+      const { data } = await updateArchive(this.inputsValue)
+      if(data.code === 200)
+        Msg.success('保存成功')
+      else
+        throw Error()
+    } catch (error) {
+      console.log(error)
+      Msg.error('保存失败')
+    } finally {
+      this.isBtnLoading = false;
+      this.isEditing = false;
+    }
   }
   // 回收站状态--操作
  async recycleBinOperation(chineseName: string, englishName: string) {

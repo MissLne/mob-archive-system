@@ -41,6 +41,7 @@ import Msg from '@/components/public-com/MsgBox/Msg';
 import PreviewBox from '@/components/public-com/PreviewBox.vue'
 import ArchForm from '@/components/public-com/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
+import { addTemporaryArchive, changeTemporaryArchiveToNormalArchive, deleteTemporaryArchive, getImageMetadata } from '@/services/temp-arch'
 
 @Component({
   name: 'TempArchDetailItem',
@@ -167,27 +168,26 @@ export default class TempArchDetailItem extends Vue {
       console.log((this.detailData as any).metadata);
   }
   // ajax著录文件
-  private addFile() {
+  private async addFile() {
     if (!this.isComplete) {
       Msg.error('请填写必填项');
       return;
     }
-    this.$service.post('/api/api/archive/changeTemporaryArchiveToNormalArchive', [this.inputsValue])
-      .then(({data}: any) => {
-        console.log(data);
-        if (data.code === 200) {
-          Msg.success('著录成功');
-          this.submitFile();
-        }
-        else throw Error();
-      }).catch(err => {
-        console.log(err);
+    try {
+      const { data } = await changeTemporaryArchiveToNormalArchive([this.inputsValue])
+      if (data.code === 200) {
+        Msg.success('著录成功');
+        this.submitFile();
+      }
+      else throw Error();
+    } catch (error) {
+      console.log(error);
         Msg.error('著录失败')
-      })
+    }
   }
   // ajax获取图片的额外数据
-  private getImageMetaData(fileId: number) {
-    return this.$service.get(`/api/api/image/getImageMetadata?fileId=${fileId}`)
+  private async getImageMetaData(fileId: number) {
+    return await getImageMetadata({ fileId})
   }
   // ajax删除文件
   private deleteFile() {
@@ -195,23 +195,22 @@ export default class TempArchDetailItem extends Vue {
       title: '确认删除',
       confirmButtonText: '是',
       cancelButtonText: '否'
-    }).then(() => {
-      this.$service.post('/api/api/archive/deleteTemporaryArchive', 
-        [this.detailData.id]
-      ).then(({data}: any) => {
+    }).then(async () => {
+      try {
+        const {data} = await deleteTemporaryArchive([this.detailData.id]);
         if (data.code === 200) {
           Msg.success('删除成功')
           this.submitFile();
         }
-        else throw Error();
-      }).catch(err => {
+          else throw Error();
+      } catch (error) {
         Msg.error('删除失败')
-      })
+      }
     }).catch(() => {})
   }
   // ajax暂存文件
   public async tempAddFile() {
-    const { data } = await this.$service.post('/api/api/archive/addTemporaryArchive', [this.inputsValue]);
+    const { data } = await addTemporaryArchive([this.inputsValue]);
     console.log(data);
   }
   // 文件被成功著录或删除

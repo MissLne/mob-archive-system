@@ -23,7 +23,11 @@
 import { Vue, Component, Prop, Emit } from "vue-property-decorator";
 import { Loading } from 'vant'
 
-@Component
+@Component({
+  components: {
+    'van-loading': Loading,
+  }
+})
 export default class SingleBtn extends Vue {
   @Prop() name!: string;
   @Prop({default: false}) isLoading!: boolean;

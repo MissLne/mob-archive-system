@@ -28,6 +28,7 @@ import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { createFileChunk, getFileMd5, uploadFile } from '@/utils/utils-upload';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
+import { addTemporaryArchive, deleteTemporaryArchive, getImageMetadata, selectTemporaryArchive } from '@/services/temp-arch';
 // import fileUtils from '@/utils/fileUtils';
 
 @Component({
@@ -59,28 +60,18 @@ export default class TempArchUpload extends Vue {
     this.getTempArchList()
   }
   // ajax获取数据
-  private getTempArchList() {
+  private async getTempArchList() {
     this.listData = []; // 清空一下，不然不会重新加载图片呜呜
-    this.$service.get('/api/api/archive/selectTemporaryArchive')
-      .then(({data: res}: any) => {
-        console.log('temp-arch-list-data', res)
-        res = res.data;
-        // this.listData = res;
-        this.listData.splice(0, this.listData.length, ...res);
-      })
-      .catch((err: any) => {
-        console.log('temp-arch-list-data', err)
-      })
+    const { data: { data } } = await selectTemporaryArchive()
+    this.listData = data;
   }
   // ajax添加数据
-  private addTempArch({fileId, thumbnailFileId, zippedFileId}: any) {
-    return this.$service.post('/api/api/archive/addTemporaryArchive', [
-      {fileId, thumbnailFileId, zippedFileId}
-    ])
+  private async addTempArch({ fileId, thumbnailFileId, zippedFileId }: any) {
+    return await addTemporaryArchive([{ fileId, thumbnailFileId, zippedFileId }])
   }
   // ajax获取图片的额外数据
-  private getImageMetaData(fileId: number) {
-    return this.$service.get(`/api/api/image/getImageMetadata?fileId=${fileId}`)
+  private async getImageMetaData(fileId: number) {
+    return await getImageMetadata({ fileId })
   }
   // 上传文件
   private onUploadFiles (file: File) {
@@ -124,18 +115,19 @@ export default class TempArchUpload extends Vue {
       title: '确认删除',
       cancelButtonText: '否',
       confirmButtonText: '是'
-    }).then(() => {
-      this.$service.post('/api/api/archive/deleteTemporaryArchive', 
-        indexList.map(checkedIndex => this.listData[checkedIndex].id)
-      ).then(({data: res}: any) => {
-        if (res.code === 200) {
+    }).then(async () => {
+      try {
+        const { data } = await deleteTemporaryArchive(
+          indexList.map(checkedIndex => this.listData[checkedIndex].id)
+        )
+        if (data.code === 200) {
           Msg.success('删除成功');
           this.getTempArchList();
         }
         else throw Error();
-      }).catch(() => {
+      } catch (error) {
         Msg.error('删除失败');
-      })
+      }
     }).catch(() => {
     }).finally(() => {
       this.disabledUpload = false;
