@@ -21,17 +21,17 @@ import { getDossierDetail } from '@/services/dossier';
 })
 export default class DesDetail extends Vue {
   private readonly inputsProps: {[key: string]: any} = {
-    topic: { title: '题名', type: 'text', value: '' },
+    topic: { title: '题名', type: 'textarea', value: '' },
     confidentialLevel: { title: '密级', type: 'select', value: '' },
     departmentId: { title: '部门', type: 'select', value: '' },
     retentionPeriod: { title: '保密期限', type: 'radio', value: 1 },
     categoryCodeId: { title: '类别号', type: 'select', value: '' },
     fondsIdentifierId: { title: '全宗号', type: 'select', value: '' },
-    catalogueNumber: { title: '目录号', type: 'text', value: '' }, // 预留
-    seeNumber: { title: '参见号', type: 'text', value: '' }, // 预留
-    keyWord: { title: '关键字', type: 'text', value: '' },
-    introduction: { title: '简介', type: 'text', value: '' },
-    yearNumber: { title: '年度', type: 'text', value: '' },
+    catalogueNumber: { title: '目录号', type: 'textarea', value: '' }, // 预留
+    seeNumber: { title: '参见号', type: 'textarea', value: '' }, // 预留
+    keyWord: { title: '关键字', type: 'textarea', value: '' },
+    introduction: { title: '简介', type: 'textarea', value: '' },
+    yearNumber: { title: '年度', type: 'textarea', value: '' },
     recordUserAndTime: { title: '著录', type: 'UserAndTime', value: ['', ''] },
     archiveUserAndTime: { title: '归档', type: 'UserAndTime', value: ['', ''] },
     storageUserAndTime: { title: '入库', type: 'UserAndTime', value: ['', ''] },

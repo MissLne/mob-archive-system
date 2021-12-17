@@ -12,16 +12,13 @@
     >
     <div
       class="holder-box"
-      :class="{ 'holder-box-hidden': !isEmpty || isActive || showOnce }"
+      :class="{ 'holder-box-hidden': !isEmpty || isActive || isWrong }"
     >{{holder}}</div>
     <div
       v-if="required"
       class="wrong-box"
       :class="{ 'wrong-box-hidden': !isWrong }"
     >{{msg}}</div>
-    <!-- <transition name="van-fade">
-      <div v-show="disabled" class="disabled-mask"></div>
-    </transition> -->
   </div>
 </template>
 
@@ -43,13 +40,12 @@ export default class Input extends Vue {
 
   public isActive: boolean = false;
   public isWrong: boolean = false;
-  public showOnce: boolean = false;
 
   get inputListeners() {
     const vm = this;
     return Object.assign({}, this.$listeners, {
-      change: function (e: any) {
-        vm.$emit('change', e.target.value)
+      change: function ({ target: { value } }: any) {
+        vm.$emit('change', value)
       }
     })
   }
@@ -60,12 +56,11 @@ export default class Input extends Vue {
 
   // 是否输入完成
   private get complete(): boolean {
-    return !this.isEmpty && !this.isEmpty;
+    return !this.isEmpty;
   }
   // 输入栏聚焦
   private onFocus() {
     this.isActive = true, this.isWrong = false;
-    if (this.required) this.showOnce = true;
   }
   // 输入栏失焦
   private onBlur() {
@@ -101,16 +96,11 @@ export default class Input extends Vue {
       background-color: transparent;
       color: $holder-color;
       line-height: $height;
+      // color用于disabled的变色
       transition:
-        border-color 0.15s ease-in, color 0.25s ease-in,
-        color 0.35s ease-out;
-        // color用于disabled的变色
-      &.username {
-        margin-bottom: 95px;
-      }
-      &.password {
-        margin-bottom: 31px;
-      }
+        border-color 0.15s ease-in,
+        color 0.25s ease-in;
+
       // 禁用的时候，改颜色！
       &:disabled,
       &:disabled + div {
@@ -149,15 +139,4 @@ export default class Input extends Vue {
       transition: none;
     }
   }
-  /* .disabled-mask {
-    // 因为人脸识别的z-index为2，而且因为使用了兄弟选择器不能改变，所以这里使用3
-    // 然而并没有用。。因为input已经在z-index=1这一层了。。
-    z-index: 3;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 430px;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.4);
-  } */
 </style>

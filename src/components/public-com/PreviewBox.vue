@@ -53,7 +53,6 @@ export default class PreviewBox extends Vue {
   
   // 摧毁之前，释放一下对象url的内存
   beforeDestroy() {
-    URL.revokeObjectURL(this.picSrc)
     URL.revokeObjectURL(this.clearPicSrc)
   }
   async preview() {
@@ -67,15 +66,15 @@ export default class PreviewBox extends Vue {
       else if (this.clearPicSrc) {
         ImagePreview([this.clearPicSrc]);
       }
-      else
+      else {
         // 先亮出来，免得用户觉得没反应
         ImagePreview([])
-        const picSrc = await getSrcCertainly(this.fileType, this.fileToken) as string
-        this.clearPicSrc = picSrc;
+        this.clearPicSrc = await getSrcCertainly(this.fileType, this.fileToken) as string
         ImagePreview([this.clearPicSrc]);
       }
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>

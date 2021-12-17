@@ -81,7 +81,8 @@ export default class editApply extends Vue {
       .then((res: any) => {
         let result = res.data.data;
         result.forEach(async (item: any) => {
-          item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
+          if (item.fileType)
+            item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
         });
         this.fileData = result;
       });

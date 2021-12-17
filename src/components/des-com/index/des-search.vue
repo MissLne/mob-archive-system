@@ -49,15 +49,6 @@ export default class DesSearch extends Vue {
       this.$emit("searchThings", {searchVal: this.searchVal});
     }, 1000);
   }
-  debounce(fn: any, wait: number) {
-    let timer: any = null;
-    return function () {
-      if (timer !== null) {
-        clearTimeout(timer);
-      }
-      timer = setTimeout(fn, wait);
-    };
-  }
 }
 </script>
 <style lang="scss">

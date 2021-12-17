@@ -26,16 +26,6 @@ export function recursionGetId(tree: Array<any>, keyValue: string, keyName: stri
     return ans;
 }
 
-export function debonce(fn: Function, delay: number) {
-    let timer: any;
-    return function(this: any, ...args: Array<any>) {
-      const _this = this;
-      if (timer)
-        clearTimeout(timer);
-      timer = setTimeout(fn.bind(this, args), delay);
-    }
-}
-
 /**
  * 针对ArchDetail页的填内容函数
  * @param detailData 后台返回数据

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="icon-wrapper">
     <slot></slot>
     <van-icon
       name="play-circle-o"
@@ -24,7 +24,7 @@ export default class IconWrapper extends Vue {
 </script>
 
 <style lang="scss" scoped>
-  .container {
+  .icon-wrapper {
     position: relative;
     .icon {
       position: absolute;

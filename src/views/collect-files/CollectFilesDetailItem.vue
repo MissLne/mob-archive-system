@@ -57,15 +57,15 @@ export default class CollectFilesDetailItem extends Vue {
     return this.inputsProps.topic.value !== '' && this.inputsProps.categoryId.value !== '';
   }
   private readonly inputsProps = {
-    topic: { title: '名称', required: true, msg: '请输入题名', type: 'text', value: '' },
-    people: { title: '人物', required: false, type: 'text', value: '' },
-    event: { title: '事件', required: false, type: 'text', value: '' },
+    topic: { title: '名称', required: true, msg: '请输入题名', type: 'textarea', value: '' },
+    people: { title: '人物', required: false, type: 'textarea', value: '' },
+    event: { title: '事件', required: false, type: 'textarea', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
-    place: { title: '地点', required: false, type: 'text', value: '' },
+    place: { title: '地点', required: false, type: 'textarea', value: '' },
     categoryId: { title: '类别', required: true, type: 'select', value: '' },
     departmentId: { title: '部门', required: false, type: 'select', value: '' },
-    comment: { title: '备注', required: false, type: 'text', value: '' },
-    sourse: { title: '来源', required: false, type: 'text', value: '' },
+    comment: { title: '备注', required: false, type: 'textarea', value: '' },
+    sourse: { title: '来源', required: false, type: 'textarea', value: '' },
   }
   get inputsValue() {
     return {
@@ -184,7 +184,7 @@ export default class CollectFilesDetailItem extends Vue {
   #collect-files-detail {
     overflow: hidden;
     width: 700px;
-    height: 1335px;
+    min-height: 1335px;
     border-radius: 1px;
     // margin: auto;
     padding: 0 25px 20px;
@@ -192,46 +192,12 @@ export default class CollectFilesDetailItem extends Vue {
     font-family: PingFang-SC-Regular;
     .container {
       width: 700px;
-      height: 1208px;
+      min-height: 1208px;
       box-sizing: border-box;
       padding: 18px 0 29px 40px;
       /* 用于头部占位的margin，因为外层margin会影响van-calendar的位置，被迫加载内层 */
       margin-top: 124px;
       background-color: #fff;
-      .input-box {
-        .title {
-          margin: 15px 0 29px;
-          font-size: 30px;
-        }
-        .inf-list {
-          margin-right: 53px;
-          .item {
-            $item-height: 73px;
-            display: flex;
-            justify-content: space-between;
-            .item-title {
-              line-height: $item-height;
-            }
-            .required::after { // 用于显示必填红星
-              content: '*';
-              color: #FF0000;
-            }
-            .item-input {
-              width: 430px;
-              height: $item-height;
-              border: none;
-              border-bottom: 3px solid #E1E1E1;
-              .select-pulldown-icon {
-                position: absolute;
-                top: 30px;
-                right: 0;
-                width: 27px;
-                height: 15px;
-              }
-            }
-          }
-        }
-      }
       .submit-box {
         margin-top: 50px;
         margin-right: 39px;

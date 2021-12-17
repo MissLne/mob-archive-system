@@ -9,7 +9,7 @@
           <li v-for="(item, key) in inputsProps" :key="item.title" class="item">
             <span class="item-title" :class="{ 'required': item.required }">{{item.title}}</span>
             <!-- 偷懒了，v-model直接绑定后台给的数据了 -->
-            <Input
+            <Textarea
               v-model="detailData[key]"
               :required="item.required"
               :msg="item.msg"
@@ -30,14 +30,14 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
-import Input from '@/components/public-com/Input/Input.vue';
+import Textarea from '@/components/public-com/Input/Textarea.vue';
 import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
 import Msg from '@/components/public-com/MsgBox/Msg';
 import { faceInformationEntry } from '@/services/face-recognition'
 
 @Component({
   components: {
-    Input,
+    Textarea,
     SingleBtn,
   }
 })

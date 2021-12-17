@@ -69,7 +69,6 @@ export const downloadPicture = async (fileToken: string) => {
  * @returns src可以使用的值
  */
 export const getSrcCertainly = async (fileType: string, fileToken?: string, canVideo?: boolean) => {
-  if (!fileType) return;
   if (fileToken && (isImage(fileType) || (canVideo && isVideo(fileType))) )
     return await downloadPicture(fileToken)
   else

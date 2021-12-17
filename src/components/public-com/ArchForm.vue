@@ -25,6 +25,14 @@
           :msg="item.msg"
           :disabled="disabled"
         />
+        <!-- 大量文本输入textarea -->
+        <Textarea 
+          v-else-if="item.type === 'textarea'"
+          v-model="item.value"
+          :required="item.required"
+          :errorMsg="item.msg"
+          :disabled="disabled"
+        />
         <!-- 日期输入date -->
         <InputDate
           v-else-if="item.type === 'date'"
@@ -124,11 +132,12 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 import Input from "@/components/public-com/Input/Input.vue";
 import InputDate from "@/components/public-com/Input/InputDate.vue";
 import Select from "@/components/public-com/Select/Select.vue";
 import FaceRecognitionIcon from "@/views/face-recognition/FaceRecognitionIcon.vue";
+import Textarea from '@/components/public-com/Input/Textarea.vue'
 
 @Component({
   components: {
@@ -136,9 +145,14 @@ import FaceRecognitionIcon from "@/views/face-recognition/FaceRecognitionIcon.vu
     InputDate,
     Select,
     FaceRecognitionIcon,
+    Textarea
   },
 })
 export default class ArchForm extends Vue {
+  test = '';
+  @Watch('test') watching() {
+    console.log(this.test)
+  }
   // 数据
   @Prop() inputsProps: any;
     // select/radio的数据

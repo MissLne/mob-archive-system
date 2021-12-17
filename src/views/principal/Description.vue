@@ -285,7 +285,8 @@ export default class Description extends Vue {
     this.pageTo = Math.ceil(this.count / 10);
 
     result.forEach(async (item: any) => {
-      item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
+      if (item.fileType)
+        item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
     });
     this.desItem = result;
   }

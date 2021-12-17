@@ -123,10 +123,10 @@ export default class ArchDetail extends Vue {
   // 表单属性
   private readonly inputsProps: {[key: string]: any} = {
     topic: { title: '题名', required: true, msg: '请输入题名', type: 'text', value: '' },
-    people: { title: '人物', required: false, type: 'text', value: '' },
+    people: { title: '人物', required: false, type: 'textarea', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
-    place: { title: '地点', required: false, type: 'text', value: '' },
-    event: { title: '事件', required: false, type: 'text', value: '' },
+    place: { title: '地点', required: false, type: 'textarea', value: '' },
+    event: { title: '事件', required: false, type: 'textarea', value: '' },
     fondsIdentifierId: { title: '全宗号', required: true, msg: '请输入全宗号', type: 'select', value: '' },
     categoryCodeId: { title: '类别号', required: true, msg: '请输入类别号', type: 'select', value: '' },
     departmentId: { title: '部门', required: true, msg: '请输入部门', type: 'select', value: '' },
@@ -309,7 +309,7 @@ export default class ArchDetail extends Vue {
 <style lang="scss" scoped>
   #arch-detail {
     width: 700px;
-    height: 1335px;
+    min-height: 1335px;
     padding: 0 25px 20px;
     font-size: 28px;
     font-family: PingFang-SC-Regular;
@@ -319,7 +319,7 @@ export default class ArchDetail extends Vue {
       flex-direction: column;
       justify-content: space-between;
       width: 700px;
-      height: 1208px;
+      min-height: 1208px;
       box-sizing: border-box;
       padding: 18px 0 29px 40px;
       background-color: #fff;
