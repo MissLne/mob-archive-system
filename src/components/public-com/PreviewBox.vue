@@ -1,12 +1,26 @@
 <template>
   <div class="preview-box">
-    <span class="preview-title">预览</span>
-    <img
-      :src="picSrc"
-      class="preview-img"
-      @click="preview"
+    <span class="title">预览</span>
+
+    <IconWrapper
+      v-if="isVideo"
+      @click.native="preview()"
     >
-    <!-- <video :src="picSrc" controls></video> -->
+      <img :src="picSrc" class="img">
+    </IconWrapper>
+    <img
+      v-else
+      :src="picSrc"
+      class="img"
+      @click="preview()"
+    />
+    
+    <VideoPrivew
+      v-if="isVideo"
+      :fileToken="fileToken"
+      :fileType="fileType"
+      v-model="videoShow"
+    />
   </div>
 </template>
 
@@ -14,24 +28,39 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ImagePreview } from 'vant';
 import { getSrcCertainly, isImage, isVideo } from '@/utils/picture';
+import VideoPrivew from './VideoPreview.vue'
+import IconWrapper from './IconWrapper.vue'
 
-@Component
+@Component({
+  components: {
+    VideoPrivew,
+    IconWrapper,
+  }
+})
 export default class PreviewBox extends Vue {
   @Prop() picSrc!: string;
   @Prop() fileToken!: string;
   @Prop() fileType!: string;
+  
   private clearPicSrc: string = ''; // 清晰图
+  private videoShow: boolean = false;
+  get isImage() {
+    return isImage(this.fileType)
+  }
+  get isVideo() {
+    return isVideo(this.fileType)
+  }
+  
   // 摧毁之前，释放一下对象url的内存
   beforeDestroy() {
     URL.revokeObjectURL(this.picSrc)
     URL.revokeObjectURL(this.clearPicSrc)
   }
   async preview() {
-    if (!this.fileType) return;
-    if (isVideo(this.fileType)) {
+    if (!this.isImage && !this.isVideo) return;
+    this.videoShow = true;
 
-    }
-    else if (isImage(this.fileType)) {
+    if (this.isImage) {
       if (!this.fileToken) {
         ImagePreview([this.picSrc])
       }
@@ -49,20 +78,21 @@ export default class PreviewBox extends Vue {
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .preview-box {
     $height: 186px;
     display: flex;
     justify-content: space-between;
     height: $height;
     margin-right: 75px;
-    .preview-title {
+    .title {
       line-height: $height;
     }
-    .preview-img {
+    .img {
       object-fit: cover;
       width: 186px;
       height: $height;
     }
+    
   }
 </style>

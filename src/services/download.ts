@@ -1,10 +1,10 @@
 import service from "@/utils/http"
-import { ResponseType } from "axios"
+import { AxiosRequestConfig } from "axios"
 
-export const download = (fileToken: string, responseType: ResponseType) => {
+export const download = (fileToken: string, options?:　AxiosRequestConfig) => {
   return service({
     url: `/api/api/file/download/${fileToken}`,
     method: 'GET',
-    responseType: responseType
+    ...options
   })
 }

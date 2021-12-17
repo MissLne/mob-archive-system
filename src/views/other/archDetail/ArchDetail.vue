@@ -309,7 +309,7 @@ export default class ArchDetail extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   #arch-detail {
     width: 700px;
     height: 1335px;

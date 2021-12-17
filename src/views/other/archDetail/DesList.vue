@@ -34,7 +34,6 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import { getSrcCertainly } from "@/utils/picture";
 import { getArchiveList } from "@/services/archive";
 
 interface dataType {
@@ -115,9 +114,6 @@ export default class DesList extends Vue {
     this.count = data.data.total;
     this.pageData.total = Math.ceil(this.count / 10);
 
-    result.forEach(async (item: any) =>
-      item.fileToken = await getSrcCertainly(item.fileType, item.fileToken)
-    );
     this.desItem = result;
   }
   changePage(event: any): void {

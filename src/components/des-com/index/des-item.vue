@@ -1,7 +1,11 @@
 <template>
   <div class="des-item">
     <div>
-      <van-image :src="desItem.fileToken ? desItem.fileToken : url" fit="cover" class="thumbnail-img"/>
+      <IconWrapper v-if="isVideo">
+        <van-image :src="desItem.type ? desItem.fileToken : url" fit="cover" class="thumbnail-img"/>
+      </IconWrapper>
+      <van-image v-else :src="desItem.type ? desItem.fileToken : url" fit="cover" class="thumbnail-img"/>
+      
       <div class="title">
         <div>{{ desItem.topic }}</div>
         <div>{{ desItem.introduce ? desItem.introduce : "暂无简介" }}</div>
@@ -38,9 +42,14 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { Image } from 'vant';
+import IconWrapper from "@/components/public-com/IconWrapper.vue"
+import { isVideo } from "@/utils/picture"
 
-@Component
+@Component({
+  components: {
+    IconWrapper
+  }
+})
 export default class DesItem extends Vue {
   @Prop({}) private typeName!: string
   @Prop({}) private desItem!: any;
@@ -86,6 +95,9 @@ export default class DesItem extends Vue {
       type: "retentionPeriod",
     },
   ];
+  get isVideo() {
+    return isVideo(this.desItem.fileType)
+  }
   created() {
     let result = JSON.parse(JSON.stringify(this.desItem));
     // console.log(result);
@@ -109,6 +121,9 @@ export default class DesItem extends Vue {
     for (let i = 0; i < this.detailData.length; i++) {
       this.detailData[i].content = result[this.detailData[i].type];
     }
+  }
+  beforeDestory() {
+    URL.revokeObjectURL(this.desItem.fileToken)
   }
   closeDetail() {
     this.isShow = false;

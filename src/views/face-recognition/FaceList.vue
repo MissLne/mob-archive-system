@@ -11,7 +11,6 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator'
-import { Image } from 'vant'
 
 @Component
 export default class FaceList extends Vue {

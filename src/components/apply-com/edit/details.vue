@@ -54,7 +54,6 @@
   </div>
 </template>
 <script lang="ts">
-import { StepRenderSlots } from "element-ui/types/step";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 interface ItemTyle {

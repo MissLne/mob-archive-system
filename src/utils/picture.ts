@@ -41,7 +41,7 @@ export const toBase64 = (blob: Blob) => {
  * @return 布尔值
  */
 export const isImage = (contentType: string) => {
-  return contentType.split('/')[0] === 'image'
+  return contentType && contentType.split('/')[0] === 'image'
 }
 
 /**
@@ -49,7 +49,7 @@ export const isImage = (contentType: string) => {
  * @return 布尔值
  */
 export const isVideo = (contentType: string) => {
-  return contentType.split('/')[0] === 'video'
+  return contentType && contentType.split('/')[0] === 'video'
 }
 
 /**
@@ -58,7 +58,7 @@ export const isVideo = (contentType: string) => {
  * @return 图片的base64编码
  */
 export const downloadPicture = async (fileToken: string) => {
-  const { data } = await download(fileToken, 'blob');
+  const { data } = await download(fileToken, { responseType: 'blob' });
   return toBase64(data);
 }
 
@@ -68,8 +68,9 @@ export const downloadPicture = async (fileToken: string) => {
  * @param fileToken 文件token，可为空
  * @returns src可以使用的值
  */
-export const getSrcCertainly = async (fileType: string, fileToken?: string) => {
-  if (isImage(fileType) && fileToken)
+export const getSrcCertainly = async (fileType: string, fileToken?: string, canVideo?: boolean) => {
+  if (!fileType) return;
+  if (fileToken && (isImage(fileType) || (canVideo && isVideo(fileType))) )
     return await downloadPicture(fileToken)
   else
     return estimateFileType(fileType)

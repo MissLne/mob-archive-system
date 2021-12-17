@@ -18,7 +18,6 @@
 <script lang="ts">
 import { Component, Vue, Model, Emit, Prop } from 'vue-property-decorator'
 import Input from './Input.vue'
-import { Calendar } from 'vant';
 @Component({
   components: {
     Input,
