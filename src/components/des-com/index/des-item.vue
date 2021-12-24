@@ -1,5 +1,5 @@
 <template>
-  <div class="des-item">
+  <div class="des-item" :key="menuKey">
     <div>
       <IconWrapper v-if="isVideo">
         <van-image :src="desItem.type ? desItem.fileToken : url" fit="cover" class="thumbnail-img"/>
@@ -41,7 +41,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import IconWrapper from "@/components/public-com/IconWrapper.vue"
 import { isVideo } from "@/utils/picture"
 
@@ -53,6 +53,13 @@ import { isVideo } from "@/utils/picture"
 export default class DesItem extends Vue {
   @Prop({}) private typeName!: string
   @Prop({}) private desItem!: any;
+  @Prop({}) private menuKey!: number
+  // @Watch("desItem", { immediate: true, deep: true }) watchArr(
+  //   newVal: number,
+  //   oldVal: number
+  // ) {
+  //   this.mount()
+  // }
   private isShow: boolean = false;
   private isClose: boolean = false;
   private noname: number = 0;
@@ -146,6 +153,7 @@ export default class DesItem extends Vue {
 }
 </script>
 <style lang="scss">
+
 .des-item {
   .covers {
     position: fixed;
@@ -156,6 +164,7 @@ export default class DesItem extends Vue {
     background: none;
     z-index: 99;
   }
+  
   position: relative;
   width: 690px;
   height: 267px;

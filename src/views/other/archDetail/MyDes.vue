@@ -1,5 +1,5 @@
 <template>
-  <div id="my-des">
+  <div id="my-des" @touchmove.self.prevent @mousewheel.self.prevent>
     <DesHead
       :headData="headData"
       @handleClick="handleClick"
@@ -47,7 +47,9 @@ export default class MyDes extends Vue {
   created() {
     this.headData.title = this.$route.params.name;
   }
-
+  lalal() {
+    console.log((this.$refs.ouo as any).style.height)
+  }
   handleClick(e: any) {
     // 在详情页且点右边
     if (this.index === 1 && e.clickType === 'right') return;
@@ -68,11 +70,16 @@ export default class MyDes extends Vue {
   #my-des {
     overflow: auto;
     height: 100vh;
+    overflow: hidden;
+    
     .tabbar {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       width: 180px;
+      height: 50px;
       padding: 24px 30px 0;
+      // background: burlywood;
       li {
         position: relative;
         z-index: 1; // 不然会被下面盖住。。
@@ -88,7 +95,7 @@ export default class MyDes extends Vue {
         &.active::after {
           content: '';
           position: absolute;
-          bottom: 0;
+          bottom: 5px;
           left: 30%;
           height: 5px;
           width: 40%;
