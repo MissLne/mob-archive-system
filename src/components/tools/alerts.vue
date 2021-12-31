@@ -41,6 +41,7 @@ export default class Alerts extends Vue {
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.5);
+  
   display: flex;
   justify-content: center;
   align-items: center;
@@ -49,6 +50,7 @@ export default class Alerts extends Vue {
       text-align: center;
     }
   .box {
+    box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
     border-radius: 8px;
     z-index: 1001;
     color: #444;

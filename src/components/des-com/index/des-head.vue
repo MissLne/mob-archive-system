@@ -97,8 +97,9 @@ export default class DesHead extends Vue {
   }
   > div:nth-of-type(1),
   div:nth-of-type(3) {
+    // background: #fff;
     height: 80px;
-    width: 80px;
+    width: 150px;
     display: flex;
     align-items: center;
     font-size: 26px;

@@ -16,7 +16,9 @@
             '--top': topPadding,
           }"
         >
-        <div class="topLoading"  v-show="vlistData.topLoading">正在加载中...</div>
+          <div class="topLoading" v-show="vlistData.topLoading">
+            正在加载中...
+          </div>
           <div v-for="(item, index) in renderItem" :key="index" class="box">
             <DesItem :desItem="item" :menuKey="menuKey" />
             <img
@@ -26,7 +28,13 @@
               @click="checkItem(index)"
             />
           </div>
-          <div class="botLoading" v-show="vlistData.botLoading" ref="botLoading">正在加载中...</div>
+          <div
+            class="botLoading"
+            v-show="vlistData.botLoading"
+            ref="botLoading"
+          >
+            {{bottomHTML}}
+          </div>
         </div>
       </div>
       <DesBtn
@@ -38,10 +46,6 @@
         ref="desBtnvue"
       />
       <div class="roadUp" ref="roadUp"></div>
-      <div class="select-btn" v-if="isChecking">
-        <div @click="cancelSelect">取消</div>
-        <div @click="alertShow = true">删除</div>
-      </div>
     </div>
   </div>
 </template>
@@ -85,7 +89,7 @@ export default class DesList extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
-  private alertShow: boolean = false;
+  public alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<number> = [];
   private isChecking: boolean = false;
@@ -110,15 +114,28 @@ export default class DesList extends Vue {
     });
   }
   public handleClick(event: any) {
+    console.log("_+_+",event)
     if (event.clickType === "right") {
       if (this.$route.params.type === "我的档案" && event.isChoice) {
         MsgBox.error("无法操作已入库档案");
         return;
       }
+      this.$emit("updateChoice",{textName: "全选"})
       this.isChecking = true;
+      if(event.text == "全选") {
+        this.$emit("updateChoice",{textName: "取消全选"})
+        this.initSelect(true)
+        return
+      }
+      
       this.initSelect(false);
     } else {
       this.$store.commit("setDetailPage");
+      if(event.text == "全选" || event.text == "取消全选") {
+        this.$emit("updateChoice",{textName: "选择"})
+        this.isChecking = false;
+        return
+      }
       this.$router.go(-1);
     }
   }
@@ -127,6 +144,9 @@ export default class DesList extends Vue {
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
+    for(let item of this.checkList) {
+      if(item == false) this.$emit("updateChoice",{textName: "全选"})
+    }
   }
   async getList() {
     const { data } = await getArchiveList({
@@ -200,6 +220,7 @@ export default class DesList extends Vue {
         .then((res: any) => {
           if (res.data.success === true) {
             MsgBox.success("删除成功");
+            this.$emit("updateChoice",{textName: "选择"})
             this.cancelSelect();
             this.getList();
             return;
@@ -208,21 +229,24 @@ export default class DesList extends Vue {
         })
         .catch((err: any) => {
           this.cancelSelect();
+          this.$emit("updateChoice",{textName: "选择"})
           MsgBox.error("删除失败");
         });
     }
+    this.$emit("deleteDo")
   }
 
   private menuKey: number = 0;
   private topPadding: any = 0;
   private bottomPadding: any = 0;
+  private bottomHTML: string = "正在加载中..."
   private vlistData: NumObj = {
     itemSize: 0,
     itemHeight: 0,
     startIndex: 0,
     enabled: true,
     topLoading: false,
-    botLoading: true
+    botLoading: true,
   };
 
   scrollHandle() {
@@ -237,8 +261,8 @@ export default class DesList extends Vue {
     // this.dosTh()
   }
   dosTh(target: any) {
-    this.vlistData.topLoading = this.vlistData.startIndex > 0? true : false
-    console.log(target[0].isIntersecting,"____")
+    this.vlistData.topLoading = this.vlistData.startIndex > 0 ? true : false;
+    console.log(target[0].isIntersecting, "____");
     if (target[0].isIntersecting) {
       this.menuKey++;
       this.vlistData.startIndex = Math.floor(
@@ -255,19 +279,29 @@ export default class DesList extends Vue {
       ]
         ? this.vlistData.startIndex + this.vlistData.itemSize
         : len - 1;
-      //  if(endIndex === len - 1) {
-      //    this.vlistData.botLoading = false;
-      //   //  console.log((this.$refs.botLoading) as any)
-      //  } else {
-      //    this.vlistData.botLoading = true
-      //  }
-      let arr = this.desItem.slice(this.vlistData.startIndex, endIndex + 1);
-      for(let item of arr) {
-        console.log(this.vlistData.startIndex,endIndex,item.topic)
+
+      if (endIndex === len - 1) {
+        let timer = setInterval(() => {
+          if (
+            (this.$refs.listContainer as any).scrollTop <=
+            (this.$refs.botLoading as any).getBoundingClientRect().top + 300
+          ) {
+            clearInterval(timer);
+          }
+          this.bottomHTML = "-我是底线-";
+          (this.$refs.listContainer as any).scrollTop -= 6;
+        }, 30);
+        this.$nextTick(() => {
+          this.bottomPadding = 0
+        })
       }
-      console.log("+++++++++")
+      let arr = this.desItem.slice(this.vlistData.startIndex, endIndex + 1);
+      for (let item of arr) {
+        console.log(this.vlistData.startIndex, endIndex, item.topic);
+      }
+      console.log("+++++++++");
       // this.$nextTick(() => {
-      this.topPadding = (this.vlistData.startIndex)* this.vlistData.itemHeight;
+      this.topPadding = this.vlistData.startIndex * this.vlistData.itemHeight;
       this.bottomPadding =
         (this.desItem.length - endIndex + 2) * this.vlistData.itemHeight;
       this.renderItem = arr;
@@ -294,7 +328,10 @@ export default class DesList extends Vue {
         (this.$refs.listContainer as any).offsetHeight /
           this.vlistData.itemHeight
       ) + 2;
-    console.log((this.$refs.listContainer as any).offsetHeight, this.vlistData.itemHeight)
+    console.log(
+      (this.$refs.listContainer as any).offsetHeight,
+      this.vlistData.itemHeight
+    );
     this.bottomPadding = (this.endIndex() + 1) * this.vlistData.itemHeight;
     // this.topPadding = -this.vlistData.itemHeight;
     let top = new IntersectionObserver((entry: any) => {
