@@ -12,13 +12,13 @@
           ref="listContainer"
           @scroll.passive="scrollHandle"
           :style="{
-            'padding-bottom': bottomPadding,
-            'padding-top': topPadding,
+            '--bottom': bottomPadding,
+            '--top': topPadding,
           }"
         >
+        <div class="topLoading"  v-show="vlistData.topLoading">正在加载中...</div>
           <div v-for="(item, index) in renderItem" :key="index" class="box">
-            <!-- <DesItem :desItem="item" :menuKey="menuKey" /> -->
-            <div class="lueluel">{{ item.topic }}</div>
+            <DesItem :desItem="item" :menuKey="menuKey" />
             <img
               class="manySelect"
               :src="checkList[index] ? seletList[1] : seletList[0]"
@@ -26,6 +26,7 @@
               @click="checkItem(index)"
             />
           </div>
+          <div class="botLoading" v-show="vlistData.botLoading" ref="botLoading">正在加载中...</div>
         </div>
       </div>
       <DesBtn
@@ -57,10 +58,12 @@ interface dataType {
   current: number | undefined;
 }
 interface NumObj {
-  itemSize: number
-  itemHeight: number
-  startIndex: number
-  enabled: boolean
+  itemSize: number;
+  itemHeight: number;
+  startIndex: number;
+  enabled: boolean;
+  topLoading: boolean;
+  botLoading: boolean;
 }
 
 type CheckItem = {
@@ -146,10 +149,10 @@ export default class DesList extends Vue {
     }
     console.log(this.desItem, "ouooo");
     let arr = this.desItem.slice(0, this.endIndex());
-    console.log(arr, "0--00");
-    for (let i = 0; i < arr.length; i++) {
-      this.$set(this.renderItem, i, arr[i]);
-    }
+    this.renderItem = arr;
+    //     for (let i = 0; i < arr.length; i++) {
+    //   this.$set(this.renderItem, i, arr[i]);
+    // }
   }
   changePage(event: any): void {
     (this.$refs.listContainer as any).scrollTop = 0;
@@ -213,52 +216,66 @@ export default class DesList extends Vue {
   private menuKey: number = 0;
   private topPadding: any = 0;
   private bottomPadding: any = 0;
-  private vlistData: NumObj  = {
-  itemSize: 0,
-  itemHeight: 0,
-  startIndex: 0,
-  enabled: true
-}
-  scrollHandle() {
-    let requetAnimationFrame = window.requestAnimationFrame;
-    if (this.vlistData.enabled) {
-      this.vlistData.enabled = false;
-      requestAnimationFrame(this.dosTh);
-      setTimeout(() => (this.vlistData.enabled = true), 50);
-    }
-  }
-  dosTh() {
-    this.menuKey++;
-    this.vlistData.startIndex = Math.floor(
-      (this.$refs.listContainer as any).scrollTop / this.vlistData.itemHeight
-    );
-    // console.log(this.startIndex + this.itemSize, this.desItem.length - 1);
-    // if (this.startIndex + this.itemSize >= this.desItem.length - 1) {
-    //   // console.log("dibu");
-    // }
-    let len = this.desItem.length || 1;
-    // console.log(this.desItem[this.startIndex + this.itemSize],"-=--=-")
-    let endIndex = this.desItem[this.vlistData.startIndex + this.vlistData.itemSize]
-      ? this.vlistData.startIndex + this.vlistData.itemSize
-      : len - 1;
+  private vlistData: NumObj = {
+    itemSize: 0,
+    itemHeight: 0,
+    startIndex: 0,
+    enabled: true,
+    topLoading: false,
+    botLoading: true
+  };
 
-    let arr = this.desItem.slice(this.vlistData.startIndex, endIndex);
-    console.log(this.desItem.length, endIndex, arr, "=-==");
-    // this.$nextTick(() => {
-    this.topPadding = this.vlistData.startIndex * this.vlistData.itemHeight + "px";
-    this.bottomPadding =
-      (this.desItem.length - endIndex) * this.vlistData.itemHeight + "px";
-    // });
-    for (let item of arr) {
-      console.log("arr:" + item.topic);
-    }
-    console.log("------------------", this.desItem);
-    // for(let item of this.desItem) {
-    //   console.log("arr:"+ item.topic)
+  scrollHandle() {
+    // let requestAF;
+    // if (!requestAF) {
+    //   return requestAF = window.requestAnimationFrame(() => {
+    //     this.dosTh();
+    //   });
+    // } else {
+    //   window.cancelAnimationFrame(requestAF);
     // }
-    for (let i = 0; i < arr.length; i++) {
-      this.$set(this.renderItem, i, arr[i]);
+    // this.dosTh()
+  }
+  dosTh(target: any) {
+    this.vlistData.topLoading = this.vlistData.startIndex > 0? true : false
+    console.log(target[0].isIntersecting,"____")
+    if (target[0].isIntersecting) {
+      this.menuKey++;
+      this.vlistData.startIndex = Math.floor(
+        (this.$refs.listContainer as any).scrollTop / this.vlistData.itemHeight
+      );
+      // console.log(this.startIndex + this.itemSize, this.desItem.length - 1);
+      // if (this.startIndex + this.itemSize >= this.desItem.length - 1) {
+      //   // console.log("dibu");
+      // }
+      let len = this.desItem.length || 1;
+      // console.log(this.desItem[this.startIndex + this.itemSize],"-=--=-")
+      let endIndex = this.desItem[
+        this.vlistData.startIndex + this.vlistData.itemSize
+      ]
+        ? this.vlistData.startIndex + this.vlistData.itemSize
+        : len - 1;
+      //  if(endIndex === len - 1) {
+      //    this.vlistData.botLoading = false;
+      //   //  console.log((this.$refs.botLoading) as any)
+      //  } else {
+      //    this.vlistData.botLoading = true
+      //  }
+      let arr = this.desItem.slice(this.vlistData.startIndex, endIndex + 1);
+      for(let item of arr) {
+        console.log(this.vlistData.startIndex,endIndex,item.topic)
+      }
+      console.log("+++++++++")
+      // this.$nextTick(() => {
+      this.topPadding = (this.vlistData.startIndex)* this.vlistData.itemHeight;
+      this.bottomPadding =
+        (this.desItem.length - endIndex + 2) * this.vlistData.itemHeight;
+      this.renderItem = arr;
     }
+
+    // for (let i = 0; i < arr.length; i++) {
+    //   this.$set(this.renderItem, i, arr[i]);
+    // }
 
     // console.log(this.renderItem, this.desItem);
   }
@@ -274,10 +291,24 @@ export default class DesList extends Vue {
     this.vlistData.itemHeight = (this.$refs.roadUp as any).offsetHeight;
     this.vlistData.itemSize =
       Math.floor(
-        (this.$refs.listContainer as any).offsetHeight / this.vlistData.itemHeight
+        (this.$refs.listContainer as any).offsetHeight /
+          this.vlistData.itemHeight
       ) + 2;
-    this.bottomPadding = this.endIndex() * this.vlistData.itemHeight;
-    this.renderItem = this.desItem.slice(this.vlistData.startIndex, this.endIndex());
+    console.log((this.$refs.listContainer as any).offsetHeight, this.vlistData.itemHeight)
+    this.bottomPadding = (this.endIndex() + 1) * this.vlistData.itemHeight;
+    // this.topPadding = -this.vlistData.itemHeight;
+    let top = new IntersectionObserver((entry: any) => {
+      this.dosTh(entry);
+    });
+    let bot = new IntersectionObserver((entry: any) => {
+      this.dosTh(entry);
+    });
+    top.observe(document.getElementsByClassName("topLoading")[0]);
+    bot.observe(document.getElementsByClassName("botLoading")[0]);
+    this.renderItem = this.desItem.slice(
+      this.vlistData.startIndex,
+      this.endIndex() + 1
+    );
   }
 }
 </script>
@@ -295,6 +326,7 @@ export default class DesList extends Vue {
     overflow-y: hidden;
   }
   .listContainer {
+    position: relative;
     box-sizing: border-box;
     height: 100%;
     overflow-y: auto;
@@ -307,6 +339,24 @@ export default class DesList extends Vue {
     position: absolute;
     z-index: -100;
     height: 289px;
+  }
+  .topLoading,
+  .botLoading {
+    box-sizing: border-box;
+    padding: 15px;
+    height: 289px;
+    width: 100%;
+    font-size: 15px;
+    text-align: center;
+    color: #999;
+  }
+  .topLoading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: absolute;
+    top: calc(var(--top) * 1px - 289px);
+    left: 0;
   }
   .lueluel {
     line-height: 289px;

@@ -123,13 +123,13 @@ export default class DesBtn extends Vue {
   align-items: center;
   .pageBtns {
     .pagebtn {
+      height: 38px;
+      box-sizing: border-box;
       padding: 8px;
       border-radius: 8px;
       background: #85b8fd;
       color: #fff;
       font-size: 16px !important;
-      // text-align: center;
-      // line-height: 38px;
       box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
     }
     display: flex;

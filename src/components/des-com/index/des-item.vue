@@ -1,6 +1,6 @@
 <template>
   <div class="des-item" :key="menuKey">
-    <div>
+    <div @click="toDetail(desItem.type)">
       <IconWrapper v-if="isVideo">
         <van-image :src="desItem.type ? desItem.fileToken : url" fit="cover" class="thumbnail-img"/>
       </IconWrapper>
@@ -16,17 +16,8 @@
         ref="detail-wrapper"
         class="show-detail"
         @click="showDetail"
-      >详细</div>
-      <router-link
-        v-if="desItem.type === 0"
-        :to="{ name: 'myDes', params: { id: desItem.id, name: desItem.topic, type: typeName } }"
-        class="go-detail-anchor"
-      >查看</router-link>
-      <router-link
-        v-else-if="desItem.type === 1"
-        :to="{ name: 'archDetail', params: { id: desItem.id } }"
-        class="go-detail-anchor"
-      >查看</router-link>
+      >概要</div>
+      
     </div>
     <div
       class="details"
@@ -150,6 +141,29 @@ export default class DesItem extends Vue {
     }
     this.isShow = !this.isShow;
   }
+  toDetail(type: number) {
+    // <router-link
+    //     v-if="desItem.type === 0"
+    //     :to="{ name: 'myDes',  }"
+    //     class="go-detail-anchor"
+    //   >查看</router-link>
+    //   <router-link
+    //     v-else-if="desItem.type === 1"
+    //     :to="{ name: 'archDetail', params: { id: desItem.id } }"
+    //     class="go-detail-anchor"
+    //   >查看</router-link>
+    if(type === 0) {
+      this.$router.push({
+        name: 'myDes',
+        params: { id: this.desItem.id, name: this.desItem.topic, type: this.typeName }
+      })
+    } else {
+      this.$router.push({
+        name: 'archDetail',
+        params: { id: this.desItem.id}
+      })
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -182,19 +196,13 @@ export default class DesItem extends Vue {
     align-items: center;
     .show-detail {
       font-size: 22px;
-      color: #8ebefe;
-      text-decoration: underline;
-    }
-    .go-detail-anchor {
-      font-size: 22px;
       width: 78px;
       height: 40px;
       line-height: 40px;
       text-align: center;
       color: #fff;
       background: #85b8fd;
-      border-radius: 8px;
-      margin-left: 54px;
+      border-radius: 8px;;
     }
   }
   .thumbnail-img {
