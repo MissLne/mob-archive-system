@@ -30,6 +30,8 @@
     <DesBtn
       @changePage="changePage($event)"
       :totalPage="pageData"
+      :pageCur="pageCur"
+      :pageTo="pageTo"
       v-if="pageTo"
     />
     <div class="slots2"></div>
