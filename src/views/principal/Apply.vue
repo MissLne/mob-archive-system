@@ -9,7 +9,7 @@
     />
     <div class="slots"></div>
     <div v-for="(item, index) in itemData" :key="index" class="item-box">
-      <ApplyItem :applyItem="item" />
+      <ApplyItem :applyItem="item" :idList="idList" :idIndex="index"/>
       <img
         class="manySelect"
         :src="checkList[index] ? seletList[1] : seletList[0]"
@@ -43,6 +43,7 @@
       @click="toAddPage(isShow)"
     />
     <div class="slots2"></div>
+    
   </div>
 </template>
 <script lang="ts">
@@ -52,6 +53,8 @@ Component.registerHooks([
   "beforeRouteUpdate",
   "beforeRouteEnter",
 ]);
+import editApply from "@/views/other/applyPage/edit-apply.vue"
+
 import ApplyItem from "@/components/apply-com/index/apply-item.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
@@ -69,6 +72,7 @@ import store from "@/store";
     Alerts,
     DesBtn,
     SideBar,
+    editApply
   },
 })
 export default class Apply extends Vue {
@@ -175,6 +179,7 @@ export default class Apply extends Vue {
           MsgBox.error("内容为空");
         }
         this.itemData = result;
+        console.log(result)
         // result.map((item, index) => {
         //   this.$set(this.itemData, index, item);
         // });
@@ -191,24 +196,24 @@ export default class Apply extends Vue {
   changePage(event: any): void {
     if (event && this.pageCur) {
       if (event.type === "prePage" && this.pageCur > 1) {
-        // this.$nextTick(() => {
-        //   window.scrollTo(0, 0);
-        // });
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.pageCur--;
         this.getList();
       } else if (
         event.type === "nextPage" &&
         this.pageCur < this.pageData.total
       ) {
-        // this.$nextTick(() => {
-        //   window.scrollTo(0, 0);
-        // });
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.pageCur++;
         this.getList();
       } else {
-        // this.$nextTick(() => {
-        //   window.scrollTo(0, 0);
-        // });
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
         this.pageCur = event.page;
         this.getList();
       }

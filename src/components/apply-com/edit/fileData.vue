@@ -1,6 +1,6 @@
 <template>
-  <div id="fileData">
-    <div class="titles">可下载文件</div>
+  <div id="fileData" v-if="flag && fileData.length"> 
+    <!-- <div class="titles" v-if="fileData.length">可下载文件</div> -->
     <div class="bodyer">
       <div v-for="(item, index) in fileList" :key="index">
         <FileItem :fileItem="item" />
@@ -21,6 +21,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import FileItem from "@/components/apply-com/edit/fileItem.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
+import { getSrcCertainly } from "@/utils/picture";
 
 interface ObjItem {
   current: number;
@@ -33,7 +34,8 @@ interface ObjItem {
   },
 })
 export default class FileData extends Vue {
-  @Prop({}) private fileData!: any;
+  @Prop({}) private fileDataId !: number
+  private fileData!: any;
   public pageData: ObjItem = {
     current: 1,
     total: 0,
@@ -42,12 +44,30 @@ export default class FileData extends Vue {
   public pageTo: number = 0
   public fileLists: Array<any[]> = [];
   public fileList: any[] = [];
-  created() {
-    this.page();
+  private flag: boolean = false
+  async created() {
+   await this.$request
+      .get("/api/api/use/getMyUseResultByUseApplyId", { id: this.fileDataId })
+      .then((res: any) => {
+        let result = res.data.data;
+        console.log(result)
+        result.forEach(async (item: any) => {
+          console.log(item)
+          if (item.fileType)
+            item.fileToken = await getSrcCertainly(
+              item.fileType,
+              item.fileToken,
+              true
+            );
+        });
+        this.fileData = result
+        this.flag = true
+        this.page();
+      })
   }
-  // actived() {
-  //   this.page();
-  // }
+  mounted() {
+    console.log(this.fileData)
+  }
   changePage(event: any): void {
     if (event && this.pageCur) {
       if (event.type === "prePage" && this.pageCur > 1) {

@@ -11,7 +11,9 @@ export default new Vuex.Store({
     _permissionList: [] as Array<string>,
     includeList: [] as Array<string>,
     faceData: [] as Array<FaceData>,
-    isDetailPage: 0
+    isDetailPage: 0,
+    applyIdList: [],
+    applyIdIndex: 0
   },
   getters: {
     permissionList: state => (query: string) => {
@@ -22,6 +24,13 @@ export default new Vuex.Store({
 
   },
   mutations: {
+    setApplyIdIndex: (state,idIndex) => {
+      state.applyIdIndex = idIndex
+    },
+    setApplyIdList: (state,list) => {
+      console.log(list,"commit")
+      state.applyIdList = list
+    },
     setIncludeList: (state, list) => {
       state.includeList = list
     },

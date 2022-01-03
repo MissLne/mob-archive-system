@@ -1,5 +1,5 @@
-<template>
-  <div id="details">
+<template :key="justCount">
+  <div id="details" v-if="flag">
     <div class="itemDetail">
       <div v-for="(item, index) in item" :key="index">
         <div>{{ item.text }}</div>
@@ -7,11 +7,17 @@
       </div>
     </div>
     <div>
-      <div class="applyADelete" v-if="detailData.status === '申请'">
+      <div
+        class="applyADelete"
+        v-if="detailData && detailData.status === '申请'"
+      >
         <router-link
           :to="{
             name: 'addApply',
-            params: { type: '编辑', id: detailData.id },
+            params: {
+              type: '编辑',
+              id: detailData.id
+            },
           }"
           class="edit"
           >编辑</router-link
@@ -19,14 +25,14 @@
         <div @click="btnClick('删除')">删除</div>
       </div>
       <div
-        v-if="detailData.status === '审批'"
+        v-if="detailData && detailData.status === '审批'"
         @click="btnClick('撤回')"
         class="cancel"
       >
         撤回
       </div>
     </div>
-    <div v-if="detailData.status === '完成'" class="success">
+    <div v-if="detailData && detailData.status === '完成'" class="success">
       <div>
         <p>审批状态</p>
         <div class="statusData">
@@ -48,13 +54,13 @@
       </div>
       <div>
         <p>审批日期</p>
-        <p>{{ agreeData.createTime.replace("T"," ") }}</p>
+        <p>{{ agreeData.createTime.replace("T", " ") }}</p>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
 interface ItemTyle {
   text: string;
@@ -71,7 +77,8 @@ interface ItemData {
 }
 @Component
 export default class Details extends Vue {
-  @Prop({}) private detailData!: any;
+  @Prop({}) private justCount!: number;
+  @Prop({}) private iditem!: number;
 
   private item: Array<ItemTyle> = [
     {
@@ -121,11 +128,46 @@ export default class Details extends Vue {
     status: 0,
     createTime: "",
   };
+  private detailData!: any;
+  private flag: boolean = false;
+  async created() {
+    console.log(this.iditem)
+    let result = await (this as any).$request
+      .get("/api/api/use/getUseApplyDetail", { id: this.iditem })
+      .then((res: any) => {
+        return res.data.data;
+      });
+    this.detailData = { ...result, id: this.iditem };
+    this.flag = true;
+    let data = new Map([
+      [0, "申请"],
+      [1, "审批"],
+      [2, "同意"],
+      [3, "拒绝"],
+      [4, "完成"],
+    ]);
+
+    this.detailData.status = data.get(this.detailData.status);
+    this.initData();
+  }
+  private showPage: boolean = false;
+  mounted() {
+    // let top = new IntersectionObserver((entry: any) => {
+    //   if (entry[0].isIntersecting) {
+    //     console.log("jdsdsfassd");
+    //     this.showPage = true;
+    //   } else {
+    //     this.showPage = false;
+    //   }
+    // });
+    // console.log(document.getElementsByClassName("hehehehwori")[0]);
+    // top.observe(document.getElementsByClassName("hehehehwori")[0]);
+  }
   initData() {
     for (let i = 0; i < this.item.length; i++) {
       this.item[i].content = this.detailData[this.item[i].type];
     }
-    this.item[6].content = this.item[6].content.replace("T"," ")
+    this.item[6].content = this.item[6].content.replace("T", " ");
     if (this.detailData.status === "完成") {
       // let data = new Map([
       //   [0, "同意"],
@@ -142,10 +184,7 @@ export default class Details extends Vue {
     }
   }
   btnClick(str: string) {
-    this.$emit("btnClick", { type: str });
-  }
-  created() {
-    this.initData();
+    this.$emit("btnClick", { type: str, id: this.iditem });
   }
   // actived() {
   //   this.initData();

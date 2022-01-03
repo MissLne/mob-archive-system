@@ -1,4 +1,4 @@
-<template>
+x<template>
   <div id="fileItem">
     <div>
       <van-image :src="fileItem.fileToken ? fileItem.fileToken : url" fit="cover" class="thumbnail-img"/>

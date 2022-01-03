@@ -7,22 +7,52 @@
     />
     <DesHead :headData="headData" @handleClick="handleClick($event)" />
     <div class="slots"></div>
-    <Details
+    <!-- <Details
       v-if="detailData"
       :detailData="detailData"
       @btnClick="btnClick($event)"
     />
-    <FileData :fileData="fileData" v-if="fileData.length" />
+    <FileData :fileData="fileData" v-if="fileData.length" /> -->
+    <SlideWrapper
+      :isCurCle="true"
+      :maxLength="$store.state.applyIdList.length"
+      @setPages="onSetPages($event)"
+    >
+      <div
+        style="width: 100vw"
+        v-for="(item, index) in $store.state.applyIdList"
+        :key="item"
+      >
+        <Details
+          v-if="
+            item &&
+            index > $store.state.applyIdIndex - 2 &&
+            index < $store.state.applyIdIndex + 2
+          "
+          :iditem="item"
+          @btnClick="btnClick($event)"
+        />
+        <FileData
+          :fileDataId="item"
+          v-if="
+            item &&
+            index > $store.state.applyIdIndex - 2 &&
+            index < $store.state.applyIdIndex + 2
+          "
+        />
+      </div>
+    </SlideWrapper>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import SlideWrapper from "@/components/public-com/Slide/SlideWrapper";
 import Details from "@/components/apply-com/edit/details.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import FileData from "@/components/apply-com/edit/fileData.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import store from "@/store"
+import store from "@/store";
 import { getSrcCertainly } from "@/utils/picture";
 
 @Component({
@@ -31,12 +61,16 @@ import { getSrcCertainly } from "@/utils/picture";
     DesHead,
     FileData,
     Alerts,
+    SlideWrapper,
   },
 })
 export default class editApply extends Vue {
   public detailData: any = "";
   private alertTitle: string = "";
+  private showId: Array<number> = [];
   private alertShow: boolean = false;
+  private count: number = 1;
+  public justCount: number = 0;
   public headData: any = {
     title: "详情",
     leftUrl: "1",
@@ -48,22 +82,35 @@ export default class editApply extends Vue {
     isShow: false,
   };
   public fileData: any[] = [];
-  created() {
-    this.getDetail();
+  public componentData: any[] = [];
+  public maxLength: number = 5;
+  onSetPages(event: any) {
+    if (event.corect == -1) {
+      this.$store.commit("setApplyIdIndex", this.$store.state.applyIdIndex + 1);
+    } else if (event.corect == 1) {
+      this.$store.commit("setApplyIdIndex", this.$store.state.applyIdIndex - 1);
+    }
+  }
+  async created() {
+    window.scrollTo(0,0)
+    if (!this.$store.state.applyIdList.length) {
+      let list = typeof this.$route.query.idList == "string"? this.$route.query.idList.split(",") : []
+      let idIndex = Number(this.$route.query.idIndex)
+      this.$store.commit("setApplyIdIndex", idIndex);
+      this.$store.commit("setApplyIdList", list);
+      this.maxLength = list.length;
+    }
   }
   activated() {
-    
-    
-    this.getDetail();
-    console.log(this.detailData,"0+0");
+    // this.getDetail(this.$route.query.id, 1);
   }
-  getDetail() {
-    (this as any).$request
-      .get("/api/api/use/getUseApplyDetail", this.$route.params)
+  async getDetail(ids: any, num: number) {
+    let details = await (this as any).$request
+      .get("/api/api/use/getUseApplyDetail", { id: ids })
       .then((res: any) => {
-        // console.log(this.$route.params, res.data.data);
-
-        this.detailData = Object.assign(res.data.data, this.$route.params);
+        // console.log(this.$route.query, res.data.data);
+        console.log(this.$route.query, res.data.data);
+        let result = { ...res.data.data, id: ids };
 
         let data = new Map([
           [0, "申请"],
@@ -72,20 +119,30 @@ export default class editApply extends Vue {
           [3, "拒绝"],
           [4, "完成"],
         ]);
-        console.log(this.detailData);
 
-        this.detailData.status = data.get(this.detailData.status);
+        result.status = data.get(result.status);
+        return result;
       });
-    this.$request
-      .get("/api/api/use/getMyUseResultByUseApplyId", this.$route.params)
+    let detailFile = await this.$request
+      .get("/api/api/use/getMyUseResultByUseApplyId", { id: ids })
       .then((res: any) => {
         let result = res.data.data;
-        result.forEach(async (item: any) => {
-          if (item.fileType)
-            item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
-        });
-        this.fileData = result;
+        Array.isArray(result) &&
+          result.forEach(async (item: any) => {
+            if (item.fileType)
+              item.fileToken = await getSrcCertainly(
+                item.fileType,
+                item.fileToken,
+                true
+              );
+          });
+        // this.fileData = result;
+        return result;
+        console.log(this.fileData, ")))))))))))");
       });
+    // this.$nextTick(() => {
+    this.$set(this.componentData, num, [details, detailFile]);
+    // });
   }
   sureDelete(event: any) {
     if (event.type === "not") {
@@ -99,8 +156,8 @@ export default class editApply extends Vue {
             (this as any).$request
               .post(
                 "/api/api/use/recallUseApply",
-                // id: [`${this.$route.params.id}`]
-                [`${this.$route.params.id}`]
+                // id: [`${this.$route.query.id}`]
+                [`${this.handleDetailId}`]
               )
               .then((res: any) => {
                 if (res.data.success === true) {
@@ -119,7 +176,7 @@ export default class editApply extends Vue {
           "删除",
           () => {
             (this as any).$request
-              .post("/api/api/use/deleteUseApply", [`${this.$route.params.id}`])
+              .post("/api/api/use/deleteUseApply", [`${this.handleDetailId}`])
               .then((res: any) => {
                 if (res.data.success === true) {
                   this.$router.go(-1);
@@ -138,14 +195,16 @@ export default class editApply extends Vue {
       action.call(this);
     }
   }
+  private handleDetailId: number = 0;
   btnClick(event: any) {
     this.alertTitle = `确认${event.type}`;
+    this.handleDetailId = event.id;
     this.alertShow = true;
   }
   handleClick(event: any) {
     let obj = {};
     if (event.clickType === "left") {
-      store.commit("setDetailPage")
+      store.commit("setDetailPage");
       this.$router.push({ name: "apply" });
     }
   }

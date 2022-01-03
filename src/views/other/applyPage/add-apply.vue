@@ -114,7 +114,10 @@ export default class AddApply extends Vue {
   handleClick(event: any) {
     let obj = {};
     if (event.clickType === "left") {
-      this.$router.go(-1)
+      this.$router.push({
+        name: 'editApply',
+        query: {id: this.$route.params.iditem,indexId: this.$route.params.idIndex}
+      })
       this.$store.commit("setDetailPage")
     }
   }

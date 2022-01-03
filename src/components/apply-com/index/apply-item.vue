@@ -1,8 +1,7 @@
 <template>
   <div id="apply-item">
-    
     <div class="header">
-      <div :style="{color: classColor}">{{ applyItem.status }}</div>
+      <div :style="{ color: classColor }">{{ applyItem.status }}</div>
       <div>{{ applyItem.applyCode }}</div>
     </div>
     <div class="item-body">
@@ -12,16 +11,18 @@
       </div>
     </div>
     <div class="lookbtn">
-      <router-link
-        :to="{ name: 'editApply', params: { id: applyItem.id } }"
+      <div
+        
         class="look"
-        >查看</router-link
+        @click="lookDetail"
+        >查看</div
       >
     </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+
 interface ItemTyle {
   text: string;
   content: string;
@@ -29,13 +30,13 @@ interface ItemTyle {
   [key: string]: any;
 }
 @Component({
-  components: {
-  }
+  components: {},
 })
 export default class ApplyItem extends Vue {
   @Prop({}) private applyItem!: any;
-    
-  private classColor: string = ""
+  @Prop({}) private idList!: Array<number>;
+  @Prop({}) private idIndex!: number;
+  private classColor: string = "";
   private item: Array<ItemTyle> = [
     {
       text: "申请原因",
@@ -53,18 +54,25 @@ export default class ApplyItem extends Vue {
       this.item[i].content = this.applyItem[this.item[i].type];
     }
     let data = new Map([
-          ["申请","#800CE8"],
-          ["审批","#EB2D02"],
-          ["同意","#12DB00"],
-          ["拒绝","#EB2D02"],
-          ["完成","#8EBEFE"],
-          ["延期","#F2C10C"]
-        ]);
-        this.classColor = data.get(this.applyItem.status) || ""
+      ["申请", "#800CE8"],
+      ["审批", "#EB2D02"],
+      ["同意", "#12DB00"],
+      ["拒绝", "#EB2D02"],
+      ["完成", "#8EBEFE"],
+      ["延期", "#F2C10C"],
+    ]);
+    this.classColor = data.get(this.applyItem.status) || "";
+  }
+  lookDetail() {
+    this.$store.commit("setApplyIdList",[])
+    this.$router.push({
+          name: 'editApply',
+          query: { id: this.applyItem.id, idList: `${this.idList}`,idIndex: `${this.idIndex}` }
+        
+    })
   }
   created() {
     this.initData();
-    
   }
   updated() {
     this.initData();

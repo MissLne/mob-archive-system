@@ -12,12 +12,14 @@
       <li :class="{ active: index === 0 }">档案</li>
       <li :class="{ active: index === 1 }">详情</li>
     </ul>
-    <SlideWrapper :maxLength="2" @setPages="onSetPages">
+    <SlideWrapper :maxLength="4" @setPages="onSetPages">
       <DesList
         ref="des-list"
         @updateChoice="updateChoice($event)"
         @deleteDo="deleteDo"
       ></DesList>
+      <div style="width:100vw;height:500px;background:red;"></div>
+      <div style="width:100vw;height:500px;background:blue;"></div>
       <DesDetail></DesDetail>
     </SlideWrapper>
     <img
