@@ -248,18 +248,8 @@ export default class DesList extends Vue {
     topLoading: false,
     botLoading: true,
   };
-
-  scrollHandle() {
-    // let requestAF;
-    // if (!requestAF) {
-    //   return requestAF = window.requestAnimationFrame(() => {
-    //     this.dosTh();
-    //   });
-    // } else {
-    //   window.cancelAnimationFrame(requestAF);
-    // }
-    // this.dosTh()
-  }
+  
+  
   dosTh(target: any) {
     this.vlistData.topLoading = this.vlistData.startIndex > 0 ? true : false;
     console.log(target[0].isIntersecting, "____");

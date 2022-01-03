@@ -79,9 +79,9 @@ export default class SlideWrapper extends Vue {
     }
     this.isLeftRight = null;
   }
-
+  @Emit("setPages")
   public setPages(go: number) {
-    this.$emit('setPages', { corect: go })
+    
     const now = this.indexList[1] - go;
 
     this.indexList = [
@@ -89,6 +89,7 @@ export default class SlideWrapper extends Vue {
       now,
       now === this.maxLength - 1 ? -1 : now + 1
     ]
+    this.$emit('setPages', { corect: go})
     return this.indexList;
   }
   created() {
