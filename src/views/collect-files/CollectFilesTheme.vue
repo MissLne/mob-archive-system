@@ -8,7 +8,10 @@
         :key="theme.themeId"
         @click="passTheme(theme)"
         class="theme-box"
-      >{{theme.topic}}</li>
+      >
+        <span>{{theme.topic}}</span>
+        <img :src="require('@/assets/index/nextpage.png')">
+      </li>
     </ul>
   </div>
 </template>
@@ -68,14 +71,15 @@ export default class CollectFilesTheme extends Vue {
   overflow: hidden;
   min-height: 100vh;
   box-sizing: border-box;
-  padding: 20px 25px 20px;
+  padding: 20px 0;
   .theme-container {
     .theme-box {
+      display: flex;
+      justify-content: space-between;
       background-color: #fff;
       border-bottom: 3px solid #eee;
-      padding: 30px 20px;
-      margin-bottom: 20px;
-      border-radius: 20px;
+      padding: 30px 75px 30px 55px;
+      margin-bottom: 2px;
     }
   }
 }
