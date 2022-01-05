@@ -31,7 +31,6 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import Select from '@/components/public-com/Select/Select.vue'
 import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
-import { recursionGetId } from '@/utils/utils-file';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
 import PreviewBox from '@/components/public-com/PreviewBox.vue';
 import ArchForm from '@/components/public-com/ArchForm.vue'

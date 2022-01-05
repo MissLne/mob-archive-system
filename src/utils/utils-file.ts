@@ -1,3 +1,4 @@
+// 因为更改了select的写法，暂时不需要了
 /**
  * 递归地从树上寻找：具有名为keyName的键，且值等于keyValue的对象。并获取其名为idName的键对应的值。
  * @param tree 要搜索的树（孩子名为children）
@@ -7,7 +8,7 @@
  * @param treeChildrenName 树的孩子名，默认为children
  * @returns 数字，找不到为undefined
  */
-export function recursionGetId(tree: Array<any>, keyValue: string, keyName: string, idName: string, treeChildrenName: string = 'children') {
+/* export function recursionGetId(tree: Array<any>, keyValue: string, keyName: string, idName: string, treeChildrenName: string = 'children') {
     // console.log(tree, keyValue, keyName, idName)
     let ans: any = undefined;
     if (tree)
@@ -24,7 +25,7 @@ export function recursionGetId(tree: Array<any>, keyValue: string, keyName: stri
         }
       }
     return ans;
-}
+} */
 
 /**
  * 递归遍历元数据树
