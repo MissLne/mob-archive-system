@@ -49,16 +49,17 @@ import { submitCollectedFile } from '@/services/collect-files';
 })
 export default class CollectFilesDetailItem extends Vue {
   @Prop() detailData!: UploadFileData;
+  @Prop() theme!: Theme;
   // select的内容
   get collectFilesType() { return this.$store.getters['selectData/collectFilesType'] };
   get allDepartmentNameTree() { return this.$store.getters['selectData/allDepartmentNameTree'] };
   get isComplete() {
     return this.inputsProps.topic.value !== '' && this.inputsProps.categoryId.value !== '';
   }
-  private readonly inputsProps = {
+  private readonly inputsProps: {[key: string]: any} = {
     topic: { title: '名称', required: true, msg: '请输入题名', type: 'textarea', value: '' },
     people: { title: '人物', required: false, type: 'textarea', value: '' },
-    themeId: { title: '主题', required: false, type: 'select', value: '' },
+    themeId: { title: '主题', required: false, type: 'select', value: { id: this.theme.themeId, name: this.theme.topic } },
     event: { title: '事件', required: false, type: 'textarea', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
     place: { title: '地点', required: false, type: 'textarea', value: '' },
@@ -68,30 +69,16 @@ export default class CollectFilesDetailItem extends Vue {
     sourse: { title: '来源', required: false, type: 'textarea', value: '' },
   }
   get inputsValue() {
-    return {
-      topic: this.inputsProps.topic,
-      people: this.inputsProps.people,
-      themeId: this.inputsProps.themeId,
-      event: this.inputsProps.event,
-      time: this.inputsProps.time,
-      place: this.inputsProps.place,
-      categoryId: this.inputsProps.categoryId,
-      departmentId: this.inputsProps.departmentId,
-      comment: this.inputsProps.comment,
-      sourse: this.inputsProps.sourse,
+    const obj: {[key: string]: any} = {}
+    for (const key in this.inputsProps) {
+      obj[key] = this.inputsProps[key]
     }
+    return obj
   }
   set inputsValue(newValue) {
-    this.inputsProps.topic = newValue.topic;
-    this.inputsProps.people = newValue.people;
-    this.inputsProps.themeId = newValue.themeId;
-    this.inputsProps.event = newValue.event;
-    this.inputsProps.time = newValue.time;
-    this.inputsProps.place = newValue.place;
-    this.inputsProps.categoryId = newValue.categoryId;
-    this.inputsProps.departmentId = newValue.departmentId;
-    this.inputsProps.comment = newValue.comment;
-    this.inputsProps.sourse = newValue.sourse;
+    for (const key in this.inputsProps) {
+      this.inputsProps[key] = newValue[key]
+    }
   }
 
   private isSubmitted: boolean = false;

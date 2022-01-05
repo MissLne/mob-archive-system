@@ -2,11 +2,11 @@
   <div id="collect-files-upload">
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
-
-    <div class="theme-detail">
-      {{theme}}
-    </div>
-    
+    <ul class="theme-detail">
+      <li class="created-time">{{theme.createdTime.split('T').join(' ')}}</li>
+      <li class="department">创建部门：{{theme.department}}</li>
+      <li class="content">{{theme.content}}</li>
+    </ul>
     <ArchList
       ref="archList"
       :listData="listData"
@@ -14,7 +14,7 @@
       @stopSelect="stopSelect"
     />
     <UploadBtn :disabled="disabledUpload" @uploadFiles="onUploadFiles"/>
-    <div v-if="!listData.length" class="uploadHint">点我上传 →</div>
+    <div v-if="!listData.length" class="upload-hint">点我上传 →</div>
 
   </div>
 </template>
@@ -38,7 +38,7 @@ import { isImage, toBase64, estimateFileType } from '@/utils/picture'
 })
 export default class CollectFilesUpload extends Vue {
   // 主题信息
-  @Prop() theme!: any;
+  @Prop() theme!: Theme;
   // 上传文件后返回的数据
   private listData: Array<any> = [];
   // 正在上传时，禁止上传
@@ -47,7 +47,7 @@ export default class CollectFilesUpload extends Vue {
   private disabledCheck: boolean = false;
   // 头部栏数据
   public headData = {
-    title: '校史征集',
+    title: this.theme.topic,
     leftPic: true,
     leftUrl: "1",
     leftText: "",
@@ -103,7 +103,8 @@ export default class CollectFilesUpload extends Vue {
     // 正在上传不给点头部
     if (this.disabledCheck) return;
     if (clickType === 'left') {
-      if (this.isAllSubmitted)
+      this.$router.go(-1);
+      /* if (this.isAllSubmitted)
         this.$router.go(-1);
       else {
         Dialog.confirm({
@@ -113,7 +114,7 @@ export default class CollectFilesUpload extends Vue {
         }).then(() => {
           this.$router.go(-1);
         }).catch(() => {})
-      }
+      } */
     }
     else {
       if (this.listData.length) {
@@ -146,11 +147,25 @@ export default class CollectFilesUpload extends Vue {
   #collect-files-upload {
     min-height: 100vh;
     box-sizing: border-box;
-    padding: 20px 25px 0;
-    .uploadHint {
+    padding: 0 25px;
+    .theme-detail {
+      border: 4px solid #8ebefe;
+      margin: 20px 0;
+      padding: 20px;
+      font-size: 26px;
+      line-height: 50px;
+      border-radius: 20px;
+      .created-time {
+        color: #999;
+      }
+      .department {
+        color: #5ca2ff;
+      }
+    }
+    .upload-hint {
       position: fixed;
       left: 257px;
-      bottom: 72px;
+      bottom: 125px;
       color: rgba(0, 0, 0, 0.2);
       font-size: 42px;
       font-family: PingFang SC;

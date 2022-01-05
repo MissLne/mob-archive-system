@@ -39,7 +39,7 @@ export default class CollectFiles extends Vue {
     this.initSelectData();
   }
   private theme: any = {};
-  passTheme(theme: any) {
+  passTheme(theme: Theme) {
     this.theme = theme
     this.$router.push({ name: 'collectFilesUpload' })
   }

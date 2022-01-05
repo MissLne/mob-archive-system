@@ -72,3 +72,11 @@ interface FaceData {
   url: string
   [key: string]: string | number
 }
+
+interface Theme {
+  content: string,
+  createdTime: string,
+  department: string,
+  themeId: number,
+  topic: string,
+}

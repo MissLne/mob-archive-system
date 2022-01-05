@@ -70,6 +70,7 @@ export default class CollectFilesDetail extends Vue {
               return (
                 <CollectFilesDetailItem
                   key={this.detailDataList[i].fileId}
+                  theme={this.$attrs.theme}
                   detailData={this.detailDataList[i]}
                   onSubmitFile={this.onSubmitFile}
                 />
