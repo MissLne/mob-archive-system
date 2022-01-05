@@ -1,6 +1,6 @@
 <template>
   <div id="face-recognition">
-    <DesHead :headData="headData" @handleClick="headClick"/>
+    <des-head :headData="headData" @handleClick="headClick">人脸识别</des-head>
     <div class="slots"></div>
     <keep-alive>
       <router-view
@@ -26,7 +26,6 @@ export default class FaceRecognition extends Vue {
   private faceData: Array<FaceData> = [];
   private detailData: FaceData = {} as FaceData;
   public headData: any = {
-    title: '人脸识别',
     leftPic: true,
     leftUrl: "1",
     leftText: "",

@@ -1,6 +1,6 @@
 <template>
   <div id="meta-data">
-    <DesHead :headData="headData" @handleClick="headClick"/>
+    <des-head :headData="headData" @handleClick="headClick">元数据</des-head>
     <header class="slots"></header><!-- 占header的位置 -->
 
     <section
@@ -106,7 +106,6 @@ export default class MetaData extends Vue {
   }
 
   private headData: any = {
-    title: '元数据',
     leftPic: true,
     leftUrl: "1",
     leftText: "",

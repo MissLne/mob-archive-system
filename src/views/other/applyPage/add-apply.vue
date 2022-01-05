@@ -1,6 +1,6 @@
 <template>
   <div id="add-apply">
-    <DesHead :headData="headData" @handleClick="handleClick($event)" />
+    <des-head :headData="headData" @handleClick="handleClick($event)">借阅申请表</des-head>
     <div class="slots"></div>
     <div class="main">
       <div>
@@ -78,7 +78,6 @@ export default class AddApply extends Vue {
     status: 0,
   };
   public headData: any = {
-    title: "借阅申请表",
     leftUrl: "1",
     rightUrl: "",
     leftPic: true,

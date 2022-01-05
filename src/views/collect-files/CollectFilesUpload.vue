@@ -1,6 +1,6 @@
 <template>
   <div id="collect-files-upload">
-    <DesHead :headData="headData" @handleClick="headClick"/>
+    <des-head :headData="headData" @handleClick="headClick">{{theme.topic}}</des-head>
     <div class="slots"></div><!-- 占header的位置 -->
     <ul class="theme-detail">
       <li class="created-time">{{theme.createdTime.split('T').join(' ')}}</li>
@@ -47,7 +47,6 @@ export default class CollectFilesUpload extends Vue {
   private disabledCheck: boolean = false;
   // 头部栏数据
   public headData = {
-    title: this.theme.topic,
     leftPic: true,
     leftUrl: "1",
     leftText: "",

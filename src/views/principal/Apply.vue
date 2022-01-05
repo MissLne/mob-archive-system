@@ -1,7 +1,7 @@
 <template>
   <div id="apply">
     <SideBar :sideBarShow="sideBarShow" />
-    <DesHead :headData="headData" @handleClick="handleClick($event)" />
+    <des-head :headData="headData" @handleClick="handleClick($event)">借阅申请</des-head>
     <DesSearch
       :searchText="searchText"
       :isDate="true"
@@ -96,7 +96,6 @@ export default class Apply extends Vue {
   public pageCur: number = 1
   public pageTo: number = 0
   public headData: any = {
-    title: "借阅申请",
     leftUrl: "3",
     rightUrl: "",
     leftPic: true,

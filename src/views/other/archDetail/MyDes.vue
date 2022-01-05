@@ -1,6 +1,6 @@
 <template>
   <div id="my-des" @touchmove.self.prevent @mousewheel.self.prevent>
-    <DesHead :headData="headData" @handleClick="handleClick" />
+    <des-head :headData="headData" @handleClick="handleClick">{{$route.params.name}}</des-head>
     <!-- <Alerts
       :title="'确认删除'"
       v-if="alertShow"
@@ -49,7 +49,6 @@ import DesList from "./DesList.vue";
 })
 export default class MyDes extends Vue {
   public headData: any = {
-    title: "",
     leftUrl: "1",
     rightUrl: "2",
     leftPic: true,
@@ -59,9 +58,6 @@ export default class MyDes extends Vue {
     isShow: false,
   };
   private index: number = 0;
-  created() {
-    this.headData.title = this.$route.params.name;
-  }
   lalal() {
     console.log((this.$refs.ouo as any).style.height);
   }

@@ -1,6 +1,6 @@
 <template>
   <div id="recycle-bin">
-    <DesHead :headData="headData" @handleClick="headClick"/>
+    <des-head :headData="headData" @handleClick="headClick">回收站</des-head>
     <div class="slots"></div>
     <!-- 头部的下拉菜单 -->
     <Selects
@@ -71,7 +71,6 @@ import { getPartDossierList } from '@/services/dossier';
 })
 export default class RecycleBin extends Vue {
   private headData: any = {
-    title: '回收站',
     leftPic: true,
     leftUrl: 1,
     leftText: "",

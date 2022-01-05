@@ -5,7 +5,9 @@
         <div v-if="!headData.leftPic">{{ headData.leftText }}</div>
         <img :src="pics[headData.leftUrl]" v-if="headData.leftPic" />
       </div>
-      <div class="title">{{ headData.title }}</div>
+      <div class="title">
+        <slot></slot>
+      </div>
       <div class="choice" @click="rightClick">
         <div v-if="!headData.rightPic">{{ headData.rightText }}</div>
         <img :src="pics[headData.rightUrl]" v-if="headData.rightPic" />
@@ -20,7 +22,6 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 interface Information {
-  title: string;
   leftUrl: string;
   rightUrl: string;
   leftPic: boolean;
@@ -72,12 +73,12 @@ export default class DesHead extends Vue {
   top: 0;
   left: 0;
   .title {
-  width: 270px;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
+    width: 270px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 
 .des {

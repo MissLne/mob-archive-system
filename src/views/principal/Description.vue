@@ -6,11 +6,11 @@
       v-if="alertShow"
       @sureDelete="sureDelete($event)"
     />
-    <DesHead
+    <des-head
       :headData="headData"
       :popArr="popArr"
       @handleClick="handleClick($event)"
-    />
+    >著录中</des-head>
     <DesSearch
       :searchText="searchText"
       @searchThings="searchThings($event)"
@@ -55,7 +55,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
 import myTool from "@/components/des-com/index/myTool.vue";
@@ -123,7 +123,6 @@ export default class Description extends Vue {
   public count: number = 0;
   private _this: any = "";
   public headData: any = {
-    title: "著录中",
     leftUrl: "3",
     rightUrl: "",
     leftPic: true,

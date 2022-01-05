@@ -1,6 +1,6 @@
 <template>
   <div id="temp-arch-upload">
-    <DesHead :headData="headData" @handleClick="headClick"/>
+    <des-head :headData="headData" @handleClick="headClick">新建</des-head>
     <div class="slots"></div><!-- 占header的位置 -->
 
     <ArchList
@@ -46,7 +46,6 @@ export default class TempArchUpload extends Vue {
   private disabledCheck: boolean = false;
   // 头部栏数据
   public headData = {
-    title: '新建',
     leftPic: true,
     leftUrl: "1",
     leftText: "",

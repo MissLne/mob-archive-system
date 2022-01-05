@@ -16,7 +16,6 @@ export default class CollectFilesDetail extends Vue {
   indexList: Array<number> = [-1, 0, -1];
   // 头部数据与点击事件
   public headData: any = {
-    title: '详情',
     leftPic: true,
     leftUrl: "1",
     leftText: "",
@@ -58,7 +57,7 @@ export default class CollectFilesDetail extends Vue {
   render() {
     return (
       <div class="temp-arch-detail">
-        <DesHead headData={this.headData} onHandleClick={this.headClick}/>
+        <des-head headData={this.headData} onHandleClick={this.headClick}>详情</des-head>
         <slide-wrapper
           ref="slide-wrapper"
           maxLength={this.detailDataList.length}

@@ -5,7 +5,7 @@
       v-if="alertShow"
       @sureDelete="sureDelete($event)"
     />
-    <DesHead :headData="headData" @handleClick="handleClick($event)" />
+    <des-head :headData="headData" @handleClick="handleClick($event)">详情</des-head>
     <div class="slots"></div>
     <!-- <Details
       v-if="detailData"
@@ -72,7 +72,6 @@ export default class editApply extends Vue {
   private count: number = 1;
   public justCount: number = 0;
   public headData: any = {
-    title: "详情",
     leftUrl: "1",
     rightUrl: "",
     leftPic: true,

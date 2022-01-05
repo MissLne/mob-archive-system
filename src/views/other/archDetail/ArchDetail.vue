@@ -1,6 +1,6 @@
 <template>
   <div id="arch-detail">
-    <DesHead :headData="headData" @handleClick="headClick"/>
+    <des-head :headData="headData" @handleClick="headClick">详情</des-head>
     <div class="slots"></div><!-- 占header的位置 -->
 
     <div v-if="detailData" class="container">
@@ -171,7 +171,6 @@ export default class ArchDetail extends Vue {
   }
   // header的数据和点击事件
   private headData: any = {
-    title: '详情',
     leftPic: true,
     leftUrl: "1",
     leftText: "",

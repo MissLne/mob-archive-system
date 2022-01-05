@@ -6,11 +6,11 @@
       v-if="alertShow"
       @sureDelete="sureDelete($event)"
     />
-    <DesHead
+    <des-head
       :headData="headData"
       :popArr="popArr"
       @handleClick="handleClick($event)"
-    />
+    >我的档案</des-head>
     <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
     <myTool
       :count="count"
@@ -106,7 +106,6 @@ export default class Me extends Vue {
   public count: number = 0;
   private _this: any = "";
   public headData: any = {
-    title: "我的档案",
     leftUrl: "3",
     rightUrl: "",
     leftPic: true,
