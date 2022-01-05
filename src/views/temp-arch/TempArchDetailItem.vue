@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
-import { recursionGetId, initMetaData } from '@/utils/utils-file';
+import { initMetaData } from '@/utils/utils-file';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import PreviewBox from '@/components/public-com/PreviewBox.vue'
@@ -115,10 +115,10 @@ export default class TempArchDetailItem extends Vue {
             item.metadataValue = props[key].value
         })
     }
-    obj['fondsIdentifierId'] = recursionGetId(this.fondsIdentifier, obj['fondsIdentifierId'], 'fondsName', 'id');
-    obj['categoryCode'] = recursionGetId(this.dossierType, obj['categoryCode'], 'typeName', 'id');
-    obj['departmentId'] = recursionGetId(this.departmentNameTree, obj['departmentId'], 'departmentName', 'id');
-    obj['confidentialLevel'] = recursionGetId(this.confidentialLevelArray, obj['confidentialLevel'], 'name', 'id');
+    obj['fondsIdentifierId'] = obj['fondsIdentifierId'].id
+    obj['categoryCode'] = obj['categoryCode'].id
+    obj['departmentId'] = obj['departmentId'].id
+    obj['confidentialLevel'] = obj['confidentialLevel'].id
 
     obj['metadata'] = (
       [...(this.$store.state.metaData.flatArr), ...(specialMeta)] as Array<MetaDataItem>

@@ -13,7 +13,7 @@
       <div class="mask" v-show="isSpread" @click.stop="isSpread = false"></div>
       <!-- 显示选择结果 -->
       <span class="selected-result disabled-color-transition" :class="{'disabled-color': disabled}">
-        {{selectedString === '' ? '无' : selectedString}}
+        {{selected.name || '无'}}
       </span>
       <!-- 选择部分 -->
       <transition name="spread">
@@ -43,7 +43,7 @@ import SelectInner from './SelectInner.vue';
   }
 })
 export default class Select extends Vue {
-  @Model('catchBubble') selectedString!: string;
+  @Model('catchBubble', { default: {} }) selected!: { name: string, id: number };
   @Prop({default: false}) disabled!: boolean;
   @Prop() myData!: Array<any> | null;
   @Prop() optionVariableName!: string;
@@ -63,12 +63,12 @@ export default class Select extends Vue {
         this.isOverflow = false;
     }
   }
-  catchBubble({target}: {target: HTMLDivElement}) {
-    if (target.innerText) {
-      console.log('click!', target.innerText)
-      this.$emit('catchBubble', target.innerText)
-      this.isSpread = false;
-    }
+  // 在冒泡的event里面加了个id...
+  @Emit('catchBubble')
+  catchBubble({target, id}: {target: HTMLDivElement, id: number}) {
+    console.log(id)
+    this.isSpread = false;
+    return { name: target.innerText, id }
   }
 }
 </script>

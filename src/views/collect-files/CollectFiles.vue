@@ -1,7 +1,9 @@
 <template>
   <div id="collect-files">
-    <keep-alive include="CollectFilesUpload">
+    <keep-alive :include="['CollectFilesUpload', 'CollectFilesTheme']">
       <router-view
+        :theme="theme"
+        @passTheme="passTheme"
         :detailDataList="detailDataList"
         @passDetailData="passDetailData"
       ></router-view>
@@ -17,7 +19,6 @@ import { getCollectedFileType, getAllDepartmentTree } from '@/services/collect-f
   name: 'CollectFiles',
 })
 export default class CollectFiles extends Vue {
-  private detailDataList: Array<any> = [];
   async initSelectData() {
     try {
       if (!localStorage.getItem('collectFilesType')) {
@@ -37,9 +38,15 @@ export default class CollectFiles extends Vue {
   created() {
     this.initSelectData();
   }
+  private theme: any = {};
+  passTheme(theme: any) {
+    this.theme = theme
+    this.$router.push({ name: 'collectFilesUpload' })
+  }
+  private detailDataList: Array<any> = [];
   passDetailData(data: UploadFileData[]) {
-    this.detailDataList = data;
-    this.$router.push({ name: 'collectFilesDetail' });
+    this.detailDataList = data
+    this.$router.push({ name: 'collectFilesDetail' })
   }
 }
 </script>

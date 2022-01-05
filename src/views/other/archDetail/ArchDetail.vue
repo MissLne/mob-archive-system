@@ -63,8 +63,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
-import { recursionGetId, fillArchDetail, initMetaData } from '@/utils/utils-file';
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import { initMetaData } from '@/utils/utils-file';
 import { downloadPicture, estimateFileType, isImage, isVideo } from '@/utils/picture';
 import PermissionRequest from '@/utils/utils-request'
 import { Dialog } from 'vant';
@@ -149,10 +149,10 @@ export default class ArchDetail extends Vue {
             item.metadataValue = props[key].value
         })
     }
-    obj['fondsIdentifierId'] = recursionGetId(this.fondsIdentifier, obj['fondsIdentifierId'], 'fondsName', 'id');
-    obj['categoryCodeId'] = recursionGetId(this.dossierType, obj['categoryCodeId'], 'typeName', 'id');
-    obj['departmentId'] = recursionGetId(this.departmentNameTree, obj['departmentId'], 'departmentName', 'id');
-    obj['confidentialLevel'] = recursionGetId(this.confidentialLevelArray, obj['confidentialLevel'], 'name', 'id');
+    obj['fondsIdentifierId'] = obj['fondsIdentifierId'].id
+    obj['categoryCodeId'] = obj['categoryCodeId'].id
+    obj['departmentId'] = obj['departmentId'].id
+    obj['confidentialLevel'] = obj['confidentialLevel'].id
 
     obj['metadata'] = (
       [...(this.$store.state.metaData.flatArr), ...(specialMeta)] as Array<MetaDataItem>
@@ -214,16 +214,35 @@ export default class ArchDetail extends Vue {
     get()
   }
   createSetting() {
-    const dData = this.detailData;
+    const dData: any = this.detailData;
     const props = this.inputsProps;
     // 将获取的数据填入表单
-    fillArchDetail(dData, this.inputsProps);
-    // 获取的全宗号是数字，转为对应的字符
-    props.fondsIdentifierId.value = 
-      recursionGetId(this.fondsIdentifier, props.fondsIdentifierId.value, 'fondsIdentifier', 'fondsName');
-    // 获取的密级是数字，转为对应的字符
-    props.confidentialLevel.value =
-      this.confidentialLevelArray[props.confidentialLevel.value].name;
+    props.topic.value = dData.topic;
+    props.people.value = dData.people;
+    props.time.value = dData.time?.split('T')[0];
+    props.place.value = dData.address;
+    props.event.value = dData.event;
+    props.retentionPeriod.value = dData.retentionPeriod;
+    // 全宗号
+    props.fondsIdentifierId.value = {
+      id: dData.fondsIdentifierId,
+      name: dData.fondsName,
+    }
+    // 类别号
+    props.categoryCodeId.value = {
+      id: dData.categoryCodeId,
+      name: dData.categoryName,
+    }
+    // 部门
+    props.departmentId.value = {
+      id: dData.departmentId,
+      name: dData.departmentName,
+    }
+    // 密级
+    props.confidentialLevel.value = {
+      id: dData.confidentialLevel,
+      name: this.confidentialLevelArray[dData.confidentialLevel].name,
+    }
     // 初始化元数据
     console.log(dData)
     initMetaData(this, 'metadataStructTreeBoList');

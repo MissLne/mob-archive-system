@@ -27,25 +27,6 @@ export function recursionGetId(tree: Array<any>, keyValue: string, keyName: stri
 }
 
 /**
- * 针对ArchDetail页的填内容函数
- * @param detailData 后台返回数据
- * @param inputsProps 要填数据的对象
- */
-export function fillArchDetail(detailData: any, inputsProps: any) {
-  // getArchiveDetail
-  inputsProps.topic.value = detailData.topic;
-  inputsProps.people.value = detailData.people;
-  inputsProps.time.value = detailData.time?.split('T')[0];
-  inputsProps.place.value = detailData.address;
-  inputsProps.event.value = detailData.event;
-  inputsProps.fondsIdentifierId.value = detailData.fondsName;
-  inputsProps.categoryCodeId.value = detailData.categoryName;
-  inputsProps.departmentId.value = detailData.departmentName;
-  inputsProps.confidentialLevel.value = detailData.confidentialLevel;
-  inputsProps.retentionPeriod.value = detailData.retentionPeriod;
-}
-
-/**
  * 递归遍历元数据树
  * @param tree 元数据树
  * @param handle 经过节点时遍历的函数

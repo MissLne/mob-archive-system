@@ -4,6 +4,7 @@
       <div
         class="content"
         :style="{ 'padding-left': 0.75 + recursionTimes * 0.5 + 'rem' }"
+        @click="event => {event.id = item[optionVariableKey]}"
       >
         <!-- 换成最外层监听了，原来在content里 -->
         <!-- @click="onOptionClick(index, item, $event)" -->

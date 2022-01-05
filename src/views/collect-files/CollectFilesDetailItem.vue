@@ -59,6 +59,7 @@ export default class CollectFilesDetailItem extends Vue {
   private readonly inputsProps = {
     topic: { title: '名称', required: true, msg: '请输入题名', type: 'textarea', value: '' },
     people: { title: '人物', required: false, type: 'textarea', value: '' },
+    themeId: { title: '主题', required: false, type: 'select', value: '' },
     event: { title: '事件', required: false, type: 'textarea', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
     place: { title: '地点', required: false, type: 'textarea', value: '' },
@@ -71,6 +72,7 @@ export default class CollectFilesDetailItem extends Vue {
     return {
       topic: this.inputsProps.topic,
       people: this.inputsProps.people,
+      themeId: this.inputsProps.themeId,
       event: this.inputsProps.event,
       time: this.inputsProps.time,
       place: this.inputsProps.place,
@@ -83,6 +85,7 @@ export default class CollectFilesDetailItem extends Vue {
   set inputsValue(newValue) {
     this.inputsProps.topic = newValue.topic;
     this.inputsProps.people = newValue.people;
+    this.inputsProps.themeId = newValue.themeId;
     this.inputsProps.event = newValue.event;
     this.inputsProps.time = newValue.time;
     this.inputsProps.place = newValue.place;
@@ -123,18 +126,16 @@ export default class CollectFilesDetailItem extends Vue {
       // "id": "资料文件的id（新增情况下不需要填写）",
       topic: this.inputsProps.topic.value,
       people: this.inputsProps.people.value,
+      themeId:
+        (this.inputsProps.themeId.value as any).id,
       event: this.inputsProps.event.value,
       time: this.inputsProps.time.value 
         && this.inputsProps.time.value + 'T00:00:00',
       place: this.inputsProps.place.value,
       categoryId:
-        Number.parseInt(
-          recursionGetId(this.collectFilesType, this.inputsProps.categoryId.value, 'typeName', 'id')
-        ),
+        (this.inputsProps.categoryId.value as any).id,
       departmentId:
-        Number.parseInt(
-          recursionGetId(this.allDepartmentNameTree, this.inputsProps.departmentId.value, 'departmentName', 'id')
-        ),
+        (this.inputsProps.departmentId.value as any).id,
       comment: this.inputsProps.comment.value,
       sourse: this.inputsProps.sourse.value,
       "fileId": this.detailData.fileId,

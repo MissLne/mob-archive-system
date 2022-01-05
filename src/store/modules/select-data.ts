@@ -18,6 +18,7 @@ const selectData: Module<any, any> = {
       {name: '秘密', id: 4}
     ],
     retentionPeriodArray: ['永久', '30年', '10年'],
+    themeList: []
   },
   getters: {
     fondsIdentifier: state => {
@@ -46,5 +47,10 @@ const selectData: Module<any, any> = {
       return state._collectFilesType;
     }
   },
+  mutations: {
+    setThemeList: (state, payload) => {
+      state.themeList = payload
+    }
+  }
 }
 export default selectData;

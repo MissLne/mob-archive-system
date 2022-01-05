@@ -2,6 +2,10 @@
   <div id="collect-files-upload">
     <DesHead :headData="headData" @handleClick="headClick"/>
     <div class="slots"></div><!-- 占header的位置 -->
+
+    <div class="theme-detail">
+      {{theme}}
+    </div>
     
     <ArchList
       ref="archList"
@@ -16,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from 'vue-property-decorator'
+import { Component, Vue, Emit, Prop } from 'vue-property-decorator'
 import UploadBtn from '@/components/public-com/UploadBtn.vue';
 import ArchList from '@/components/public-com/ArchList.vue';
 import DesHead from '@/components/des-com/index/des-head.vue';
@@ -33,6 +37,8 @@ import { isImage, toBase64, estimateFileType } from '@/utils/picture'
   }
 })
 export default class CollectFilesUpload extends Vue {
+  // 主题信息
+  @Prop() theme!: any;
   // 上传文件后返回的数据
   private listData: Array<any> = [];
   // 正在上传时，禁止上传
