@@ -17,8 +17,7 @@
 </template>
 
 <script lang="ts">
-import { getAllTheme } from '@/services/collect-files'
-import { Vue, Component, Emit } from 'vue-property-decorator'
+import { Vue, Component, Emit, Prop } from 'vue-property-decorator'
 import DesHead from '@/components/des-com/index/des-head.vue';
 
 @Component({
@@ -29,16 +28,7 @@ import DesHead from '@/components/des-com/index/des-head.vue';
 })
 export default class CollectFilesTheme extends Vue {
   // 主题列表
-  themeList: Array<Theme> = []
-  created() {
-    const get = async () => {
-      const { data } = await getAllTheme()
-      this.themeList = data.data
-      this.$store.commit('selectData/setThemeList', data.data)
-      console.log(data)
-    }
-    get()
-  }
+  @Prop() themeList!: Array<Theme>
 
   // 传递当前主题
   @Emit('passTheme')

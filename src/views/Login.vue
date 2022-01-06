@@ -24,7 +24,11 @@
         @focus="setPasswordMsg"
       />
       <div class="collect-files-box">
-        <img :src="require('@/assets/login/scan.png')" class="scan">
+        <img
+          :src="require('@/assets/login/scan.png')"
+          class="scan"
+          @click="$router.push({ name: 'collectFilesScan' })"
+        >
         <router-link to="/collect-files" class="link">校史征集>></router-link>
       </div>
       <img
