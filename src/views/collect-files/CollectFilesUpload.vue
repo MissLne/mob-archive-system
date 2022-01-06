@@ -22,7 +22,7 @@
 <script lang="ts">
 import { Component, Vue, Emit, Prop } from 'vue-property-decorator'
 import UploadBtn from '@/components/public-com/UploadBtn.vue';
-import ArchList from '@/components/public-com/ArchList.vue';
+import ArchList from '@/components/public-com/Archive/ArchList.vue';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { Dialog } from 'vant'

@@ -22,8 +22,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
-import ListItem from '@/components/public-com/ListItem.vue'
-import MsgBox from './MsgBox/Msg';
+import ListItem from './ListItem.vue'
+import MsgBox from '../MsgBox/Msg';
 
 @Component({
   components: {

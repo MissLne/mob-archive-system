@@ -70,8 +70,8 @@ import PermissionRequest from '@/utils/utils-request'
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import DesHead from '@/components/des-com/index/des-head.vue';
-import PreviewBox from '@/components/public-com/PreviewBox.vue'
-import ArchForm from '@/components/public-com/ArchForm.vue'
+import PreviewBox from '@/components/public-com/Archive/PreviewBox.vue'
+import ArchForm from '@/components/public-com/Archive/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
 import SingleBtn from '@/components/public-com/Btn/SingleBtn.vue'
 import { getArchiveDetail, updateArchive } from '@/services/archive'

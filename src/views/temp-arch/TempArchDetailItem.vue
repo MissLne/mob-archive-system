@@ -38,8 +38,8 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import { initMetaData } from '@/utils/utils-file';
 import { Dialog } from 'vant';
 import Msg from '@/components/public-com/MsgBox/Msg';
-import PreviewBox from '@/components/public-com/PreviewBox.vue'
-import ArchForm from '@/components/public-com/ArchForm.vue'
+import PreviewBox from '@/components/public-com/Archive/PreviewBox.vue'
+import ArchForm from '@/components/public-com/Archive/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
 import { addTemporaryArchive, changeTemporaryArchiveToNormalArchive, deleteTemporaryArchive, getImageMetadata } from '@/services/temp-arch'
 

@@ -32,8 +32,8 @@ import Select from '@/components/public-com/Select/Select.vue'
 import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
-import PreviewBox from '@/components/public-com/PreviewBox.vue';
-import ArchForm from '@/components/public-com/ArchForm.vue'
+import PreviewBox from '@/components/public-com/Archive/PreviewBox.vue';
+import ArchForm from '@/components/public-com/Archive/ArchForm.vue'
 import { Dialog } from 'vant'
 import { submitCollectedFile } from '@/services/collect-files';
 

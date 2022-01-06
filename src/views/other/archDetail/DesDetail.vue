@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import ArchForm from '@/components/public-com/ArchForm.vue'
+import ArchForm from '@/components/public-com/Archive/ArchForm.vue'
 import { getDossierDetail } from '@/services/dossier';
 
 @Component({
