@@ -2,28 +2,23 @@
   <div id="collect-files-theme">
     <des-head :headData="headData" @handleClick="headClick">选择主题</des-head>
     <div class="slots"></div><!-- 占header的位置 -->
-    <ul class="theme-container">
-      <li
-        v-for="theme in themeList"
-        :key="theme.themeId"
-        @click="passTheme(theme)"
-        class="theme-box"
-      >
-        <span>{{theme.topic}}</span>
-        <img :src="require('@/assets/index/nextpage.png')">
-      </li>
-    </ul>
+    <ThemeList
+      :themeList="themeList"
+      @chooseTheme="passTheme"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Emit, Prop } from 'vue-property-decorator'
 import DesHead from '@/components/des-com/index/des-head.vue';
+import ThemeList from '@/components/public-com/Theme/ThemeList.vue'
 
 @Component({
   name: 'CollectFilesTheme',
   components: {
-    DesHead
+    DesHead,
+    ThemeList
   }
 })
 export default class CollectFilesTheme extends Vue {
@@ -61,15 +56,5 @@ export default class CollectFilesTheme extends Vue {
   min-height: 100vh;
   box-sizing: border-box;
   padding: 20px 0;
-  .theme-container {
-    .theme-box {
-      display: flex;
-      justify-content: space-between;
-      background-color: #fff;
-      border-bottom: 3px solid #eee;
-      padding: 30px 75px 30px 55px;
-      margin-bottom: 2px;
-    }
-  }
 }
 </style>
