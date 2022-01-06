@@ -103,11 +103,15 @@ export default class CollectFilesScan extends Vue {
         // 停止摄像头和扫描
         this.start = false
         // 如果是符合要求的二维码 
-        if ((this.res as string).startsWith('collectFiles/themeId/')) {
-          const themeId = this.res.split('/')[2]
+        if ((this.res as string).includes(
+          `${location.host}/#/collect-files/upload/`
+        )) {
+          const segments = this.res.split('/')
+          console.log(segments.length)
+          const themeId = segments[segments.length - 1]
           // 如果themeId在合理范围内
-          if (1 <= themeId && themeId <= this.$attrs.themeList.length)
-            this.$emit('passTheme', this.$attrs.themeList[themeId - 1])
+          if (1 <= themeId && themeId <= this.$store.state.selectData.themeList.length)
+            this.$emit('passTheme', this.$store.state.selectData.themeList[themeId - 1])
           else
             Dialog({ message: '该themeId不存在' })
               .finally(() => this.start = true)

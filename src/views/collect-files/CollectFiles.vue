@@ -2,7 +2,6 @@
   <div id="collect-files">
     <keep-alive :include="['CollectFilesUpload', 'CollectFilesTheme']">
       <router-view
-        :themeList="themeList"
         :theme="theme"
         @passTheme="passTheme"
         :detailDataList="detailDataList"
@@ -15,7 +14,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { getCollectedFileType, getAllDepartmentTree } from '@/services/collect-files'
-import { getAllTheme } from '@/services/collect-files'
 
 @Component({
   name: 'CollectFiles',
@@ -37,21 +35,15 @@ export default class CollectFiles extends Vue {
       console.log('error when fetch select-data', error);
     }
   }
-  private themeList: Array<Theme> = []
-  async initThemeList() {
-    const { data } = await getAllTheme()
-    this.themeList = data.data
-    this.$store.commit('selectData/setThemeList', data.data)
-    console.log(data)
-  }
   created() {
     this.initSelectData();
-    this.initThemeList();
+    this.$store.dispatch('selectData/setThemeListAsync')
   }
   private theme: any = {};
   passTheme(theme: Theme) {
     this.theme = theme
-    this.$router.push({ name: 'collectFilesUpload' })
+    if (this.$route.name !== 'collectFilesUpload')
+      this.$router.push({ name: 'collectFilesUpload', params: { themeId: theme.themeId.toString() } })
   }
   private detailDataList: Array<any> = [];
   passDetailData(data: UploadFileData[]) {

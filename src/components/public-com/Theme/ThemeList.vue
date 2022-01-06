@@ -13,14 +13,16 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Emit, Prop } from 'vue-property-decorator'
+import { Vue, Component, Emit } from 'vue-property-decorator'
 
 @Component({
   name: 'ThemeList',
 })
 export default class ThemeList extends Vue {
   // 主题列表
-  @Prop() themeList!: Array<Theme>
+  get themeList() {
+    return this.$store.state.selectData.themeList
+  }
 
   // 传递当前主题
   @Emit('chooseTheme')

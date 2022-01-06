@@ -2,7 +2,10 @@
   <div id="collect-files-upload">
     <des-head :headData="headData" @handleClick="headClick">{{theme.topic}}</des-head>
     <div class="slots"></div><!-- 占header的位置 -->
-    <ul class="theme-detail">
+    <ul
+      v-if="themeList.length && Object.keys(theme).length"
+      class="theme-detail"
+    >
       <li class="created-time">{{theme.createdTime.split('T').join(' ')}}</li>
       <li class="department">创建部门：{{theme.department}}</li>
       <li class="content">{{theme.content}}</li>
@@ -39,6 +42,15 @@ import { isImage, toBase64, estimateFileType } from '@/utils/picture'
 export default class CollectFilesUpload extends Vue {
   // 主题信息
   @Prop() theme!: Theme;
+  get themeList() {
+    const t = this.$store.state.selectData.themeList
+    if (t.length) {
+      const themeId = Number.parseInt(this.$route.params.themeId)
+      if (themeId)
+        this.$emit('passTheme', t[themeId - 1])
+    }
+    return t
+  }
   // 上传文件后返回的数据
   private listData: Array<any> = [];
   // 正在上传时，禁止上传

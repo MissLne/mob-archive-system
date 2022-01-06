@@ -1,3 +1,5 @@
+import { getAllTheme } from "@/services/collect-files";
+import { Toast } from "vant";
 import { Module } from "vuex";
 
 const selectData: Module<any, any> = {
@@ -50,6 +52,20 @@ const selectData: Module<any, any> = {
   mutations: {
     setThemeList: (state, payload) => {
       state.themeList = payload
+    }
+  },
+  actions: {
+    setThemeListAsync: async ({ commit }) => {
+      Toast.loading({
+        duration: 0,
+        forbidClick: true,
+        message: '加载主题中'
+      })
+      const { data } = await getAllTheme()
+      commit('setThemeList', data.data)
+      console.log(data)
+      Toast.clear()
+      return data.data
     }
   }
 }

@@ -3,7 +3,6 @@
     <des-head :headData="headData" @handleClick="headClick">选择主题</des-head>
     <div class="slots"></div><!-- 占header的位置 -->
     <ThemeList
-      :themeList="themeList"
       @chooseTheme="passTheme"
     />
   </div>
@@ -22,9 +21,6 @@ import ThemeList from '@/components/public-com/Theme/ThemeList.vue'
   }
 })
 export default class CollectFilesTheme extends Vue {
-  // 主题列表
-  @Prop() themeList!: Array<Theme>
-
   // 传递当前主题
   @Emit('passTheme')
   passTheme(theme: Theme) {

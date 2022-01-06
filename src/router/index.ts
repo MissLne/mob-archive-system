@@ -57,7 +57,7 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/collect-files/CollectFilesTheme.vue'),
       },
       {
-        path: 'upload',
+        path: 'upload/:themeId',
         name: 'collectFilesUpload',
         component: () => import('@/views/collect-files/CollectFilesUpload.vue'),
       },
