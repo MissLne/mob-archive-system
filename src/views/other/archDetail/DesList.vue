@@ -56,6 +56,7 @@ import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import { getArchiveList } from "@/services/archive";
+import { getSrcCertainly } from "@/utils/picture";
 
 interface dataType {
   size: number | undefined;
@@ -168,6 +169,11 @@ export default class DesList extends Vue {
       id: this.$route.params.id,
     });
     let result = data.data.records;
+    // 获取图片缩略图
+    result.forEach(async (item: any) => {
+      if (item.fileType)
+        item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
+    })
     // 初始化 选择状态数组
     this.checkList = new Array(result.length).fill(false);
     for (let i = 0; i < result.length; i++) {

@@ -244,11 +244,11 @@ export default class Description extends Vue {
     this.count = data.data.total;
     this.pageData.total = Math.ceil(this.count / 10);
     this.pageTo = Math.ceil(this.count / 10);
-
+    // 获取图片缩略图
     result.forEach(async (item: any) => {
       if (item.fileType)
         item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
-    });
+    })
     this.desItem = result;
   }
   changePage(event: any): void {

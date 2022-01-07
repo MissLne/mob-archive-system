@@ -177,6 +177,7 @@ export default class Me extends Vue {
         }
         this.count = res.data.data.total;
         this.pageTo = Math.ceil(this.count / 10);
+        // 获取图片缩略图
         result.forEach(async (item: any) => {
           if (item.fileType)
             item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
