@@ -5,7 +5,7 @@
         :to="item.itemLink"
         replace
         custom
-        v-slot="{ navigate, isActive }"
+        #default="{ navigate, isActive }"
       >
         <div
           @click="navigate"

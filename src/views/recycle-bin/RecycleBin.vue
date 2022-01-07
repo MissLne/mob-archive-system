@@ -71,9 +71,6 @@ import { getPartDossierList } from '@/services/dossier';
 })
 export default class RecycleBin extends Vue {
   private headData: any = {
-    leftPic: true,
-    leftUrl: 1,
-    leftText: "",
     rightPic: true,
     rightUrl: 2,
     rightText: '全选',

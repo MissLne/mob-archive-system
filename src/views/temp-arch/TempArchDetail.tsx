@@ -25,9 +25,6 @@ export default class TempArchDetail extends Vue {
   } */
 
   private headData: any = {
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
     rightPic: false,
     rightUrl: "",
     rightText: "",

@@ -78,11 +78,8 @@ export default class AddApply extends Vue {
     status: 0,
   };
   public headData: any = {
-    leftUrl: "1",
     rightUrl: "",
-    leftPic: true,
     rightPic: false,
-    leftText: "",
     rightText: "",
     isShow: false,
   };

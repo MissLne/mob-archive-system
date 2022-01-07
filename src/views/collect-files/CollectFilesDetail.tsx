@@ -16,9 +16,6 @@ export default class CollectFilesDetail extends Vue {
   indexList: Array<number> = [-1, 0, -1];
   // 头部数据与点击事件
   public headData: any = {
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
     rightPic: false,
     rightUrl: "",
     rightText: "",

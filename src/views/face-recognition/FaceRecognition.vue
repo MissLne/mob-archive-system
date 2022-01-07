@@ -26,9 +26,6 @@ export default class FaceRecognition extends Vue {
   private faceData: Array<FaceData> = [];
   private detailData: FaceData = {} as FaceData;
   public headData: any = {
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
     rightPic: false,
     rightUrl: "",
     rightText: "",

@@ -2,15 +2,16 @@
   <div id="des-head">
     <div class="des">
       <div class="sideBar" @click="leftClick">
-        <div v-if="!headData.leftPic">{{ headData.leftText }}</div>
-        <img :src="pics[headData.leftUrl]" v-if="headData.leftPic" />
+        <slot name="left" :pics="pics">
+          <img :src=pics[1]>
+        </slot>
       </div>
       <div class="title">
         <slot></slot>
       </div>
       <div class="choice" @click="rightClick">
         <div v-if="!headData.rightPic">{{ headData.rightText }}</div>
-        <img :src="pics[headData.rightUrl]" v-if="headData.rightPic" />
+        <img v-else :src="pics[headData.rightUrl]" />
       </div>
       <div class="popUp" v-if="headData.isShow" :class="{'isClose': isClose}">
         <div v-for="(item, index) in popArr" :key="index" @click.prevent="popUpClick(index)">{{ item }}</div>
@@ -22,11 +23,8 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 interface Information {
-  leftUrl: string;
   rightUrl: string;
-  leftPic: boolean;
   rightPic: boolean;
-  leftText: string;
   rightText: string;
   isShow: boolean;
   [key: string]: string | boolean;
@@ -45,7 +43,6 @@ export default class DesHead extends Vue {
     3: require("@/assets/head/more@2x.png"), //左侧边栏
     4: require("@/assets/head/chacha@2x.png"), //叉号
   };
-  created() {}
   popUpClick(index: number) {
     if(index === 1) this.rightClick(1)
   }
@@ -57,7 +54,7 @@ export default class DesHead extends Vue {
      if (this.headData.isShow) {
        this.isClose = true;
         setTimeout(() => {
-             this.isClose = false;
+          this.isClose = false;
         }, 400)
       }
     this.$emit("handleClick", { clickType: "right"});

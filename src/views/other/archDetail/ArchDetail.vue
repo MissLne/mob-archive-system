@@ -171,9 +171,6 @@ export default class ArchDetail extends Vue {
   }
   // header的数据和点击事件
   private headData: any = {
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
     rightPic: false,
     rightUrl: "",
     rightText: "",

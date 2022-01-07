@@ -106,9 +106,6 @@ export default class MetaData extends Vue {
   }
 
   private headData: any = {
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
     rightPic: false,
     rightUrl: "",
     rightText: "",

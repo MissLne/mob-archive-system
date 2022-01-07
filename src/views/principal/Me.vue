@@ -10,7 +10,12 @@
       :headData="headData"
       :popArr="popArr"
       @handleClick="handleClick($event)"
-    >我的档案</des-head>
+    >
+      <template #left="{pics}">
+        <img :src="sideBarShow ? pics[4] : pics[3]">
+      </template>
+      <template #default>我的档案</template>
+    </des-head>
     <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
     <myTool
       :count="count"
@@ -106,11 +111,8 @@ export default class Me extends Vue {
   public count: number = 0;
   private _this: any = "";
   public headData: any = {
-    leftUrl: "3",
     rightUrl: "",
-    leftPic: true,
     rightPic: false,
-    leftText: "",
     rightText: "",
     isShow: false,
   };
@@ -174,17 +176,8 @@ export default class Me extends Vue {
     console.log(event);
   }
   handleClick(event: any) {
-    if (event.clickType === "right") {
-      return;
-    } else {
-      if (this.headData.leftUrl == "4") {
-        this.sideBarShow = false;
-        this.headData.leftUrl = "3";
-      } else {
-        this.sideBarShow = true;
-        this.headData.leftUrl = "4";
-      }
-    }
+    if (event.clickType === "left")
+      this.sideBarShow = !this.sideBarShow
   }
   cancelSelect() {
     this.isShow = false;

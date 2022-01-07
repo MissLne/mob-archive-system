@@ -59,9 +59,6 @@ export default class CollectFilesUpload extends Vue {
   private disabledCheck: boolean = false;
   // 头部栏数据
   public headData = {
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
     rightPic: false,
     rightUrl: "",
     rightText: "选择",

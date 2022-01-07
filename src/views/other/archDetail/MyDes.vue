@@ -49,11 +49,8 @@ import DesList from "./DesList.vue";
 })
 export default class MyDes extends Vue {
   public headData: any = {
-    leftUrl: "1",
     rightUrl: "2",
-    leftPic: true,
     rightPic: false,
-    leftText: "",
     rightText: "选择",
     isShow: false,
   };

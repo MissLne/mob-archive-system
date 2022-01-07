@@ -72,11 +72,8 @@ export default class editApply extends Vue {
   private count: number = 1;
   public justCount: number = 0;
   public headData: any = {
-    leftUrl: "1",
     rightUrl: "",
-    leftPic: true,
     rightPic: false,
-    leftText: "",
     rightText: "",
     isShow: false,
   };

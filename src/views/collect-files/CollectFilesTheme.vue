@@ -29,9 +29,6 @@ export default class CollectFilesTheme extends Vue {
 
   // 头部处理
   public headData = {
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
     rightPic: false,
     rightUrl: "",
     rightText: "",
