@@ -5,14 +5,10 @@
       <template #right>{{isChecking ? '全选' : '选择'}}</template>
     </des-head>
     <div class="slots"></div><!-- 占header的位置 -->
-    <ul
+    <ThemeSummary
       v-if="themeList.length && Object.keys(theme).length"
-      class="theme-detail"
-    >
-      <li class="created-time">{{theme.createdTime.split('T').join(' ')}}</li>
-      <li class="department">创建部门：{{theme.department}}</li>
-      <li class="content">{{theme.content}}</li>
-    </ul>
+      :theme="theme"
+    />
     <ArchList
       ref="archList"
       :listData="listData"
@@ -31,15 +27,17 @@ import UploadBtn from '@/components/public-com/UploadBtn.vue';
 import ArchList from '@/components/public-com/Archive/ArchList.vue';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
+import ThemeSummary from '@/components/public-com/Theme/ThemeSummary.vue'
 import { Dialog } from 'vant'
 import { visitorUpload } from '@/services/collect-files';
-import { isImage, toBase64, estimateFileType } from '@/utils/picture'
+import { isImage, toObjectURL, estimateFileType } from '@/utils/picture'
 
 @Component({
   components: {
     UploadBtn,
     ArchList,
     DesHead,
+    ThemeSummary,
   }
 })
 export default class CollectFilesUpload extends Vue {
@@ -88,7 +86,7 @@ export default class CollectFilesUpload extends Vue {
       fileData.fileName = file.name;
       // 如果是图片
       if (isImage(file.type))
-        fileData.picSrc = toBase64(file)
+        fileData.picSrc = toObjectURL(file)
       // 如果不是图片
       else
         fileData.picSrc = estimateFileType(file.type)
@@ -160,20 +158,6 @@ export default class CollectFilesUpload extends Vue {
     min-height: 100vh;
     box-sizing: border-box;
     padding: 0 25px;
-    .theme-detail {
-      border: 4px solid #8ebefe;
-      margin: 20px 0;
-      padding: 20px;
-      font-size: 26px;
-      line-height: 50px;
-      border-radius: 20px;
-      .created-time {
-        color: #999;
-      }
-      .department {
-        color: #5ca2ff;
-      }
-    }
     .upload-hint {
       position: fixed;
       left: 257px;

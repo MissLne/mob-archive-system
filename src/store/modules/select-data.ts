@@ -1,4 +1,4 @@
-import { getAllTheme } from "@/services/collect-files";
+import { getAllTheme } from "@/services/theme";
 import { Toast } from "vant";
 import { Module } from "vuex";
 

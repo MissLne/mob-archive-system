@@ -4,6 +4,7 @@
       <div class="side-bar-top">
         <router-link :to="{ name: 'tempArchUpload' }">临时档案</router-link>
         <router-link :to="{ name: 'recycleBin' }">回收站</router-link>
+        <router-link :to="{ name: 'themeList' }">主题(beta)</router-link>
       </div>
       <div class="side-bar-foot" @click="logout">退出登录</div>
     </div>

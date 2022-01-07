@@ -39,6 +39,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import jsQR from 'jsqr'
 import { Dialog } from 'vant'
+import { QRURL } from '@/utils/QRURL'
 
 @Component({
   name: 'CollectFilesScan',
@@ -103,9 +104,8 @@ export default class CollectFilesScan extends Vue {
         // 停止摄像头和扫描
         this.start = false
         // 如果是符合要求的二维码 
-        if ((this.res as string).includes(
-          `${location.host}/#/collect-files/upload/`
-        )) {
+        
+        if ((this.res as string).startsWith(QRURL)) {
           const segments = this.res.split('/')
           console.log(segments.length)
           const themeId = segments[segments.length - 1]

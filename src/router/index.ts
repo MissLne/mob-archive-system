@@ -132,6 +132,22 @@ const routes: Array<RouteConfig> = [
     path: '/recycle-bin/x',
     name: 'recycleBin',
     component: () => import('@/views/recycle-bin/RecycleBin.vue'),
+  },
+  {
+    path: '/theme',
+    component: () => import('@/views/theme/Theme.vue'),
+    children: [
+      {
+        path: '/',
+        name: 'themeList',
+        component: () => import('@/views/theme/ThemeList.vue'),
+      },
+      {
+        path: 'QR',
+        name: 'themeQR',
+        component: () => import('@/views/theme/ThemeQR.vue')
+      }
+    ]
   }
 ]
 

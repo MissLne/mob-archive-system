@@ -1,0 +1,1 @@
+export const QRURL = `${location.protocol}//${location.host}/#/collect-files/upload/`

@@ -34,11 +34,3 @@ export const submitCollectedFile = (urlSuffix: string, data: any) => {
     data: data
   })
 }
-
-// 获取主题列表
-export const getAllTheme = () => {
-  return service({
-    url: '/api/api/collectedFile/getAllTheme',
-    method: 'POST'
-  })
-}
