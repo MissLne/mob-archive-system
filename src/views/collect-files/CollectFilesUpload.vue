@@ -1,6 +1,9 @@
 <template>
   <div id="collect-files-upload">
-    <des-head :headData="headData" @handleClick="headClick">{{theme.topic}}</des-head>
+    <des-head @handleClick="headClick">
+      {{theme.topic}}
+      <template #right>{{isChecking ? '全选' : '选择'}}</template>
+    </des-head>
     <div class="slots"></div><!-- 占header的位置 -->
     <ul
       v-if="themeList.length && Object.keys(theme).length"
@@ -57,13 +60,7 @@ export default class CollectFilesUpload extends Vue {
   private disabledUpload: boolean = false;
   // 正在上传时，禁止选择
   private disabledCheck: boolean = false;
-  // 头部栏数据
-  public headData = {
-    rightPic: false,
-    rightUrl: "",
-    rightText: "选择",
-    isShow: false,
-  }
+  // 是否都提交了
   get isAllSubmitted(): boolean {
     for (let i = 0; i < this.listData.length; ++i) {
       if (this.listData[i].isSubmitted === undefined)
@@ -106,12 +103,19 @@ export default class CollectFilesUpload extends Vue {
       this.disabledCheck = false;
     }
   }
+  // 是否选择状态，与archlist同步
+  private isChecking: boolean = false;
   // header的左边（返回）和右边（选择）
   public headClick({clickType}: any) {
     // 正在上传不给点头部
     if (this.disabledCheck) return;
     if (clickType === 'left') {
-      this.$router.go(-1);
+      if (this.isChecking) {
+        (this.$refs.archList as ArchList).stopSelect()
+        this.isChecking = false
+      }
+      else
+        this.$router.go(-1)
       /* if (this.isAllSubmitted)
         this.$router.go(-1);
       else {
@@ -127,18 +131,18 @@ export default class CollectFilesUpload extends Vue {
     else {
       if (this.listData.length) {
         (this.$refs.archList as ArchList).onChecking()
-        this.headData.rightText = '全选'
         // 开始选择时，禁用上传
         this.disabledUpload = true
+        this.isChecking = true
       }
       else
         MsgBox.error('请先上传文件')
     }
   }
   public stopSelect() {
-    this.headData.rightText = '选择'
     // 取消选择状态时，结束选择，启用上传
-    this.disabledUpload = false;
+    this.disabledUpload = false
+    this.isChecking = false
   }
 
   // 点击或选择后，将数据传给父组件

@@ -10,12 +10,11 @@
         <slot></slot>
       </div>
       <div class="choice" @click="rightClick">
-        <div v-if="!headData.rightPic">{{ headData.rightText }}</div>
-        <img v-else :src="pics[headData.rightUrl]" />
+        <slot name="right" :pics="pics"></slot>
       </div>
-      <div class="popUp" v-if="headData.isShow" :class="{'isClose': isClose}">
+      <!-- <div class="popUp" v-if="headData.isShow" :class="{'isClose': isClose}">
         <div v-for="(item, index) in popArr" :key="index" @click.prevent="popUpClick(index)">{{ item }}</div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -23,9 +22,6 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 interface Information {
-  rightUrl: string;
-  rightPic: boolean;
-  rightText: string;
   isShow: boolean;
   [key: string]: string | boolean;
 }
@@ -34,7 +30,6 @@ interface strObj {
 }
 @Component
 export default class DesHead extends Vue {
-  @Prop({}) private headData!: Information;
   @Prop({}) private popArr!: string[];
   private isClose: boolean = false
   private pics: strObj = {
@@ -51,12 +46,12 @@ export default class DesHead extends Vue {
   }
   rightClick(e?: number) {
     if(e && e === 1) this.$emit("handleClick", { clickType: "right", show: true, isChoice: true });
-     if (this.headData.isShow) {
+     /* if (this.headData.isShow) {
        this.isClose = true;
         setTimeout(() => {
           this.isClose = false;
         }, 400)
-      }
+      } */
     this.$emit("handleClick", { clickType: "right"});
   }
 }

@@ -7,14 +7,14 @@
       @sureDelete="sureDelete($event)"
     />
     <des-head
-      :headData="headData"
       :popArr="popArr"
       @handleClick="handleClick($event)"
     >
+      我的档案
       <template #left="{pics}">
         <img :src="sideBarShow ? pics[4] : pics[3]">
       </template>
-      <template #default>我的档案</template>
+      <template #right></template>
     </des-head>
     <DesSearch :searchText="searchText" @searchThings="searchThings($event)" />
     <myTool
@@ -25,12 +25,6 @@
     <div class="slots"></div>
     <div v-for="(item, index) in desItem" :key="index" class="box">
       <DesItem v-if="desItem" :desItem="item" typeName="我的档案" />
-      <img
-        class="manySelect"
-        :src="checkList[index] ? seletList[1] : seletList[0]"
-        v-show="isShow"
-        @click="checkItem(index)"
-      />
     </div>
     <DesBtn
       @changePage="changePage($event)"
@@ -40,21 +34,16 @@
       v-if="pageTo"
     />
     <div class="slots2"></div>
-    <div class="select-btn" v-if="isShow">
-      <div @click="cancelSelect">取消</div>
-      <div @click="alertShow = true">删除</div>
-    </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
 import myTool from "@/components/des-com/index/myTool.vue";
 import DesItem from "@/components/des-com/index/des-item.vue";
 import DesBtn from "@/components/des-com/index/des-btn.vue";
 import Alerts from "@/components/tools/alerts.vue";
-import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue";
 import { getSrcCertainly } from "@/utils/picture";
 import store from "@/store";
@@ -104,18 +93,11 @@ export default class Me extends Vue {
   private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<Id> = [];
-  private isShow: boolean = false;
   private searchText: string = "请输入题名搜索";
   private desItem: [] = [];
   public popArr: string[] = ["案卷详情", "选择"];
   public count: number = 0;
   private _this: any = "";
-  public headData: any = {
-    rightUrl: "",
-    rightPic: false,
-    rightText: "",
-    isShow: false,
-  };
   public pageData: any = {
     current: 1,
     total: 0,
@@ -178,17 +160,6 @@ export default class Me extends Vue {
   handleClick(event: any) {
     if (event.clickType === "left")
       this.sideBarShow = !this.sideBarShow
-  }
-  cancelSelect() {
-    this.isShow = false;
-
-    let obj = {
-      leftPic: true,
-      rightPic: false,
-      rightText: "选择",
-      leftText: "",
-    };
-    this.headData = Object.assign(this.headData, obj);
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
@@ -259,48 +230,6 @@ export default class Me extends Vue {
       }
     });
     return { desId, fileId };
-  }
-  sureDelete(event: any) {
-    let { desId, fileId } = this.deleteItem();
-
-    if (event.type === "not") {
-      this.alertShow = false;
-    } else {
-      this.alertShow = false;
-      if (desId.length) {
-        this.$request
-          .post("/api/api/dossier/userDeleteDossier", { ids: [...desId] })
-          .then((res: any) => {
-            if (res.data.success === true) {
-              MsgBox.success("删除成功");
-              this.cancelSelect();
-              this.getList();
-              return;
-            }
-            throw new Error();
-          })
-          .catch((err: any) => {
-            this.cancelSelect();
-            MsgBox.error("删除失败");
-          });
-      } else if (fileId.length) {
-        this.$request
-          .post("/api/api/archive/userDeleteArchive", { ids: fileId })
-          .then((res: any) => {
-            if (res.data.success === true) {
-              if (!desId.length) MsgBox.success("删除成功");
-              this.cancelSelect();
-              this.getList();
-              return;
-            }
-            throw new Error();
-          })
-          .catch((err: any) => {
-            this.cancelSelect();
-            MsgBox.error("删除失败");
-          });
-      }
-    }
   }
   created() {
     // let obj = [{

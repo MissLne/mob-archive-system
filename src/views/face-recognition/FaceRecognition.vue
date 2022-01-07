@@ -1,6 +1,6 @@
 <template>
   <div id="face-recognition">
-    <des-head :headData="headData" @handleClick="headClick">人脸识别</des-head>
+    <des-head @handleClick="headClick">人脸识别</des-head>
     <div class="slots"></div>
     <keep-alive>
       <router-view
@@ -25,12 +25,6 @@ import DesHead from '@/components/des-com/index/des-head.vue'
 export default class FaceRecognition extends Vue {
   private faceData: Array<FaceData> = [];
   private detailData: FaceData = {} as FaceData;
-  public headData: any = {
-    rightPic: false,
-    rightUrl: "",
-    rightText: "",
-    isShow: false,
-  }
   created() {
     this.faceData = this.$store.state.faceData;
   }

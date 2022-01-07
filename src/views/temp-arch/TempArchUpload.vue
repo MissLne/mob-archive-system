@@ -1,6 +1,9 @@
 <template>
   <div id="temp-arch-upload">
-    <des-head :headData="headData" @handleClick="headClick">新建</des-head>
+    <des-head @handleClick="headClick">
+      新建
+      <template #right>{{isChecking ? '全选' : '选择'}}</template>
+    </des-head>
     <div class="slots"></div><!-- 占header的位置 -->
 
     <ArchList
@@ -44,13 +47,6 @@ export default class TempArchUpload extends Vue {
   private disabledUpload: boolean = false;
   // 正在上传时，禁止选择
   private disabledCheck: boolean = false;
-  // 头部栏数据
-  public headData = {
-    rightPic: false,
-    rightUrl: "",
-    rightText: "选择",
-    isShow: false,
-  }
 
   private created() {
     this.getTempArchList()
@@ -130,21 +126,24 @@ export default class TempArchUpload extends Vue {
       this.disabledCheck = false;
     })
   }
-  
+  // 是否选择状态，与archlist同步
+  private isChecking: boolean = false;
   // header的左边（返回）和右边（选择）
   public headClick({clickType}: any) {
     // 正在上传不给点头部
     if (this.disabledCheck) return;
     if (clickType === 'left') {
-      if ((this.$refs.archList as ArchList).isChecking)
-        (this.$refs.archList as ArchList).stopSelect();
+      if (this.isChecking) {
+        (this.$refs.archList as ArchList).stopSelect()
+        this.isChecking = false
+      }
       else
-        this.$router.go(-1);
+        this.$router.go(-1)
     }
     else {
       if (this.listData.length) {
         (this.$refs.archList as ArchList).onChecking()
-        this.headData.rightText = '全选'
+        this.isChecking = true
         // 开始选择时，禁用上传
         this.disabledUpload = true
       }
@@ -154,7 +153,6 @@ export default class TempArchUpload extends Vue {
   }
   // 停止选择
   public stopSelect() {
-    this.headData.rightText = '选择'
     // 取消选择状态时，结束选择，启用上传
     this.disabledUpload = false;
   }

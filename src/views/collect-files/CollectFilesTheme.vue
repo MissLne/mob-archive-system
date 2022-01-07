@@ -1,6 +1,6 @@
 <template>
   <div id="collect-files-theme">
-    <des-head :headData="headData" @handleClick="headClick">选择主题</des-head>
+    <des-head @handleClick="headClick">选择主题</des-head>
     <div class="slots"></div><!-- 占header的位置 -->
     <ThemeList
       @chooseTheme="passTheme"
@@ -28,12 +28,6 @@ export default class CollectFilesTheme extends Vue {
   }
 
   // 头部处理
-  public headData = {
-    rightPic: false,
-    rightUrl: "",
-    rightText: "",
-    isShow: false,
-  }
   public headClick({clickType}: any) {
     // 正在上传不给点头部
     if (clickType === 'left') {

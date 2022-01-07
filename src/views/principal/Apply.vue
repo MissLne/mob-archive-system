@@ -2,16 +2,18 @@
   <div id="apply">
     <SideBar :sideBarShow="sideBarShow" />
     <des-head
-      :headData="headData"
       @handleClick="handleClick($event)"
     >
+      借阅申请
       <template #left="{pics}">
         <!-- 正在选择 -->
         <span v-if="isChecking">返回</span>
         <!-- 常规状态 -->
         <img v-else :src="sideBarShow ? pics[4] : pics[3]">
       </template>
-      <template #default>借阅申请</template>
+      <template #right>
+        {{isChecking ? isAllSelect ? '取消' : '全选' : '选择'}}
+      </template>
     </des-head>
     <DesSearch
       :searchText="searchText"
@@ -106,12 +108,6 @@ export default class Apply extends Vue {
   };
   public pageCur: number = 1
   public pageTo: number = 0
-  public headData: any = {
-    rightUrl: "",
-    rightPic: false,
-    rightText: "选择",
-    isShow: false,
-  };
   private isFlag: boolean = false
   // @Watch("$route")
   // watchSlotRoute(to: any, from: any) {
@@ -280,44 +276,27 @@ export default class Apply extends Vue {
     }
   }
   checkItem(index: number) {
-    this.$set(this.checkList, index, !this.checkList[index]);
-    this.checkList.forEach((item) => {
-      if(!item) this.headData.rightText =  "全选"
-    })
+    this.$set(this.checkList, index, !this.checkList[index])
   }
   cancelSelect() {
     this.isChecking = false;
     this.isFlag = false
-    let obj = {
-      rightPic: false,
-      rightText: "选择",
-    };
-    this.headData = Object.assign(this.headData, obj);
   }
   initSelect(type: boolean) {
     this.checkList.forEach((value, index) => {
       this.$set(this.checkList, index, type);
     });
   }
+  // 是否全选
+  get isAllSelect() {
+    return !this.checkList.includes(false)
+  }
   handleClick(event: any) {
-    let obj = {};
     if (event.clickType === "right") {
-      if (this.headData.rightText === "选择") {
-        this.initSelect(false);
-        this.isChecking = true;
-        obj = {
-          rightText: "全选",
-        };
-        this.headData = Object.assign(this.headData, obj);
-        return;
-      }
-      if(this.headData.rightText === "全选") {
-        this.initSelect(true);
-        this.headData.rightText =  "取消"
-      } else if(this.headData.rightText === "取消"){
-        this.initSelect(false);
-        this.headData.rightText =  "全选"
-      }
+      if (this.isChecking)
+        this.initSelect(!this.isAllSelect) // 当前全选就变false，当前未全选就全true
+      else
+        this.isChecking = true
     } else {
       if (this.isChecking)
         this.cancelSelect()

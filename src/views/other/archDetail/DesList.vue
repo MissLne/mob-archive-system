@@ -92,7 +92,6 @@ export default class DesList extends Vue {
   public alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<number> = [];
-  private isChecking: boolean = false;
   private desItem: any[] = [];
   private renderItem: any = [];
   public count: number = 0;
@@ -108,10 +107,28 @@ export default class DesList extends Vue {
   //   this.getListData.type = event.index;
   //   this.getList();
   // }
+
+
+  // 是否处于选择状态
+  private v_isChecking: boolean = false;
+  get isChecking() {
+    return this.v_isChecking
+  }
+  set isChecking(newValue) {
+    this.v_isChecking = newValue
+    // 选择状态更改时，自动emit
+    this.$emit('updateChoice', { isChecking: newValue })
+  }
+  // 是否全选
+  get isAllSelect() {
+    return !this.checkList.includes(false)
+  }
+
   initSelect(type: boolean) {
     this.checkList.forEach((value, index) => {
       this.$set(this.checkList, index, type);
     });
+    this.$emit('updateChoice', { isChecking: true, isAllSelect: type })
   }
   public handleClick(event: any) {
     console.log("_+_+",event)
@@ -120,34 +137,31 @@ export default class DesList extends Vue {
         MsgBox.error("无法操作已入库档案");
         return;
       }
-      this.$emit("updateChoice",{textName: "全选"})
-      this.isChecking = true;
-      if(event.text == "全选") {
-        this.$emit("updateChoice",{textName: "取消全选"})
-        this.initSelect(true)
-        return
-      }
-      
-      this.initSelect(false);
+      // 如果当前是选择状态，全选/取消全选
+      if (this.isChecking)
+        this.initSelect(!this.isAllSelect) // 当前全选就变false，当前未全选就全true
+      // 如果不是，进入选择状态
+      else
+        this.isChecking = true
     } else {
       this.$store.commit("setDetailPage");
-      if(event.text == "全选" || event.text == "取消全选") {
-        this.$emit("updateChoice",{textName: "选择"})
+      // 如果当前是选择状态，而且在列表页，退出选择
+      if(this.isChecking && event.index === 0)
         this.isChecking = false;
-        return
-      }
-      this.$router.go(-1);
+      // 如果不是，回到上一页
+      else
+        this.$router.go(-1);
     }
   }
   cancelSelect() {
     this.isChecking = false;
   }
   checkItem(index: number) {
-    this.$set(this.checkList, index, !this.checkList[index]);
-    for(let item of this.checkList) {
-      if(item == false) this.$emit("updateChoice",{textName: "全选"})
-    }
+    this.$set(this.checkList, index, !this.checkList[index])
+    // 每次选都判断一下是否全选
+    this.$emit('updateChoice', { isChecking: true, isAllSelect: this.isAllSelect })
   }
+  
   async getList() {
     const { data } = await getArchiveList({
       ...this.getListData,
@@ -220,7 +234,7 @@ export default class DesList extends Vue {
         .then((res: any) => {
           if (res.data.success === true) {
             MsgBox.success("删除成功");
-            this.$emit("updateChoice",{textName: "选择"})
+            this.$emit("updateChoice",{ isChecking: false })
             this.cancelSelect();
             this.getList();
             return;
@@ -229,7 +243,7 @@ export default class DesList extends Vue {
         })
         .catch((err: any) => {
           this.cancelSelect();
-          this.$emit("updateChoice",{textName: "选择"})
+          this.$emit("updateChoice",{ isChecking: false })
           MsgBox.error("删除失败");
         });
     }

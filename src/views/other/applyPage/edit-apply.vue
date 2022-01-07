@@ -5,7 +5,7 @@
       v-if="alertShow"
       @sureDelete="sureDelete($event)"
     />
-    <des-head :headData="headData" @handleClick="handleClick($event)">详情</des-head>
+    <des-head @handleClick="handleClick($event)">详情</des-head>
     <div class="slots"></div>
     <!-- <Details
       v-if="detailData"
@@ -71,12 +71,6 @@ export default class editApply extends Vue {
   private alertShow: boolean = false;
   private count: number = 1;
   public justCount: number = 0;
-  public headData: any = {
-    rightUrl: "",
-    rightPic: false,
-    rightText: "",
-    isShow: false,
-  };
   public fileData: any[] = [];
   public componentData: any[] = [];
   public maxLength: number = 5;

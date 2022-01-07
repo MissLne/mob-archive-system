@@ -24,13 +24,6 @@ export default class TempArchDetail extends Vue {
     return this.detailDataList.length;
   } */
 
-  private headData: any = {
-    rightPic: false,
-    rightUrl: "",
-    rightText: "",
-    isShow: false,
-  }
-
   private headClick({clickType}: any) {
     if (clickType === 'left') {
       this.$router.go(-1)
@@ -73,7 +66,7 @@ export default class TempArchDetail extends Vue {
   render() {
     return (
       <div class="temp-arch-detail">
-        <des-head headData={this.headData} onHandleClick={this.headClick}>详情</des-head>
+        <des-head onHandleClick={this.headClick}>详情</des-head>
         <slide-wrapper
           ref="slide-wrapper"
           maxLength={this.detailDataList.length}

@@ -15,12 +15,6 @@ export default class CollectFilesDetail extends Vue {
   @Prop() detailDataList!: Array<any>;
   indexList: Array<number> = [-1, 0, -1];
   // 头部数据与点击事件
-  public headData: any = {
-    rightPic: false,
-    rightUrl: "",
-    rightText: "",
-    isShow: false,
-  }
   public headClick({clickType}: any) {
     if (clickType === 'left') {
       this.$router.go(-1)
@@ -54,7 +48,7 @@ export default class CollectFilesDetail extends Vue {
   render() {
     return (
       <div class="temp-arch-detail">
-        <des-head headData={this.headData} onHandleClick={this.headClick}>详情</des-head>
+        <des-head onHandleClick={this.headClick}>详情</des-head>
         <slide-wrapper
           ref="slide-wrapper"
           maxLength={this.detailDataList.length}

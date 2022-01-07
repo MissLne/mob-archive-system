@@ -1,6 +1,9 @@
 <template>
   <div id="my-des" @touchmove.self.prevent @mousewheel.self.prevent>
-    <des-head :headData="headData" @handleClick="handleClick">{{$route.params.name}}</des-head>
+    <des-head @handleClick="handleClick">
+      {{$route.params.name}}
+      <template #right>{{index ? '' : (isChecking ? isAllSelect ? '取消' : '全选' : '选择')}}</template>
+    </des-head>
     <!-- <Alerts
       :title="'确认删除'"
       v-if="alertShow"
@@ -21,10 +24,7 @@
       <DesDetail></DesDetail>
     </SlideWrapper>
     <img
-      v-show="
-        this.headData.rightText == '全选' ||
-        this.headData.rightText == '取消全选'
-      "
+      v-show="isChecking"
       src="@/assets/button/delete.png"
       class="delete"
       @click="deleteItem()"
@@ -48,12 +48,6 @@ import DesList from "./DesList.vue";
   },
 })
 export default class MyDes extends Vue {
-  public headData: any = {
-    rightUrl: "2",
-    rightPic: false,
-    rightText: "选择",
-    isShow: false,
-  };
   private index: number = 0;
   lalal() {
     console.log((this.$refs.ouo as any).style.height);
@@ -66,24 +60,20 @@ export default class MyDes extends Vue {
   deleteDo() {
     this.alertShow = (this.$refs["des-list"] as DesList).alertShow;
   }
-  handleClick(e: any) {
-    // 在详情页且点右边
-    if (this.index === 1 && e.clickType === "right") return;
-    let obj = {
-      clickType: e.clickType,
-      text: this.headData.rightText,
-    };
-    console.log("+__+");
-    (this.$refs["des-list"] as DesList).handleClick(obj);
+  handleClick({ clickType }: any) {
+    // 在详情页点右边，忽略
+    if (this.index === 1 && clickType === 'right') return;
+    // 在列表页点右边
+    (this.$refs["des-list"] as DesList).handleClick({ clickType, index: this.index });
   }
-  updateChoice(event: any) {
-    console.log(event);
-    this.headData.rightText = event.textName;
+  private isChecking: boolean = false
+  private isAllSelect: boolean = false
+  updateChoice({ isChecking, isAllSelect }: {[key: string]: boolean}) {
+    this.isChecking = isChecking
+    this.isAllSelect = isChecking && isAllSelect
   }
   onSetPages(indexList: Array<number>) {
     this.index = indexList[1];
-    if (indexList[1] === 0) this.headData.rightText = "选择";
-    else this.headData.rightText = "";
   }
 }
 </script>

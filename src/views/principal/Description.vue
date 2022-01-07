@@ -7,17 +7,19 @@
       @sureDelete="sureDelete($event)"
     />
     <des-head
-      :headData="headData"
       :popArr="popArr"
       @handleClick="handleClick($event)"
     >
+      著录中
       <template #left="{pics}">
         <!-- 正在选择 -->
         <span v-if="isChecking">返回</span>
         <!-- 常规状态 -->
         <img v-else :src="sideBarShow ? pics[4] : pics[3]">
       </template>
-      <template #default>著录中</template>
+      <template #right>
+        {{isChecking ? isAllSelect ? '取消' : '全选' : '选择'}}
+      </template>
     </des-head>
     <DesSearch
       :searchText="searchText"
@@ -131,12 +133,6 @@ export default class Description extends Vue {
   public popArr: string[] = ["案卷详情", "选择"];
   public count: number = 0;
   private _this: any = "";
-  public headData: any = {
-    rightUrl: "",
-    rightPic: false,
-    rightText: "选择",
-    isShow: false,
-  };
   public pageData: any = {
     current: 1,
     total: 0,
@@ -209,29 +205,16 @@ export default class Description extends Vue {
     this.getList();
     console.log(event);
   }
+  // 是否全选
+  get isAllSelect() {
+    return !this.checkList.includes(false)
+  }
   handleClick(event: any) {
-    let obj = {};
     if (event.clickType === "right") {
-      // 将要变成选择状态
-      if (this.isChecking === false) {
-        this.initSelect(false);
-        this.isChecking = true;
-        obj = {
-          rightText: "全选",
-        };
-        this.headData = Object.assign(this.headData, obj);
-      }
-      // 将要结束选择状态
-      else {
-        if ( this.headData.rightText === "全选") {
-        this.initSelect(true);
-        this.headData.rightText =  "取消"
-        }
-        else if(this.headData.rightText === "取消"){
-          this.initSelect(false);
-          this.headData.rightText =  "全选"
-        }
-      }
+      if (this.isChecking)
+        this.initSelect(!this.isAllSelect) // 当前全选就变false，当前未全选就全true
+      else
+        this.isChecking = true
     } else {
       if (this.isChecking)
         this.cancelSelect()
@@ -241,18 +224,9 @@ export default class Description extends Vue {
   }
   cancelSelect() {
     this.isChecking = false;
-
-    let obj = {
-      rightPic: false,
-      rightText: "选择",
-    };
-    this.headData = Object.assign(this.headData, obj);
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
-    this.checkList.forEach((item) => {
-      if(!item) this.headData.rightText =  "全选"
-    })
   }
   async getList() {
     const { data } = await getPartDossierList({ ...this.getListData });
