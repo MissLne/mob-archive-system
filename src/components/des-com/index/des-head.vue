@@ -2,17 +2,19 @@
   <div id="des-head">
     <div class="des">
       <div class="sideBar" @click="leftClick">
-        <div v-if="!headData.leftPic">{{ headData.leftText }}</div>
-        <img :src="pics[headData.leftUrl]" v-if="headData.leftPic" />
+        <slot name="left" :pics="pics">
+          <img :src=pics[1]>
+        </slot>
       </div>
-      <div class="title">{{ headData.title }}</div>
+      <div class="title">
+        <slot></slot>
+      </div>
       <div class="choice" @click="rightClick">
-        <div v-if="!headData.rightPic">{{ headData.rightText }}</div>
-        <img :src="pics[headData.rightUrl]" v-if="headData.rightPic" />
+        <slot name="right" :pics="pics"></slot>
       </div>
-      <div class="popUp" v-if="headData.isShow" :class="{'isClose': isClose}">
+      <!-- <div class="popUp" v-if="headData.isShow" :class="{'isClose': isClose}">
         <div v-for="(item, index) in popArr" :key="index" @click.prevent="popUpClick(index)">{{ item }}</div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -20,13 +22,6 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 interface Information {
-  title: string;
-  leftUrl: string;
-  rightUrl: string;
-  leftPic: boolean;
-  rightPic: boolean;
-  leftText: string;
-  rightText: string;
   isShow: boolean;
   [key: string]: string | boolean;
 }
@@ -35,7 +30,6 @@ interface strObj {
 }
 @Component
 export default class DesHead extends Vue {
-  @Prop({}) private headData!: Information;
   @Prop({}) private popArr!: string[];
   private isClose: boolean = false
   private pics: strObj = {
@@ -44,7 +38,6 @@ export default class DesHead extends Vue {
     3: require("@/assets/head/more@2x.png"), //左侧边栏
     4: require("@/assets/head/chacha@2x.png"), //叉号
   };
-  created() {}
   popUpClick(index: number) {
     if(index === 1) this.rightClick(1)
   }
@@ -52,13 +45,13 @@ export default class DesHead extends Vue {
     this.$emit("handleClick", { clickType: "left" });
   }
   rightClick(e?: number) {
-    if(e && e === 1) this.$emit("handleClick", { clickType: "right",show: true,isChoice: true });
-     if (this.headData.isShow) {
+    if(e && e === 1) this.$emit("handleClick", { clickType: "right", show: true, isChoice: true });
+     /* if (this.headData.isShow) {
        this.isClose = true;
         setTimeout(() => {
-             this.isClose = false;
+          this.isClose = false;
         }, 400)
-      }
+      } */
     this.$emit("handleClick", { clickType: "right"});
   }
 }
@@ -72,12 +65,12 @@ export default class DesHead extends Vue {
   top: 0;
   left: 0;
   .title {
-  width: 270px;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
+    width: 270px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 
 .des {

@@ -29,7 +29,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ImagePreview } from 'vant';
 import { getSrcCertainly, isImage, isVideo } from '@/utils/picture';
 import VideoPrivew from './VideoPreview.vue'
-import IconWrapper from './IconWrapper.vue'
+import IconWrapper from '../IconWrapper.vue'
 
 @Component({
   components: {

@@ -87,6 +87,14 @@
             :optionVariableKey="'id'"
             :disabled="disabled"
           />
+          <Select
+            v-else-if="item.title === '主题'"
+            v-model="item.value"
+            :myData="themeList"
+            :optionVariableName="'topic'"
+            :optionVariableKey="'themeId'"
+            :disabled="disabled"
+          />
         </div>
         <!-- 多选框radio -->
         <div v-else-if="item.type === 'radio'" class="item-input all-radio-boxes">
@@ -170,6 +178,7 @@ export default class ArchForm extends Vue {
   get retentionPeriodArray() { return this.$store.state.selectData.retentionPeriodArray };
 
   get collectFilesType() { return this.$store.getters['selectData/collectFilesType'] };
+  get themeList() { return this.$store.state.selectData.themeList }
 
   // 功能
   @Prop({default: false}) disabled!: boolean;

@@ -39,7 +39,7 @@ x<template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import { toBase64 } from "@/utils/picture";
+import { toObjectURL } from "@/utils/picture";
 
 @Component
 export default class FileItem extends Vue {
@@ -109,7 +109,7 @@ export default class FileItem extends Vue {
             }
           )
           .then((data: any) => {
-            this.downloadUrl = toBase64(data.data);
+            this.downloadUrl = toObjectURL(data.data);
             MsgBox.changeStatus("获取资源成功");
             setTimeout(() => {
               (ele as HTMLElement).click();

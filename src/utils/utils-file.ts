@@ -1,3 +1,4 @@
+// 因为更改了select的写法，暂时不需要了
 /**
  * 递归地从树上寻找：具有名为keyName的键，且值等于keyValue的对象。并获取其名为idName的键对应的值。
  * @param tree 要搜索的树（孩子名为children）
@@ -7,7 +8,7 @@
  * @param treeChildrenName 树的孩子名，默认为children
  * @returns 数字，找不到为undefined
  */
-export function recursionGetId(tree: Array<any>, keyValue: string, keyName: string, idName: string, treeChildrenName: string = 'children') {
+/* export function recursionGetId(tree: Array<any>, keyValue: string, keyName: string, idName: string, treeChildrenName: string = 'children') {
     // console.log(tree, keyValue, keyName, idName)
     let ans: any = undefined;
     if (tree)
@@ -24,26 +25,7 @@ export function recursionGetId(tree: Array<any>, keyValue: string, keyName: stri
         }
       }
     return ans;
-}
-
-/**
- * 针对ArchDetail页的填内容函数
- * @param detailData 后台返回数据
- * @param inputsProps 要填数据的对象
- */
-export function fillArchDetail(detailData: any, inputsProps: any) {
-  // getArchiveDetail
-  inputsProps.topic.value = detailData.topic;
-  inputsProps.people.value = detailData.people;
-  inputsProps.time.value = detailData.time?.split('T')[0];
-  inputsProps.place.value = detailData.address;
-  inputsProps.event.value = detailData.event;
-  inputsProps.fondsIdentifierId.value = detailData.fondsName;
-  inputsProps.categoryCodeId.value = detailData.categoryName;
-  inputsProps.departmentId.value = detailData.departmentName;
-  inputsProps.confidentialLevel.value = detailData.confidentialLevel;
-  inputsProps.retentionPeriod.value = detailData.retentionPeriod;
-}
+} */
 
 /**
  * 递归遍历元数据树

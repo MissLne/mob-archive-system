@@ -1,3 +1,5 @@
+import { getAllTheme } from "@/services/theme";
+import { Toast } from "vant";
 import { Module } from "vuex";
 
 const selectData: Module<any, any> = {
@@ -18,6 +20,7 @@ const selectData: Module<any, any> = {
       {name: '秘密', id: 4}
     ],
     retentionPeriodArray: ['永久', '30年', '10年'],
+    themeList: []
   },
   getters: {
     fondsIdentifier: state => {
@@ -46,5 +49,24 @@ const selectData: Module<any, any> = {
       return state._collectFilesType;
     }
   },
+  mutations: {
+    setThemeList: (state, payload) => {
+      state.themeList = payload
+    }
+  },
+  actions: {
+    setThemeListAsync: async ({ commit }) => {
+      Toast.loading({
+        duration: 0,
+        forbidClick: true,
+        message: '加载主题中'
+      })
+      const { data } = await getAllTheme()
+      commit('setThemeList', data.data)
+      console.log(data)
+      Toast.clear()
+      return data.data
+    }
+  }
 }
 export default selectData;

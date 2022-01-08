@@ -27,7 +27,7 @@ export const estimateFileType = (contentType: string) => {
  * @param buffer 
  * @returns 对象URL
  */
-export const toBase64 = (blob: Blob) => {
+export const toObjectURL = (blob: Blob) => {
   return URL.createObjectURL(blob);
     // 原写法：将arraybuffer转为base64
     /* btoa(
@@ -59,7 +59,7 @@ export const isVideo = (contentType: string) => {
  */
 export const downloadPicture = async (fileToken: string) => {
   const { data } = await download(fileToken, { responseType: 'blob' });
-  return toBase64(data);
+  return toObjectURL(data);
 }
 
 /**

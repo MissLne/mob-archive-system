@@ -1,6 +1,12 @@
 <template>
   <div id="recycle-bin">
-    <DesHead :headData="headData" @handleClick="headClick"/>
+    <des-head @handleClick="headClick">
+      回收站
+      <template #right="{pics}">
+        <div v-if="isChecking">全选</div>
+        <img v-else :src="isShowList ? pics[4] : pics[2]">
+      </template>
+    </des-head>
     <div class="slots"></div>
     <!-- 头部的下拉菜单 -->
     <Selects
@@ -70,16 +76,6 @@ import { getPartDossierList } from '@/services/dossier';
   }
 })
 export default class RecycleBin extends Vue {
-  private headData: any = {
-    title: '回收站',
-    leftPic: true,
-    leftUrl: 1,
-    leftText: "",
-    rightPic: true,
-    rightUrl: 2,
-    rightText: '全选',
-    isShow: false,
-  }
   private readonly listData: any = {
     title: '',
     list: [ '清空回收站', '选择' ]
@@ -88,22 +84,7 @@ export default class RecycleBin extends Vue {
   private pages: number = 0;
   private currentPage: number = 1;
   private checkList: Array<boolean> = [];
-  private isChecking_: boolean = false;
-  get isChecking(): boolean  {
-    return this.isChecking_;
-  }
-  set isChecking(newValue: boolean) {
-    console.log('set!')
-    // 如果要变为选择
-    if (newValue) {
-      this.isChecking_ = true;
-      this.headData.rightPic = false;
-    }
-    else {
-      this.isChecking_ = false;
-      this.headData.rightPic = true;
-    }
-  }
+  private isChecking: boolean = false;
   get checkIds() {
     // 这样写好像高级一点，不过性能好像比较差，需要遍历两遍
     /* return this.records.map(value => value.id)
@@ -199,30 +180,27 @@ export default class RecycleBin extends Vue {
         Msg.error(`${chineseName}失败`)
     }
   }
-  
+  private v_isShowList: boolean = false
+  get isShowList() { return this.v_isShowList }
+  set isShowList(newValue: any) {
+    (this.$refs['headerSelects'] as Selects).isShowList = newValue
+    this.v_isShowList = newValue
+  }
   private headClick({clickType}: any) {
     if (clickType === 'left') {
       if (this.isChecking)
-        this.isChecking = false;
+        this.isChecking = this.isShowList = false
       else
         this.$router.go(-1)
     }
     else {
-      if (this.isChecking) {
-        this.checkAll();
-      }
-      else if (this.headData.rightUrl === 2) {
-        this.headData.rightUrl = 4;
-        (this.$refs['headerSelects'] as Selects).isShowList = true;
-      }
-      else {
-        this.headData.rightUrl = 2;
-        (this.$refs['headerSelects'] as Selects).isShowList = false;
-      }
+      if (this.isChecking)
+        this.checkAll()
+      else
+        this.isShowList = !this.isShowList
     }
   }
   private selectsClick({num: index}: {num: number}) {
-    this.headData.rightUrl = 2;
     if (index === 1)
       this.isChecking = !this.isChecking;
     else 

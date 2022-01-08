@@ -1,6 +1,9 @@
 <template>
   <div id="temp-arch-upload">
-    <DesHead :headData="headData" @handleClick="headClick"/>
+    <des-head @handleClick="headClick">
+      新建
+      <template #right>{{isChecking ? '全选' : '选择'}}</template>
+    </des-head>
     <div class="slots"></div><!-- 占header的位置 -->
 
     <ArchList
@@ -22,7 +25,7 @@
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator'
 import UploadBtn from '@/components/public-com/UploadBtn.vue';
-import ArchList from '@/components/public-com/ArchList.vue';
+import ArchList from '@/components/public-com/Archive/ArchList.vue';
 import DesHead from '@/components/des-com/index/des-head.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
 import { createFileChunk, getFileMd5, uploadFile } from '@/utils/utils-upload';
@@ -44,26 +47,36 @@ export default class TempArchUpload extends Vue {
   private disabledUpload: boolean = false;
   // 正在上传时，禁止选择
   private disabledCheck: boolean = false;
-  // 头部栏数据
-  public headData = {
-    title: '新建',
-    leftPic: true,
-    leftUrl: "1",
-    leftText: "",
-    rightPic: false,
-    rightUrl: "",
-    rightText: "选择",
-    isShow: false,
-  }
 
   private created() {
     this.getTempArchList()
   }
   // ajax获取数据
   private async getTempArchList() {
-    this.listData = []; // 清空一下，不然不会重新加载图片呜呜
-    const { data: { data } } = await selectTemporaryArchive()
-    this.listData = data;
+    const { data: { data } } = await selectTemporaryArchive();
+    const list = this.listData;
+    let p1 = list.length, p2 = data.length;
+    while (p1 || p2) {
+      // 1.如果list已经没了，data还有，就直接加到前面
+      if (p1 === 0) {
+        list.splice(0, 0, ...data.slice(0, p2));
+        break;
+      }
+      // 2.如果list还有，data已经没了，说明删的是第一个（第一次忽略的情况）
+      else if (p2 === 0) {
+        list.splice(0, 1);
+        break;
+      }
+      // 3.两个都还有
+      else {
+        // 如果两个fileId不等（说明被删了一部分），减list的指针，并把这个项移除
+        // 合理是因为顺序肯定是一样的
+        while (p1 && list[p1 - 1].fileId !== data[p2 - 1].fileId) {
+          list.splice(--p1, 1)
+        }
+      }
+      --p1, --p2;
+    }
   }
   // ajax添加数据
   private async addTempArch({ fileId, thumbnailFileId, zippedFileId }: any) {
@@ -110,6 +123,7 @@ export default class TempArchUpload extends Vue {
   }
   // 删除选择的档案
   deleteClickIndex(indexList: Array<number>) {
+    this.isChecking = false;
     this.disabledCheck = true;
     Dialog.confirm({
       title: '确认删除',
@@ -134,21 +148,24 @@ export default class TempArchUpload extends Vue {
       this.disabledCheck = false;
     })
   }
-  
+  // 是否选择状态，与archlist同步
+  private isChecking: boolean = false;
   // header的左边（返回）和右边（选择）
   public headClick({clickType}: any) {
     // 正在上传不给点头部
     if (this.disabledCheck) return;
     if (clickType === 'left') {
-      if ((this.$refs.archList as ArchList).isChecking)
-        (this.$refs.archList as ArchList).stopSelect();
+      if (this.isChecking) {
+        (this.$refs.archList as ArchList).stopSelect()
+        this.isChecking = false
+      }
       else
-        this.$router.go(-1);
+        this.$router.go(-1)
     }
     else {
       if (this.listData.length) {
         (this.$refs.archList as ArchList).onChecking()
-        this.headData.rightText = '全选'
+        this.isChecking = true
         // 开始选择时，禁用上传
         this.disabledUpload = true
       }
@@ -158,7 +175,6 @@ export default class TempArchUpload extends Vue {
   }
   // 停止选择
   public stopSelect() {
-    this.headData.rightText = '选择'
     // 取消选择状态时，结束选择，启用上传
     this.disabledUpload = false;
   }

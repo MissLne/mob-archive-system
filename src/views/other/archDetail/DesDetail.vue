@@ -9,9 +9,8 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
-import ArchForm from '@/components/public-com/ArchForm.vue'
-import { recursionGetId } from '@/utils/utils-file';
+import { Vue, Component } from 'vue-property-decorator'
+import ArchForm from '@/components/public-com/Archive/ArchForm.vue'
 import { getDossierDetail } from '@/services/dossier';
 
 @Component({
@@ -62,14 +61,23 @@ export default class DesDetail extends Vue {
         props[key].value = data[key];
     }
     // key不一样的
-    props.fondsIdentifierId.value = data.fondsName;
-    props.categoryCodeId.value = data.categoryName;
-    props.departmentId.value = data.departmentName;
-    props.fondsIdentifierId.value = 
-      recursionGetId(this.$store.getters['selectData/fondsIdentifier'], props.fondsIdentifierId.value, 'fondsIdentifier', 'fondsName');
-    // 获取的密级是数字，转为对应的字符
-    props.confidentialLevel.value =
-      this.$store.state.selectData.confidentialLevelArray[props.confidentialLevel.value].name;
+    props.fondsIdentifierId.value = {
+      id: data.fondsIdentifierId,
+      name: data.fondsName,
+    };
+    props.categoryCodeId.value = {
+      id: data.categoryId,
+      name: data.categoryName,
+    };
+    props.departmentId.value = {
+      id: data.departmentId,
+      name: data.departmentName,
+    };
+    props.confidentialLevel.value = {
+      id: props.confidentialLevel.value,
+      // 获取的密级是数字，转为对应的字符
+      name: this.$store.state.selectData.confidentialLevelArray[props.confidentialLevel.value].name,
+    }
   }
 }
 </script>

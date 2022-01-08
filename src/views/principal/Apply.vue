@@ -1,7 +1,20 @@
 <template>
   <div id="apply">
     <SideBar :sideBarShow="sideBarShow" />
-    <DesHead :headData="headData" @handleClick="handleClick($event)" />
+    <des-head
+      @handleClick="handleClick($event)"
+    >
+      借阅申请
+      <template #left="{pics}">
+        <!-- 正在选择 -->
+        <span v-if="isChecking">返回</span>
+        <!-- 常规状态 -->
+        <img v-else :src="sideBarShow ? pics[4] : pics[3]">
+      </template>
+      <template #right>
+        {{isChecking ? isAllSelect ? '取消' : '全选' : '选择'}}
+      </template>
+    </des-head>
     <DesSearch
       :searchText="searchText"
       :isDate="true"
@@ -13,12 +26,12 @@
       <img
         class="manySelect"
         :src="checkList[index] ? seletList[1] : seletList[0]"
-        v-show="isShow"
+        v-show="isChecking"
         @click="checkItem(index)"
       />
     </div>
     <!-- <transition name="delete-cancel">
-      <div class="select-btn" v-if="isShow">
+      <div class="select-btn" v-if="isChecking">
         <div @click="cancelSelect">返回</div>
         <div @click="alertShow = true">删除</div>
       </div>
@@ -38,9 +51,9 @@
     />
     <img
       v-show="!sideBarShow"
-      :src="isShow? btnUrl[1] : btnUrl[0]"
+      :src="isChecking? btnUrl[1] : btnUrl[0]"
       class="add-apply"
-      @click="toAddPage(isShow)"
+      @click="toAddPage(isChecking)"
     />
     <div class="slots2"></div>
     
@@ -83,7 +96,7 @@ export default class Apply extends Vue {
   private searchText: string = "";
   private itemData: any[] = [];
   private checkList: Array<boolean> = [];
-  private isShow: boolean = false;
+  private isChecking: boolean = false;
   private seletList: any[] = [
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
@@ -95,16 +108,6 @@ export default class Apply extends Vue {
   };
   public pageCur: number = 1
   public pageTo: number = 0
-  public headData: any = {
-    title: "借阅申请",
-    leftUrl: "3",
-    rightUrl: "",
-    leftPic: true,
-    rightPic: false,
-    leftText: "",
-    rightText: "选择",
-    isShow: false,
-  };
   private isFlag: boolean = false
   // @Watch("$route")
   // watchSlotRoute(to: any, from: any) {
@@ -273,74 +276,32 @@ export default class Apply extends Vue {
     }
   }
   checkItem(index: number) {
-    this.$set(this.checkList, index, !this.checkList[index]);
-    this.checkList.forEach((item) => {
-      if(!item) this.headData.rightText =  "全选"
-    })
+    this.$set(this.checkList, index, !this.checkList[index])
   }
   cancelSelect() {
-    this.isShow = false;
+    this.isChecking = false;
     this.isFlag = false
-    let obj = {
-      leftUrl: "3",
-      leftPic: true,
-      rightPic: false,
-      rightText: "选择",
-      leftText: "",
-    };
-    this.sideBarShow ? (obj.leftUrl = "4") : (obj.leftUrl = "3");
-    this.headData = Object.assign(this.headData, obj);
   }
   initSelect(type: boolean) {
     this.checkList.forEach((value, index) => {
       this.$set(this.checkList, index, type);
     });
   }
+  // 是否全选
+  get isAllSelect() {
+    return !this.checkList.includes(false)
+  }
   handleClick(event: any) {
-    let obj = {};
     if (event.clickType === "right") {
-      if (this.headData.rightText === "选择") {
-        this.initSelect(false);
-        this.isShow = true;
-        obj = {
-          leftUrl: "",
-          leftPic: false,
-          leftText: "返回",
-          rightText: "全选",
-        };
-        this.headData = Object.assign(this.headData, obj);
-        return;
-      }
-      if(this.headData.rightText === "全选") {
-        this.initSelect(true);
-        this.headData.rightText =  "取消"
-      } else if(this.headData.rightText === "取消"){
-        this.initSelect(false);
-        this.headData.rightText =  "全选"
-      }
+      if (this.isChecking)
+        this.initSelect(!this.isAllSelect) // 当前全选就变false，当前未全选就全true
+      else
+        this.isChecking = true
     } else {
-      if (this.headData.leftText === "返回") {
+      if (this.isChecking)
         this.cancelSelect()
-        return;
-      }
-
-      if (this.headData.leftUrl == "4") {
-        obj = {
-          leftUrl: "3",
-          leftPic: true,
-          rightText: "选择",
-        };
-        this.headData = Object.assign(this.headData, obj);
-        this.sideBarShow = false;
-      } else if (this.headData.leftUrl == "3") {
-        obj = {
-          leftUrl: "4",
-          leftPic: true,
-          rightText: "",
-        };
-        this.headData = Object.assign(this.headData, obj);
-        this.sideBarShow = true;
-      }
+      else
+        this.sideBarShow = !this.sideBarShow
     }
   }
   created() {

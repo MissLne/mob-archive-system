@@ -6,11 +6,21 @@
       v-if="alertShow"
       @sureDelete="sureDelete($event)"
     />
-    <DesHead
-      :headData="headData"
+    <des-head
       :popArr="popArr"
       @handleClick="handleClick($event)"
-    />
+    >
+      著录中
+      <template #left="{pics}">
+        <!-- 正在选择 -->
+        <span v-if="isChecking">返回</span>
+        <!-- 常规状态 -->
+        <img v-else :src="sideBarShow ? pics[4] : pics[3]">
+      </template>
+      <template #right>
+        {{isChecking ? isAllSelect ? '取消' : '全选' : '选择'}}
+      </template>
+    </des-head>
     <DesSearch
       :searchText="searchText"
       @searchThings="searchThings($event)"
@@ -26,8 +36,8 @@
       <DesItem v-if="desItem" :desItem="item" typeName="著录中" />
       <img
         class="manySelect"
-        :src="checkList[index] ? seletList[1] : seletList[0]"
-        v-show="isShow"
+        :src="checkList[index] ? selectList[1] : selectList[0]"
+        v-show="isChecking"
         @click="checkItem(index)"
       />
     </div>
@@ -42,12 +52,12 @@
     <div class="slots2"></div>
     <img
       v-show="!sideBarShow"
-      :src="isShow? btnUrl[1] : btnUrl[0]"
+      :src="isChecking? btnUrl[1] : btnUrl[0]"
       class="upload"
-      @click="toAddPage(isShow)"
+      @click="toAddPage(isChecking)"
     />
     <!-- <transition name="delete-cancel">
-      <div class="select-btn" v-if="isShow">
+      <div class="select-btn" v-if="isChecking">
         <div @click="cancelSelect">返回</div>
         <div @click="alertShow = true">删除</div>
       </div>
@@ -55,7 +65,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
 import myTool from "@/components/des-com/index/myTool.vue";
@@ -103,7 +113,7 @@ interface Item {
   },
 })
 export default class Description extends Vue {
-  private seletList: any[] = [
+  private selectList: any[] = [
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
@@ -116,22 +126,13 @@ export default class Description extends Vue {
   private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<Id> = [];
-  private isShow: boolean = false;
+  // 正在选择
+  private isChecking: boolean = false;
   private searchText: string = "请输入题名搜索";
   private desItem: [] = [];
   public popArr: string[] = ["案卷详情", "选择"];
   public count: number = 0;
   private _this: any = "";
-  public headData: any = {
-    title: "著录中",
-    leftUrl: "3",
-    rightUrl: "",
-    leftPic: true,
-    rightPic: false,
-    leftText: "",
-    rightText: "选择",
-    isShow: false,
-  };
   public pageData: any = {
     current: 1,
     total: 0,
@@ -204,68 +205,28 @@ export default class Description extends Vue {
     this.getList();
     console.log(event);
   }
+  // 是否全选
+  get isAllSelect() {
+    return !this.checkList.includes(false)
+  }
   handleClick(event: any) {
-    let obj = {};
     if (event.clickType === "right") {
-      if (this.headData.rightText === "选择") {
-        this.initSelect(false);
-        this.isShow = true;
-        obj = {
-          leftPic: false,
-          leftText: "返回",
-          rightText: "全选",
-        };
-        this.headData = Object.assign(this.headData, obj);
-        return;
-      }
-       if(this.headData.rightText === "全选") {
-        this.initSelect(true);
-        this.headData.rightText =  "取消"
-      } else if(this.headData.rightText === "取消"){
-        this.initSelect(false);
-        this.headData.rightText =  "全选"
-      }
+      if (this.isChecking)
+        this.initSelect(!this.isAllSelect) // 当前全选就变false，当前未全选就全true
+      else
+        this.isChecking = true
     } else {
-      if (this.headData.leftText === "返回") {
+      if (this.isChecking)
         this.cancelSelect()
-        return;
-      }
-
-      if (this.headData.leftUrl == "4") {
-        obj = {
-          leftUrl: "3",
-          leftPic: true,
-          rightText: "选择",
-        };
-        this.headData = Object.assign(this.headData, obj);
-        this.sideBarShow = false;
-      } else if (this.headData.leftUrl == "3") {
-        obj = {
-          leftUrl: "4",
-          leftPic: true,
-          rightText: "",
-        };
-        this.headData = Object.assign(this.headData, obj);
-        this.sideBarShow = true;
-      }
+      else
+        this.sideBarShow = !this.sideBarShow
     }
   }
   cancelSelect() {
-    this.isShow = false;
-
-    let obj = {
-      leftPic: true,
-      rightPic: false,
-      rightText: "选择",
-      leftText: "",
-    };
-    this.headData = Object.assign(this.headData, obj);
+    this.isChecking = false;
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index]);
-    this.checkList.forEach((item) => {
-      if(!item) this.headData.rightText =  "全选"
-    })
   }
   async getList() {
     const { data } = await getPartDossierList({ ...this.getListData });
@@ -283,11 +244,11 @@ export default class Description extends Vue {
     this.count = data.data.total;
     this.pageData.total = Math.ceil(this.count / 10);
     this.pageTo = Math.ceil(this.count / 10);
-
+    // 获取图片缩略图
     result.forEach(async (item: any) => {
       if (item.fileType)
         item.fileToken = await getSrcCertainly(item.fileType, item.fileToken, true)
-    });
+    })
     this.desItem = result;
   }
   changePage(event: any): void {

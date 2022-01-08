@@ -23,7 +23,14 @@
         class="pw-input"
         @focus="setPasswordMsg"
       />
-      <router-link to="/collect-files" class="collect-files-link">校史征集>></router-link>
+      <div class="collect-files-box">
+        <img
+          :src="require('@/assets/login/scan.png')"
+          class="scan"
+          @click="$router.push({ name: 'collectFilesScan' })"
+        >
+        <router-link to="/collect-files" class="link">校史征集>></router-link>
+      </div>
       <img
         class="login-btn"
         :src="complete ? require('@/assets/login/log-in-bright.png') : require('@/assets/login/log-in-gray.png')"
@@ -205,11 +212,21 @@ export default class Login extends Vue {
       .pw-input::after {
         background-image: url(../assets/login/password.svg);
       }
-      .collect-files-link {
+      .collect-files-box {
         align-self: flex-end;
-        margin: 31px 119px 60px 0;
-        color: #8EBEFE;
-        font-size: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 31px 119px 50px 0;
+        .scan {
+          width: 28px;
+          height: 28px;
+        }
+        .link {
+          color: #8EBEFE;
+          font-size: 20px;
+        }
       }
       .login-btn {
         width: 122px;

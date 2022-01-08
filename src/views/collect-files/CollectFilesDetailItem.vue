@@ -31,10 +31,9 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
 import Select from '@/components/public-com/Select/Select.vue'
 import Input from '@/components/public-com/Input/Input.vue';
 import MsgBox from '@/components/public-com/MsgBox/Msg';
-import { recursionGetId } from '@/utils/utils-file';
 import InputDate from '@/components/public-com/Input/InputDate.vue';
-import PreviewBox from '@/components/public-com/PreviewBox.vue';
-import ArchForm from '@/components/public-com/ArchForm.vue'
+import PreviewBox from '@/components/public-com/Archive/PreviewBox.vue';
+import ArchForm from '@/components/public-com/Archive/ArchForm.vue'
 import { Dialog } from 'vant'
 import { submitCollectedFile } from '@/services/collect-files';
 
@@ -50,15 +49,17 @@ import { submitCollectedFile } from '@/services/collect-files';
 })
 export default class CollectFilesDetailItem extends Vue {
   @Prop() detailData!: UploadFileData;
+  @Prop() theme!: Theme;
   // select的内容
   get collectFilesType() { return this.$store.getters['selectData/collectFilesType'] };
   get allDepartmentNameTree() { return this.$store.getters['selectData/allDepartmentNameTree'] };
   get isComplete() {
     return this.inputsProps.topic.value !== '' && this.inputsProps.categoryId.value !== '';
   }
-  private readonly inputsProps = {
+  private readonly inputsProps: {[key: string]: any} = {
     topic: { title: '名称', required: true, msg: '请输入题名', type: 'textarea', value: '' },
     people: { title: '人物', required: false, type: 'textarea', value: '' },
+    themeId: { title: '主题', required: false, type: 'select', value: { id: this.theme.themeId, name: this.theme.topic } },
     event: { title: '事件', required: false, type: 'textarea', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
     place: { title: '地点', required: false, type: 'textarea', value: '' },
@@ -68,28 +69,16 @@ export default class CollectFilesDetailItem extends Vue {
     sourse: { title: '来源', required: false, type: 'textarea', value: '' },
   }
   get inputsValue() {
-    return {
-      topic: this.inputsProps.topic,
-      people: this.inputsProps.people,
-      event: this.inputsProps.event,
-      time: this.inputsProps.time,
-      place: this.inputsProps.place,
-      categoryId: this.inputsProps.categoryId,
-      departmentId: this.inputsProps.departmentId,
-      comment: this.inputsProps.comment,
-      sourse: this.inputsProps.sourse,
+    const obj: {[key: string]: any} = {}
+    for (const key in this.inputsProps) {
+      obj[key] = this.inputsProps[key]
     }
+    return obj
   }
   set inputsValue(newValue) {
-    this.inputsProps.topic = newValue.topic;
-    this.inputsProps.people = newValue.people;
-    this.inputsProps.event = newValue.event;
-    this.inputsProps.time = newValue.time;
-    this.inputsProps.place = newValue.place;
-    this.inputsProps.categoryId = newValue.categoryId;
-    this.inputsProps.departmentId = newValue.departmentId;
-    this.inputsProps.comment = newValue.comment;
-    this.inputsProps.sourse = newValue.sourse;
+    for (const key in this.inputsProps) {
+      this.inputsProps[key] = newValue[key]
+    }
   }
 
   private isSubmitted: boolean = false;
@@ -123,18 +112,16 @@ export default class CollectFilesDetailItem extends Vue {
       // "id": "资料文件的id（新增情况下不需要填写）",
       topic: this.inputsProps.topic.value,
       people: this.inputsProps.people.value,
+      themeId:
+        (this.inputsProps.themeId.value as any).id,
       event: this.inputsProps.event.value,
       time: this.inputsProps.time.value 
         && this.inputsProps.time.value + 'T00:00:00',
       place: this.inputsProps.place.value,
       categoryId:
-        Number.parseInt(
-          recursionGetId(this.collectFilesType, this.inputsProps.categoryId.value, 'typeName', 'id')
-        ),
+        (this.inputsProps.categoryId.value as any).id,
       departmentId:
-        Number.parseInt(
-          recursionGetId(this.allDepartmentNameTree, this.inputsProps.departmentId.value, 'departmentName', 'id')
-        ),
+        (this.inputsProps.departmentId.value as any).id,
       comment: this.inputsProps.comment.value,
       sourse: this.inputsProps.sourse.value,
       "fileId": this.detailData.fileId,
