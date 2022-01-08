@@ -4,25 +4,29 @@
       <img src="@/assets/login/logo.png" class="logo">
       <h3 class="title">仓颉智慧多媒体档案系统</h3>
       <h3 class="title">Cangjie - Smart Multimedia File System</h3>
-      <Input
-        ref="account"
-        v-model="formData.account"
-        :required="true"
-        :holder="formMsg.account"
-        :msg="formMsg.account"
-        class="ac-input"
-        @focus="setAccountMsg"
-      />
-      <Input
-        ref="password"
-        v-model="formData.password"
-        :type="'password'"
-        :required="true"
-        :holder="formMsg.password"
-        :msg="formMsg.password"
-        class="pw-input"
-        @focus="setPasswordMsg"
-      />
+      <form>
+        <Input
+          ref="account"
+          v-model="formData.account"
+          :required="true"
+          :holder="formMsg.account"
+          :msg="formMsg.account"
+          class="ac-input"
+          autocomplete="account"
+          @focus="setAccountMsg"
+        />
+        <Input
+          ref="password"
+          v-model="formData.password"
+          :type="'password'"
+          :required="true"
+          :holder="formMsg.password"
+          :msg="formMsg.password"
+          class="pw-input"
+          autocomplete="password"
+          @focus="setPasswordMsg"
+        />
+      </form>
       <div class="collect-files-box">
         <img
           :src="require('@/assets/login/scan.png')"
