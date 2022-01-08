@@ -28,7 +28,7 @@ export default class Selects extends Vue {
   private isClose: boolean = false
   private isShowR:boolean = false
   created() {
-    console.log(this.listData);
+    console.log('selects component', this.listData);
   }
   showList() {
     /* if (this.isShowList) {

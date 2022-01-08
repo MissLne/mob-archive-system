@@ -158,7 +158,7 @@ export default class ArchDetail extends Vue {
       [...(this.$store.state.metaData.flatArr), ...(specialMeta)] as Array<MetaDataItem>
     )
       .filter(value => value.metadataValue)
-      .map((value) => {
+      .forEach((value) => {
         let { id, metadataValue, metadataName } = value
         if (metadataName.slice(-2) === '时间')
           metadataValue += 'T00:00:00'
