@@ -72,14 +72,15 @@ export default class TempArchUpload extends Vue {
     const list = this.listData;
     let p1 = list.length, p2 = data.length;
     while (p1 || p2) {
+      console.log(p1, p2)
       // 1.如果list已经没了，data还有，就直接加到前面
       if (p1 === 0) {
         list.splice(0, 0, ...data.slice(0, p2));
         break;
       }
-      // 2.如果list还有，data已经没了，说明删的是第一个（第一次忽略的情况）
+      // 2.如果list还有，data已经没了，说明删的是剩下这几个（第一次忽略，第二次只删一个，第三次才做对。。）
       else if (p2 === 0) {
-        list.splice(0, 1);
+        list.splice(0, p1);
         break;
       }
       // 3.两个都还有
@@ -87,10 +88,11 @@ export default class TempArchUpload extends Vue {
         // 如果两个fileId不等（说明被删了一部分），减list的指针，并把这个项移除
         // 合理是因为顺序肯定是一样的
         while (p1 && list[p1 - 1].fileId !== data[p2 - 1].fileId) {
+          console.log(p1, p2, 'in while2')
           list.splice(--p1, 1)
         }
+        --p1, --p2;
       }
-      --p1, --p2;
     }
   }
   // 上传文件

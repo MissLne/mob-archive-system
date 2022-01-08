@@ -1,6 +1,6 @@
 <template>
   <div class="theme-qr">
-    <des-head @handleClick="headClick">详情</des-head>
+    <des-head @handleClick="headClick">{{theme.topic}}</des-head>
     <div class="slots"></div>
     <ThemeSummary :theme="theme"/>
     <div class="img-box">
@@ -70,7 +70,7 @@ export default class ThemeQR extends Vue {
 
 <style lang="scss">
   .theme-qr {
-    padding: 0 20px;
+    padding: 20px 20px;
     .img-box {
       display: flex;
       justify-content: center;
