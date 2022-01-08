@@ -281,9 +281,9 @@ export default class DesList extends Vue {
           this.bottomHTML = "-我是底线-";
           (this.$refs.listContainer as any).scrollTop -= 6;
         }, 30);
-        this.$nextTick(() => {
+        // this.$nextTick(() => {
           this.bottomPadding = 0
-        })
+        // })
       }
       let arr = this.desItem.slice(this.vlistData.startIndex, endIndex + 1);
       for (let item of arr) {

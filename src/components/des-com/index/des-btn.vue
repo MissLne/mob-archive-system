@@ -79,6 +79,7 @@ export default class DesBtn extends Vue {
     if(this.pageCur == 1 ) return
     console.log("pre");
     this.prePage();
+    if(this.arr[0] == 1) return
     if (this.pageCur >= 3 && this.arr[0] >= page - 2) {
       for (let i = 0; i < 6; i++) {
         i == 5 ? this.arr.splice(i) : this.$set(this.arr, i, page + i - 3);
@@ -88,7 +89,7 @@ export default class DesBtn extends Vue {
   }
   nextPageData(page: number) {
     if(this.pageCur == this.pageTo ) return
-    console.log("next");
+    console.log("next",this.pageCur,this.pageTo);
     this.nextPage();
     page = this.pageCur;
     if (this.pageCur + 2 < this.pageTo && this.arr[0] < page - 2) {

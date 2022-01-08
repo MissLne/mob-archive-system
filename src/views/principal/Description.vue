@@ -291,6 +291,7 @@ export default class Description extends Vue {
     this.desItem = result;
   }
   changePage(event: any): void {
+    console.log("点击=",event,this.getListData)
     if (event && this.getListData.current) {
       if (event.type === "prePage" && this.getListData.current > 1) {
         this.$nextTick(() => {
@@ -306,6 +307,7 @@ export default class Description extends Vue {
         this.pageData.current < this.pageData.total &&
         this.pageCur < this.pageTo
       ) {
+        console.log(this.pageCur,"我点击了下一页")
         this.$nextTick(() => {
           window.scrollTo(0, 0);
         });
