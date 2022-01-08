@@ -76,7 +76,7 @@ export default class Textarea extends Vue {
     font-size: $font-size;
     line-height: $line-height;
     text-align: start;
-    // white-space: pre-line;
+    overflow-wrap: break-word;
 
     box-sizing: border-box;
     outline: none;

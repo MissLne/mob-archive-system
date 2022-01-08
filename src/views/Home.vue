@@ -22,6 +22,7 @@ export default class Home extends Vue {
 </script>
 <style lang="scss">
 .home {
+  overflow-x: hidden;
   width: 100vw;
   min-height: 100vh;
   display: flex;

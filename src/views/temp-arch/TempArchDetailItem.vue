@@ -83,7 +83,7 @@ export default class TempArchDetailItem extends Vue {
   }
 
   private readonly inputsProps: {[key: string]: any} = {
-    topic: { title: '题名', required: true, msg: '请输入题名', type: 'text', value: '' },
+    topic: { title: '题名', required: true, msg: '请输入题名', type: 'textarea', value: '' },
     people: { title: '人物', required: false, type: 'textarea', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
     place: { title: '地点', required: false, type: 'textarea', value: '' },
