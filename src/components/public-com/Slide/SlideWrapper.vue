@@ -1,9 +1,35 @@
+<template>
+<!-- 参考https://www.bilibili.com/video/BV1YU4y177wa -->
+<!-- 视口，100vw -->
+<div class="slide-wrapper">
+  <!-- 滑动窗口，长度3 * 100vw -->
+  <div
+    :style="{transform: `translateX(${
+      this.dynamicBox ?
+      -100 + movePercentage * 100 :
+      -indexList[1] * 100 + movePercentage * 100
+    }%)`}"
+    class="flex-wrapper"
+    :class="{ 'tween': isTween }"
+    @touchstart="onTouchstart"
+    @touchmove="onTouchmove"
+    @touchend="onTouchend"
+  >
+    <div v-show="dynamicBox && stopGoLeft" style="width: 100vw;"></div>
+    <slot></slot>
+    <div v-show="dynamicBox && stopGoRight" style="width: 100vw;"></div>
+  </div>
+</div>
+</template>
+
+<script lang="ts">
 import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator'
-import './slide.scss'
 
 @Component
 export default class SlideWrapper extends Vue {
   @Prop({ default: 0 }) maxLength!: number
+  // 内部的盒子是否动态变化的盒子
+  @Prop({ default: false }) dynamicBox!: boolean
   //大概是一个矫揉造作的变量
   @Prop({ default: false }) isCurCle!: boolean
   @Prop({}) showNumber!: number
@@ -22,12 +48,8 @@ export default class SlideWrapper extends Vue {
   indexList: Array<number> = [0, 0, 0];
 
   // 禁止向左走和向右走
-  get stopGoLeft() {
-    return this.indexList[0] === -1;
-  }
-  get stopGoRight() {
-    return this.indexList[2] === -1;
-  }
+  get stopGoLeft() { return this.indexList[0] === -1; }
+  get stopGoRight() { return this.indexList[2] === -1; }
 
   onTouchstart({ touches }: TouchEvent) {
     if (touches.length === 1) {
@@ -51,18 +73,15 @@ export default class SlideWrapper extends Vue {
     }
   }
   onTouchend(e: TouchEvent, outsidePercentage?: number) {
-    if (outsidePercentage) {
+    if (outsidePercentage)
       this.movePercentage = outsidePercentage;
-    }
     if (this.isLeftRight) {
       if ((0.4 < Math.abs(this.movePercentage) && Math.abs(this.movePercentage) <= 1) ||
         Math.abs(this.endX - this.startX) / ((new Date() as any) - (this.startTime as any)) > 1.5) {
         if (this.movePercentage > 0)
           this.movePercentage = this.stopGoLeft ? 0 : 1;
-        // this.movePercentage =  1;
         else
           this.movePercentage = this.stopGoRight ? 0 : -1;
-        // this.movePercentage = -1;
       }
       else
         this.movePercentage = 0;
@@ -96,24 +115,23 @@ export default class SlideWrapper extends Vue {
     if(this.isCurCle) this.indexList[1] = this.$store.state.applyIdIndex
     this.setPages(0);
   }
-  render() {
-    // 参考https://www.bilibili.com/video/BV1YU4y177wa
-    return (
-      /* 视口，100vw */
-      <div class="slide-wrapper">
-        {/* 滑动窗口，长度3 * 100vw */}
-        <div
-          style={{ transform: `translateX(${-this.indexList[1] * 100 + this.movePercentage * 100}%)` }}
-          class={{ 'tween': this.isTween, 'flex-wrapper': true }}
-          onTouchstart={this.onTouchstart}
-          onTouchmove={this.onTouchmove}
-          onTouchend={this.onTouchend}
-        >
-          {/* {this.stopGoLeft ? (<div style="width: 100vw;"></div>) : ''} */}
-          {this.$slots['default']}
-          {/* {this.stopGoRight ? (<div style="width: 100vw;"></div>) : ''} */}
-        </div>
-      </div>
-    )
+}
+</script>
+
+<style lang="scss" scoped>
+.slide-wrapper {
+  overflow-x: hidden;
+  width: 100vw;
+  .flex-wrapper {
+    display: flex;
+    height: 100vh;
+    > * {
+      flex-shrink: 0;
+      transform: translate(0%);
+    }
   }
 }
+.tween {
+  transition: transform 0.3s;
+}
+</style>

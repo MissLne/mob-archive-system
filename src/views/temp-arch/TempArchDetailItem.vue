@@ -41,7 +41,12 @@ import Msg from '@/components/public-com/MsgBox/Msg';
 import PreviewBox from '@/components/public-com/Archive/PreviewBox.vue'
 import ArchForm from '@/components/public-com/Archive/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
-import { addTemporaryArchive, changeTemporaryArchiveToNormalArchive, deleteTemporaryArchive, getImageMetadata } from '@/services/temp-arch'
+import {
+  addTemporaryArchive,
+  changeTemporaryArchiveToNormalArchive,
+  deleteTemporaryArchive, 
+  getImageMetadata
+} from '@/services/temp-arch'
 
 @Component({
   name: 'TempArchDetailItem',

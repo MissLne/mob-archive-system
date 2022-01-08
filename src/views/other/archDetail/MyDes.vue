@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import SlideWrapper from "@/components/public-com/Slide/SlideWrapper";
+import SlideWrapper from "@/components/public-com/Slide/SlideWrapper.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import { Vue, Component, Prop } from "vue-property-decorator";
 import DesDetail from "./DesDetail.vue";

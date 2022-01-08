@@ -1,4 +1,4 @@
-import SlideWrapper from '@/components/public-com/Slide/SlideWrapper';
+import SlideWrapper from '@/components/public-com/Slide/SlideWrapper.vue';
 import CollectFilesDetailItem from './CollectFilesDetailItem.vue'
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import DesHead from '@/components/des-com/index/des-head.vue';
@@ -52,6 +52,7 @@ export default class CollectFilesDetail extends Vue {
         <slide-wrapper
           ref="slide-wrapper"
           maxLength={this.detailDataList.length}
+          dynamicBox={true}
           onSetPages={this.onSetPages}
         >
           {this.indexList.map((i, index) => {
