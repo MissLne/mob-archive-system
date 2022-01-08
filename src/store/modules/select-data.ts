@@ -55,13 +55,18 @@ const selectData: Module<any, any> = {
     }
   },
   actions: {
-    setThemeListAsync: async ({ commit }) => {
+    setThemeListAsync: async ({ commit }, payload?: { needNull: boolean }) => {
       Toast.loading({
         duration: 0,
         forbidClick: true,
         message: '加载主题中'
       })
-      const { data } = await getAllTheme()
+      const { data }: { data: { data: Array<Partial<Theme>> } } = await getAllTheme()
+      if (payload?.needNull)
+        data.data.unshift({
+          themeId: 0,
+          topic: '暂不选择主题'
+        })
       commit('setThemeList', data.data)
       console.log(data)
       Toast.clear()

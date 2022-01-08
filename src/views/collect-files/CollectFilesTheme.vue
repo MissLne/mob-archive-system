@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Emit, Prop } from 'vue-property-decorator'
+import { Vue, Component, Emit } from 'vue-property-decorator'
 import DesHead from '@/components/des-com/index/des-head.vue';
 import ThemeList from '@/components/public-com/Theme/ThemeList.vue'
 

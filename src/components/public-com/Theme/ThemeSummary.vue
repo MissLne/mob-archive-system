@@ -1,9 +1,9 @@
 <template>
-  <ul class="theme-summary">
+  <ul v-if="theme.themeId" class="theme-summary">
     <li class="created-time">{{theme.createdTime.split('T').join(' ')}}</li>
     <li class="department">创建部门：{{theme.department}}</li>
     <li class="content">{{theme.content}}</li>
-  </ul>  
+  </ul>
 </template>
 
 <script lang="ts">
@@ -18,7 +18,7 @@ export default class ThemeSummary extends Vue {
 <style lang="scss" scoped>
 .theme-summary {
   border: 4px solid #8ebefe;
-  margin: 20px 0;
+  margin-bottom: 20px;
   padding: 20px;
   font-size: 26px;
   line-height: 50px;

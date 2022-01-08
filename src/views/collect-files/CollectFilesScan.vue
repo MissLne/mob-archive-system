@@ -111,7 +111,7 @@ export default class CollectFilesScan extends Vue {
           const themeId = segments[segments.length - 1]
           // 如果themeId在合理范围内
           if (1 <= themeId && themeId <= this.$store.state.selectData.themeList.length)
-            this.$emit('passTheme', this.$store.state.selectData.themeList[themeId - 1])
+            this.$emit('passTheme', this.$store.state.selectData.themeList[themeId])
           else
             Dialog({ message: '该themeId不存在' })
               .finally(() => this.start = true)

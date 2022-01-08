@@ -10,7 +10,7 @@
       :theme="theme"
     />
     <ArchList
-      ref="archList"
+      ref="ArchList"
       :listData="listData"
       @passClickIndex="passDetailData"
       v-model="isChecking"
@@ -48,7 +48,7 @@ export default class CollectFilesUpload extends Vue {
     if (t.length) {
       const themeId = Number.parseInt(this.$route.params.themeId)
       if (themeId)
-        this.$emit('passTheme', t[themeId - 1])
+        this.$emit('passTheme', t[themeId])
     }
     return t
   }
@@ -155,7 +155,7 @@ export default class CollectFilesUpload extends Vue {
   #collect-files-upload {
     min-height: 100vh;
     box-sizing: border-box;
-    padding: 0 25px;
+    padding: 20px 25px;
     .upload-hint {
       position: fixed;
       left: 257px;

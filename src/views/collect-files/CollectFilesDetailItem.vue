@@ -129,6 +129,8 @@ export default class CollectFilesDetailItem extends Vue {
       "zippedFileId": this.detailData.zippedImageFileId,
       // "attachmentIds": "附件（有传的话，要求传进来的要求是最新版本）"
     }
+    // 如果themeId是0，说明未选择
+    if (fullFileData.themeId === 0) fullFileData.themeId = undefined;
 
     let urlSuffix = 'addCollectedFile'
     if (this.detailData.newFileId) {

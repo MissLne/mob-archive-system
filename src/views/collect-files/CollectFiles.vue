@@ -37,7 +37,7 @@ export default class CollectFiles extends Vue {
   }
   created() {
     this.initSelectData();
-    this.$store.dispatch('selectData/setThemeListAsync')
+    this.$store.dispatch('selectData/setThemeListAsync', { needNull: true })
   }
   private theme: any = {};
   passTheme(theme: Theme) {
