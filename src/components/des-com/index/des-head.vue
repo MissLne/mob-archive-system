@@ -59,7 +59,7 @@ export default class DesHead extends Vue {
 <style lang="scss">
 #des-head {
   z-index: 99;
-  width: 750px;
+  width: 100vw;
   height: 124px;
   position: fixed;
   top: 0;
