@@ -46,7 +46,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import SlideWrapper from "@/components/public-com/Slide/SlideWrapper";
+import SlideWrapper from "@/components/public-com/Slide/SlideWrapper.vue";
 import Details from "@/components/apply-com/edit/details.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import FileData from "@/components/apply-com/edit/fileData.vue";

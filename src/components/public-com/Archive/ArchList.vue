@@ -12,7 +12,7 @@
     </ul>
     <transition name="btns-move">
       <div v-show="isChecking" class="btns-box">
-        <button v-if="canCancel" class="cancel-btn" @click="stopSelect">取消</button>
+        <button v-if="canCancel" class="cancel-btn" @click="$emit('changeCheck', false)">取消</button>
         <button v-else class="delete-btn" @click="startEdit(false)">删除</button>
         <button class="edit-btn" @click="startEdit(true)">{{editName}}</button>
       </div>
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Emit } from 'vue-property-decorator'
+import { Component, Prop, Vue, Emit, Model } from 'vue-property-decorator'
 import ListItem from './ListItem.vue'
 import MsgBox from '../MsgBox/Msg';
 
@@ -37,8 +37,9 @@ export default class ArchList extends Vue {
   @Prop({default: true}) canClickItem!: boolean;
   @Prop({default: '编辑'}) editName!: string;
   @Prop({default: true}) canCancel!: boolean;
+  @Model('changeCheck') isChecking: boolean = false;
+
   private checkList: Array<boolean> = [];
-  public isChecking: boolean = false;
 
   /* 选择文件部分 */
   onChecking() {
@@ -53,16 +54,10 @@ export default class ArchList extends Vue {
         this.checkList.forEach((value, index) => 
           this.$set(this.checkList, index, false))
     }
-    else
-      this.isChecking = true;
   }
   checkItem(index: number) {
     // 如果直接修改数组内元素无效，官方文档响应式原理！
     this.$set(this.checkList, index, !this.checkList[index]);
-  }
-  @Emit('stopSelect')
-  stopSelect() {
-    this.isChecking = false;
   }
   startEdit(adding: boolean = true) {
     let checkedIndex: Array<number> = [];
@@ -78,7 +73,6 @@ export default class ArchList extends Vue {
         this.passClickIndex(checkedIndex)
       else
         this.deleteClickIndex(checkedIndex)
-      this.isChecking = false;
     }
   }
   /* 告诉父组件点击了哪个元素 */

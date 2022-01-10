@@ -29,7 +29,7 @@ service.interceptors.response.use(
         case 401:
         case 420:
           errMsg = '登录状态失效，请重新登录'
-          localStorage.removeItem('token')
+          localStorage.clear()
           router.replace({name: 'login'})
           break
         case 403:

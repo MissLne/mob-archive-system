@@ -10,12 +10,12 @@
       :theme="theme"
     />
     <ArchList
-      ref="archList"
+      ref="ArchList"
       :listData="listData"
       @passClickIndex="passDetailData"
-      @stopSelect="stopSelect"
+      v-model="isChecking"
     />
-    <UploadBtn :disabled="disabledUpload" @uploadFiles="onUploadFiles"/>
+    <UploadBtn :disabled="!canUpload" @uploadFiles="onUploadFiles"/>
     <div v-if="!listData.length" class="upload-hint">点我上传 →</div>
 
   </div>
@@ -48,16 +48,30 @@ export default class CollectFilesUpload extends Vue {
     if (t.length) {
       const themeId = Number.parseInt(this.$route.params.themeId)
       if (themeId)
-        this.$emit('passTheme', t[themeId - 1])
+        this.$emit('passTheme', t[themeId])
     }
     return t
   }
   // 上传文件后返回的数据
   private listData: Array<any> = [];
-  // 正在上传时，禁止上传
-  private disabledUpload: boolean = false;
-  // 正在上传时，禁止选择
-  private disabledCheck: boolean = false;
+  // 正在上传时禁止，上传结束启用
+  // 正在选择时禁止，[取消选择，进入编辑]启用
+  private canUpload: boolean = true;
+  // 是否选择状态，v-model to ArchList
+  private isChecking: boolean = false;
+  // 开始选择
+  public startSelect() {
+    // 开始选择状态时，结束上传
+    this.isChecking = true;
+    (this.$refs['ArchList'] as ArchList).onChecking();
+    this.canUpload = false;
+  }
+  // 停止选择
+  public stopSelect() {
+    // 取消选择状态时，启用上传
+    this.isChecking = false;
+    this.canUpload = true;
+  }
   // 是否都提交了
   get isAllSubmitted(): boolean {
     for (let i = 0; i < this.listData.length; ++i) {
@@ -68,13 +82,12 @@ export default class CollectFilesUpload extends Vue {
   }
   // 上传文件
   private async onUploadFiles (file: File) {
+    MsgBox.success('文件上传中...', true)
+    // 正在上传时禁止
+    this.canUpload = false;
+
     const formData = new FormData();
     formData.append('multipartFile', file);
-
-    MsgBox.success('文件上传中...', true)
-    this.disabledUpload = true;
-    this.disabledCheck = true;
-
     try {
       const { data } = await visitorUpload(formData);
       if (data.code !== 200)
@@ -97,21 +110,23 @@ export default class CollectFilesUpload extends Vue {
       MsgBox.changeStatus('上传失败', false);
     } finally {
       MsgBox.closeBox(1000);
-      this.disabledUpload = false;
-      this.disabledCheck = false;
+      this.canUpload = true;
     }
   }
-  // 是否选择状态，与archlist同步
-  private isChecking: boolean = false;
+  // 编辑，点击或选择后，将数据传给父组件
+  @Emit('passDetailData')
+  passDetailData(indexList: Array<number>) {
+    // 开始编辑时，结束选择
+    this.stopSelect();
+    return indexList.map(value => this.listData[value]);
+  }
   // header的左边（返回）和右边（选择）
-  public headClick({clickType}: any) {
+  headClick({clickType}: any) {
     // 正在上传不给点头部
-    if (this.disabledCheck) return;
+    if (!this.isChecking && !this.canUpload) return;
     if (clickType === 'left') {
-      if (this.isChecking) {
-        (this.$refs.archList as ArchList).stopSelect()
-        this.isChecking = false
-      }
+      if (this.isChecking)
+        this.stopSelect()
       else
         this.$router.go(-1)
       /* if (this.isAllSubmitted)
@@ -127,28 +142,11 @@ export default class CollectFilesUpload extends Vue {
       } */
     }
     else {
-      if (this.listData.length) {
-        (this.$refs.archList as ArchList).onChecking()
-        // 开始选择时，禁用上传
-        this.disabledUpload = true
-        this.isChecking = true
-      }
+      if (this.listData.length)
+        this.startSelect()  
       else
         MsgBox.error('请先上传文件')
     }
-  }
-  public stopSelect() {
-    // 取消选择状态时，结束选择，启用上传
-    this.disabledUpload = false
-    this.isChecking = false
-  }
-
-  // 点击或选择后，将数据传给父组件
-  @Emit('passDetailData')
-  passDetailData(indexList: Array<number>) {
-    // 开始编辑时，结束选择，启用上传
-    this.disabledUpload = false;
-    return indexList.map(value => this.listData[value]);
   }
 }
 </script>
@@ -157,7 +155,7 @@ export default class CollectFilesUpload extends Vue {
   #collect-files-upload {
     min-height: 100vh;
     box-sizing: border-box;
-    padding: 0 25px;
+    padding: 20px 25px;
     .upload-hint {
       position: fixed;
       left: 257px;

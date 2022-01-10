@@ -41,7 +41,12 @@ import Msg from '@/components/public-com/MsgBox/Msg';
 import PreviewBox from '@/components/public-com/Archive/PreviewBox.vue'
 import ArchForm from '@/components/public-com/Archive/ArchForm.vue'
 import CoupleBtns from '@/components/public-com/Btn/CoupleBtns.vue'
-import { addTemporaryArchive, changeTemporaryArchiveToNormalArchive, deleteTemporaryArchive, getImageMetadata } from '@/services/temp-arch'
+import {
+  addTemporaryArchive,
+  changeTemporaryArchiveToNormalArchive,
+  deleteTemporaryArchive, 
+  getImageMetadata
+} from '@/services/temp-arch'
 
 @Component({
   name: 'TempArchDetailItem',
@@ -83,7 +88,7 @@ export default class TempArchDetailItem extends Vue {
   }
 
   private readonly inputsProps: {[key: string]: any} = {
-    topic: { title: '题名', required: true, msg: '请输入题名', type: 'text', value: '' },
+    topic: { title: '题名', required: true, msg: '请输入题名', type: 'textarea', value: '' },
     people: { title: '人物', required: false, type: 'textarea', value: '' },
     time: { title: '时间', required: false, type: 'date', value: '' },
     place: { title: '地点', required: false, type: 'textarea', value: '' },
@@ -124,7 +129,7 @@ export default class TempArchDetailItem extends Vue {
       [...(this.$store.state.metaData.flatArr), ...(specialMeta)] as Array<MetaDataItem>
     )
       .filter(value => value.metadataValue)
-      .map((value) => {
+      .forEach((value) => {
         let { id, metadataValue, metadataName } = value
         if (metadataName.slice(-2) === '时间')
           metadataValue += 'T00:00:00'
@@ -140,7 +145,7 @@ export default class TempArchDetailItem extends Vue {
     this.createSetting();
   }
   // 进入页面时的设置
-  createSetting() {
+  async createSetting() {
     // 清空
     for (let key in this.inputsProps) {
       if (key !== 'retentionPeriod') this.inputsProps[key].value = '';
@@ -151,18 +156,17 @@ export default class TempArchDetailItem extends Vue {
       this.inputsProps.topic.value = this.detailData.fileName;
 
     if (!(this.detailData as any).metadata) {
-      this.getImageMetaData(this.detailData.fileId)
-        .then(({data: res}: any) => {
-          res.data = res.data.map((value: any) => {
-            return {
-              id: value.metadataId,
-              metadataValue: value.metadataValue,
-            }
-          })
-          this.$set(this.detailData, 'metadata', res.data);
-          initMetaData(this, 'metadata')
-          console.log(this.$store.state.metaData.tree)
-        })
+      const { data } = await getImageMetadata({ fileId: this.detailData.fileId })
+      
+      if (data.code === 200) {
+        data.data.forEach((value: any) => ({
+          id: value.metadataId,
+          metadataValue: value.metadataValue,
+        }))
+        this.$set(this.detailData, 'metadata', data.data)
+        initMetaData(this, 'metadata')
+        console.log(this.$store.state.metaData.tree)
+      }
     }
     else
       console.log((this.detailData as any).metadata);
@@ -184,10 +188,6 @@ export default class TempArchDetailItem extends Vue {
       console.log(error);
         Msg.error('著录失败')
     }
-  }
-  // ajax获取图片的额外数据
-  private async getImageMetaData(fileId: number) {
-    return await getImageMetadata({ fileId})
   }
   // ajax删除文件
   private deleteFile() {

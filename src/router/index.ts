@@ -166,7 +166,7 @@ router.beforeEach((to, from, next) => {
     store.commit('setIncludeList', ['Arch', 'TempArch']);
   }
   else {
-    store.commit('setIncludeList', ['']);
+    store.commit('setIncludeList', ['TempArch']);
   }
   // 没有token就踢出去
   if (to.name === 'login'

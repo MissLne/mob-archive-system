@@ -1,6 +1,6 @@
-import SlideWrapper from '@/components/public-com/Slide/SlideWrapper';
+import SlideWrapper from '@/components/public-com/Slide/SlideWrapper.vue';
 import TempArchDetailItem from './TempArchDetailItem.vue';
-import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import DesHead from '@/components/des-com/index/des-head.vue';
 
 @Component({
@@ -70,6 +70,7 @@ export default class TempArchDetail extends Vue {
         <slide-wrapper
           ref="slide-wrapper"
           maxLength={this.detailDataList.length}
+          dynamicBox={true}
           onSetPages={this.onSetPages}
         >
           {this.indexList.map((i, index) => {

@@ -1,9 +1,11 @@
 <template>
   <div id="temp-arch">
+    <keep-alive include="TempArchUpload">
       <router-view
         :detailDataList="detailDataList"
         @passDetailData="passDetailData"
       ></router-view>
+    </keep-alive>
 <!--     <button @click="add">add</button>
     <button @click="del">del</button> -->
   </div>

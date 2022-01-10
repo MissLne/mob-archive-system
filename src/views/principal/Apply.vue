@@ -12,7 +12,7 @@
         <img v-else :src="sideBarShow ? pics[4] : pics[3]">
       </template>
       <template #right>
-        {{isChecking ? isAllSelect ? '取消' : '全选' : '选择'}}
+        {{sideBarShow ? '' : (isChecking ? isAllSelect ? '取消' : '全选' : '选择')}}
       </template>
     </des-head>
     <DesSearch
@@ -293,7 +293,9 @@ export default class Apply extends Vue {
   }
   handleClick(event: any) {
     if (event.clickType === "right") {
-      if (this.isChecking)
+      if (this.sideBarShow)
+        return
+      else if (this.isChecking)
         this.initSelect(!this.isAllSelect) // 当前全选就变false，当前未全选就全true
       else
         this.isChecking = true

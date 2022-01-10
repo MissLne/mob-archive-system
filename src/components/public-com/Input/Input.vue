@@ -7,6 +7,7 @@
       :class="{ 'active': isActive, 'wrong': required && isWrong }"
       :value="outerValue"
       v-on="inputListeners"
+      :autocomplete="$attrs.autocomplete"
       @focus="onFocus"
       @blur="onBlur"
     >
