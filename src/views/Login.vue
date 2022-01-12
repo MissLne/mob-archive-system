@@ -47,6 +47,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Input from '@/components/public-com/Input/Input.vue'
+import crypto from "@/utils/crypto"
 import {
   postLogin,
   getFileMetadataStructTree,
@@ -110,7 +111,7 @@ export default class Login extends Vue {
     this.formMsg.password = '请输入密码'
   }
   private async initLocalStorage(res: any) {
-    localStorage.setItem('token', res.token);
+    crypto.setLocal('token', res.token)
     localStorage.setItem('username', res.user.name);
     localStorage.setItem('departmentId', res.user.departmentId);
     // 载入权限列表

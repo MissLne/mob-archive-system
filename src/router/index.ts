@@ -1,6 +1,7 @@
 import store from '@/store'
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
+import crypto from "@/utils/crypto"
 
 Vue.use(VueRouter)
 
@@ -171,7 +172,7 @@ router.beforeEach((to, from, next) => {
   // 没有token就踢出去
   if (to.name === 'login'
     || to.name?.includes('collectFiles')
-    || localStorage.getItem('token')
+    || localStorage.getItem("token")
   )
     next();
   else
