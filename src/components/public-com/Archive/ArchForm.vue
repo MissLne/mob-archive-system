@@ -146,6 +146,7 @@ import InputDate from "@/components/public-com/Input/InputDate.vue";
 import Select from "@/components/public-com/Select/Select.vue";
 import FaceRecognitionIcon from "@/views/face-recognition/FaceRecognitionIcon.vue";
 import Textarea from '@/components/public-com/Input/Textarea.vue'
+import crypto from "@/utils/crypto"
 
 @Component({
   components: {
@@ -167,7 +168,7 @@ export default class ArchForm extends Vue {
   get fondsIdentifier() { return this.$store.getters['selectData/fondsIdentifier'] }
   get dossierType() { return this.$store.getters['selectData/dossierType'] }
   get departmentNameTree() {
-    if (localStorage.getItem('token') === null)
+    if (localStorage.getItem("token") === null)
       return this.$store.getters['selectData/allDepartmentNameTree']
     else
       return this.$store.getters['selectData/departmentNameTree']

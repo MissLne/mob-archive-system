@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 import router from '@/router/index'
-
+import crypto from "@/utils/crypto"
 
 const service = axios.create({
   timeout: 100000 
@@ -9,7 +9,7 @@ const service = axios.create({
 service.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     if (localStorage.getItem("token")) {
-      config.headers.Authorization = localStorage.getItem("token")
+      config.headers.Authorization = crypto.getLocal("token").replace(/\"/g,"")
     }
     config.headers["Content-Type"] = "application/json"
     return config
@@ -24,6 +24,7 @@ service.interceptors.response.use(
   },
   (err: any) => {
     let errMsg = ''
+    if(err && err.response.status == undefined ||  err.response.status == null) localStorage.clear()
     if (err && err.response.status) {
       switch (err.response.status) {
         case 401:

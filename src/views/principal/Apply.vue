@@ -226,7 +226,7 @@ export default class Apply extends Vue {
     if(addOrdel) {
       this.alertShow = true
     } else {
-      this.$router.push({ name: "addApply" });
+      this.$router.push({ name: "addApply",query: {type: 'add'} });
     }
   }
   changeStatus(arr: any[]) {
