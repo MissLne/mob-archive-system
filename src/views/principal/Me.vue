@@ -26,12 +26,10 @@
     <div v-for="(item, index) in desItem" :key="index" class="box">
       <DesItem v-if="desItem" :desItem="item" typeName="我的档案" />
     </div>
-    <DesBtn
-      @changePage="changePage($event)"
-      :totalPage="pageData"
+    <PageBtn
+      :pageTotal="pageTotal"
       :pageCur="pageCur"
-      :pageTo="pageTo"
-      v-if="pageTo"
+      @changePage="changePage($event)"
     />
     <div class="slots2"></div>
   </div>
@@ -42,7 +40,7 @@ import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
 import myTool from "@/components/des-com/index/myTool.vue";
 import DesItem from "@/components/des-com/index/des-item.vue";
-import DesBtn from "@/components/des-com/index/des-btn.vue";
+import PageBtn from "@/components/public-com/PageBtn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import SideBar from "@/components/public-com/SideBar.vue";
 import { getSrcCertainly } from "@/utils/picture";
@@ -75,7 +73,7 @@ type Id = {
     DesSearch,
     myTool,
     DesItem,
-    DesBtn,
+    PageBtn,
     Alerts,
     SideBar,
   },
@@ -98,12 +96,8 @@ export default class Me extends Vue {
   public popArr: string[] = ["案卷详情", "选择"];
   public count: number = 0;
   private _this: any = "";
-  public pageData: any = {
-    current: 1,
-    total: 0,
-  };
   public pageCur: number = 1
-  public pageTo: number = 0
+  public pageTotal: number = 0
   public getListData: dataType = {
     size: 10,
     current: 1,
@@ -176,7 +170,7 @@ export default class Me extends Vue {
           this.idList.push({ id: result[i].id, type: result[i].type });
         }
         this.count = res.data.data.total;
-        this.pageTo = Math.ceil(this.count / 10);
+        this.pageTotal = Math.ceil(this.count / 10);
         // 获取图片缩略图
         result.forEach(async (item: any) => {
           if (item.fileType)
@@ -185,34 +179,16 @@ export default class Me extends Vue {
         this.desItem = result;
       });
   }
-  changePage(event: any): void {
-    if (event && this.getListData.current) {
-      if (event.type === "prePage" && this.getListData.current > 1) {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.getListData.current--;
-        this.pageCur--;
-        this.getList();
-      } else if (
-        event.type === "nextPage" &&
-        this.pageCur < this.pageTo
-      ) {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.getListData.current++;
-        this.pageCur++;
-        this.getList();
-      } else {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-       this.getListData.current = event.page;
-        this.pageCur = event.page;
-        this.getList();
-      }
-    }
+  changePage(page: number | null) {
+    if (page === null)
+      return;
+    // if (event && this.getListData.current)
+    this.$nextTick(() => {
+      window.scrollTo(0, 0);
+    });
+    this.pageCur = page;
+    this.getListData.current = page;
+    this.getList();
   }
   deleteItem() {
     let desId: Array<number> = [];

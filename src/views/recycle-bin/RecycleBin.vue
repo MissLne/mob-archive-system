@@ -46,9 +46,10 @@
       />
     </transition>
     <!-- 翻页按钮 -->
-    <DesBtn
-      :totalPage="{total: pages, current: currentPage}"
-      @changePage="goPage"
+    <PageBtn
+      :pageTotal="pageTotal"
+      :pageCur="pageCur"
+      @changePage="changePage"
     />
   </div>
 </template>
@@ -57,7 +58,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import DesHead from '@/components/des-com/index/des-head.vue'
 import DesItem from '@/components/des-com/index/des-item.vue'
-import DesBtn from '@/components/des-com/index/des-btn.vue'
+import PageBtn from "@/components/public-com/PageBtn.vue";
 import Selects from '@/components/tools/selects.vue';
 import Msg from '@/components/public-com/MsgBox/Msg';
 import { getSrcCertainly } from '@/utils/picture';
@@ -70,25 +71,30 @@ import { getPartDossierList } from '@/services/dossier';
   components: {
     DesHead,
     DesItem,
-    DesBtn,
+    PageBtn,
     Selects,
     CoupleBtns
   }
 })
 export default class RecycleBin extends Vue {
-  private readonly listData: any = {
-    title: '',
-    list: [ '清空回收站', '选择' ]
+// 翻页相关
+  private pageTotal: number = 0;
+  private pageCur: number = 1;
+  changePage(page: number | null) {
+    if (page)
+      this.getPageData(page)
   }
+
+
+// 选择、获取数据相关
+  // 数据列表
   private records: Array<any> = [];
-  private pages: number = 0;
-  private currentPage: number = 1;
+  // 表示*某个index是否选择*的数组
   private checkList: Array<boolean> = [];
+  // 是否正在选择
   private isChecking: boolean = false;
+  // 已经选择的id
   get checkIds() {
-    // 这样写好像高级一点，不过性能好像比较差，需要遍历两遍
-    /* return this.records.map(value => value.id)
-      .filter((value, index) => this.checkList[index]); */
     const temp = [];
     for(const key in this.records)
       if (this.checkList[key]) temp.push(this.records[key].id)
@@ -103,10 +109,7 @@ export default class RecycleBin extends Vue {
       this.checkList.forEach((value, index) =>
         this.$set(this.checkList, index, false))
   }
-  
-  created() {
-    this.getPageData(this.currentPage)     
-  }
+  // 获取数据函数
   async getPageData(current: number) {
     try {
       
@@ -118,13 +121,13 @@ export default class RecycleBin extends Vue {
       })
       if (data.code !== 200) throw Error();
       this.records = data.data.records
-      this.pages = data.data.pages;
+      this.pageTotal = data.data.pages;
       this.checkList = new Array(this.records.length).fill(false);
 
       for (const value of this.records) {
         value.fileToken = await getSrcCertainly(value.fileType, value.fileToken)
       }
-      this.currentPage = current
+      this.pageCur = current
       // 用forEach的话大的catch捕获不了
       /* this.pageData.records.forEach(async (value: any) => {
         value.fileToken = await downloadPic(value.fileToken, value.fileType)
@@ -133,16 +136,12 @@ export default class RecycleBin extends Vue {
       Msg.error('加载失败')
     }
   }
-  // 点击翻页按钮时执行的函数
-  goPage({type}: {type: string}) {
-    let newPages;
-    if (type === 'prePage')
-      newPages = this.currentPage - 1;
-    else
-      newPages = this.currentPage + 1;
-    if (newPages < 1 || newPages > this.pages) return;
-    this.getPageData(newPages)
+  // 创建时获取数据
+  created() {
+    this.getPageData(this.pageCur)
   }
+
+
   /**
    * 本页面的三种操作
    * @param {string} chineseName 中文名
@@ -180,12 +179,31 @@ export default class RecycleBin extends Vue {
         Msg.error(`${chineseName}失败`)
     }
   }
+
+
+  // 下拉菜单相关
+  // 下拉菜单的options
+  private readonly listData: any = {
+    title: '',
+    list: [ '清空回收站', '选择' ]
+  }
+  // 是否显示下拉菜单
   private v_isShowList: boolean = false
   get isShowList() { return this.v_isShowList }
   set isShowList(newValue: any) {
     (this.$refs['headerSelects'] as Selects).isShowList = newValue
     this.v_isShowList = newValue
   }
+  // 下拉菜单点击
+  private selectsClick({num: index}: {num: number}) {
+    if (index === 1)
+      this.isChecking = !this.isChecking;
+    else 
+      this.checkOperation('清空回收站', 'emptyRecycleBin', true, '确认清空回收站？该操作不可逆')
+  }
+
+
+  // 头部点击
   private headClick({clickType}: any) {
     if (clickType === 'left') {
       if (this.isChecking)
@@ -199,12 +217,6 @@ export default class RecycleBin extends Vue {
       else
         this.isShowList = !this.isShowList
     }
-  }
-  private selectsClick({num: index}: {num: number}) {
-    if (index === 1)
-      this.isChecking = !this.isChecking;
-    else 
-      this.checkOperation('清空回收站', 'emptyRecycleBin', true, '确认清空回收站？该操作不可逆')
   }
 }
 </script>

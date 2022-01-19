@@ -41,13 +41,10 @@
         @click="checkItem(index)"
       />
     </div>
-    <DesBtn
-      @changePage="changePage($event)"
-      :totalPage="pageData"
+    <PageBtn
+      :pageTotal="pageTotal"
       :pageCur="pageCur"
-      :pageTo="pageTo"
-      v-if="pageData.total"
-      ref="desBtnvue"
+      @changePage="changePage"
     />
     <div class="slots2"></div>
     <img
@@ -70,7 +67,7 @@ import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
 import myTool from "@/components/des-com/index/myTool.vue";
 import DesItem from "@/components/des-com/index/des-item.vue";
-import DesBtn from "@/components/des-com/index/des-btn.vue";
+import PageBtn from "@/components/public-com/PageBtn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue";
@@ -107,7 +104,7 @@ interface Item {
     DesSearch,
     myTool,
     DesItem,
-    DesBtn,
+    PageBtn,
     Alerts,
     SideBar,
   },
@@ -133,12 +130,8 @@ export default class Description extends Vue {
   public popArr: string[] = ["案卷详情", "选择"];
   public count: number = 0;
   private _this: any = "";
-  public pageData: any = {
-    current: 1,
-    total: 0,
-  };
   public pageCur: number = 1
-  public pageTo: number = 0
+  public pageTotal: number = 0
   public getListData: dataType = {
     size: 10,
     current: 1,
@@ -167,14 +160,12 @@ export default class Description extends Vue {
     vm.searchText = "请输入题名搜索";
     vm.getListData.type = 0;
     vm.getListData.current = 1;
-    vm.pageData.current = 1;
 
     vm.getList();
   }
   selectHandle(event: any) {
     this.getListData.type = event.index == 0 ? 2 : event.index - 1;
     this.getListData.current = 1;
-    this.pageData.current = 1;
     this.pageCur = 1
     // this.listData.title = this.listData.list[event.index];
     // (this as any).$localStore.setData("desListData",this.getListData);
@@ -244,8 +235,7 @@ export default class Description extends Vue {
       this.idList.push({ id: result[i].id, type: result[i].type });
     }
     this.count = data.data.total;
-    this.pageData.total = Math.ceil(this.count / 10);
-    this.pageTo = Math.ceil(this.count / 10);
+    this.pageTotal = Math.ceil(this.count / 10);
     // 获取图片缩略图
     result.forEach(async (item: any) => {
       if (item.fileType)
@@ -253,42 +243,16 @@ export default class Description extends Vue {
     })
     this.desItem = result;
   }
-  changePage(event: any): void {
-    console.log("点击=",event,this.getListData)
-    if (event && this.getListData.current) {
-      if (event.type === "prePage" && this.getListData.current > 1) {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.getListData.current--;
-        this.pageData.current--;
-        this.pageCur--
-        this.getList();
-        // (this as any).$localStore.setData("desListData",this.getListData)
-      } else if (
-        event.type === "nextPage" &&
-        this.pageData.current < this.pageData.total &&
-        this.pageCur < this.pageTo
-      ) {
-        console.log(this.pageCur,"我点击了下一页")
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.getListData.current++;
-        this.pageData.current++;
-        this.pageCur++
-        // (this as any).$localStore.setData("desListData",this.getListData)
-        this.getList();
-      } else {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.getListData.current = event.page;
-        this.pageData.current = event.page;
-        this.pageCur = event.page
-        this.getList();
-      }
-    }
+  changePage(page: number | null) {
+    if (page === null)
+      return;
+    // if (event && this.getListData.current)
+    this.$nextTick(() => {
+      window.scrollTo(0, 0);
+    });
+    this.pageCur = page;
+    this.getListData.current = page;
+    this.getList();
   }
   deleteItem() {
     let desId: Array<number> = [];

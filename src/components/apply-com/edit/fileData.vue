@@ -7,12 +7,10 @@
       </div>
     </div>
     <div class="footer">
-      <DesBtn
-        @changePage="changePage($event)"
-        :totalPage="pageData"
+      <PageBtn
+        :pageTotal="pageTotal"
         :pageCur="pageCur"
-        :pageTo="pageTo"
-        v-if="pageTo"
+        @changePage="changePage"
       />
     </div>
   </div>
@@ -20,28 +18,18 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import FileItem from "@/components/apply-com/edit/fileItem.vue";
-import DesBtn from "@/components/des-com/index/des-btn.vue";
+import PageBtn from "@/components/public-com/PageBtn.vue";
 import { getSrcCertainly } from "@/utils/picture";
 
-interface ObjItem {
-  current: number;
-  total: number;
-}
 @Component({
   components: {
     FileItem,
-    DesBtn,
+    PageBtn,
   },
 })
 export default class FileData extends Vue {
   @Prop({}) private fileDataId !: number
   private fileData!: any;
-  public pageData: ObjItem = {
-    current: 1,
-    total: 0,
-  };
-  public pageCur: number = 1
-  public pageTo: number = 0
   public fileLists: Array<any[]> = [];
   public fileList: any[] = [];
   private flag: boolean = false
@@ -68,27 +56,23 @@ export default class FileData extends Vue {
   mounted() {
     console.log(this.fileData)
   }
-  changePage(event: any): void {
-    if (event && this.pageCur) {
-      if (event.type === "prePage" && this.pageCur > 1) {
-        this.pageCur--;
-        this.fileList = this.fileLists[this.pageCur - 1];
-      } else if (
-        event.type === "nextPage" &&
-        this.pageCur < this.pageTo
-      ) {
-        this.pageCur++;
-        this.fileList = this.fileLists[this.pageCur - 1];
-      } else {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.pageCur = event.page;
-      }
-    }
+
+  // 页数控制相关
+  public pageCur: number = 1
+  public pageTotal: number = 0
+  changePage(page: number | null) {
+    if (page === null)
+      return;
+    // if (event && this.getListData.current)
+    this.$nextTick(() => {
+      window.scrollTo(0, 0);
+    });
+    this.pageCur = page;
+    this.fileList = this.fileLists[this.pageCur - 1];
   }
+
   page() {
-    this.pageTo = Math.ceil(this.fileData.length / 5);
+    this.pageTotal = Math.ceil(this.fileData.length / 5);
     this.fileLists = this.arrTrans(5, this.fileData);
     this.fileList = this.fileLists[0];
   }
