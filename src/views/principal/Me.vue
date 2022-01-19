@@ -1,11 +1,6 @@
 <template>
   <div id="description">
     <SideBar :sideBarShow="sideBarShow" />
-    <Alerts
-      :title="'确认删除'"
-      v-if="alertShow"
-      @sureDelete="sureDelete($event)"
-    />
     <des-head
       :popArr="popArr"
       @handleClick="handleClick($event)"
@@ -41,7 +36,6 @@ import DesSearch from "@/components/des-com/index/des-search.vue";
 import myTool from "@/components/des-com/index/myTool.vue";
 import DesItem from "@/components/des-com/index/des-item.vue";
 import PageBtn from "@/components/public-com/PageBtn.vue";
-import Alerts from "@/components/tools/alerts.vue";
 import SideBar from "@/components/public-com/SideBar.vue";
 import { getSrcCertainly } from "@/utils/picture";
 import store from "@/store";
@@ -74,7 +68,6 @@ type Id = {
     myTool,
     DesItem,
     PageBtn,
-    Alerts,
     SideBar,
   },
 })
@@ -88,7 +81,6 @@ export default class Me extends Vue {
     list: ["显示全部", "显示案卷", "显示文件"],
   };
   public sideBarShow: boolean = false;
-  private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<Id> = [];
   private searchText: string = "请输入题名搜索";
