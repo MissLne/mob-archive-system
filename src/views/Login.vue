@@ -35,11 +35,19 @@
         >
         <router-link to="/collect-files" class="link">校史征集>></router-link>
       </div>
-      <img
+      <svg 
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
         class="login-btn"
-        :src="complete ? require('@/assets/login/log-in-bright.png') : require('@/assets/login/log-in-gray.png')"
+        viewBox="0 0 122 122"
+        :style="{ 'background-image': complete ?
+          'linear-gradient(rgba(173, 198, 249, 0.7), rgba(131, 161, 226, 0.7))' :
+          'linear-gradient(rgba(213, 226, 252, 0.7), rgba(185, 202, 239, 0.7))'
+        }"
         @click="onClick"
-      />
+      >
+        <path fill-rule="evenodd" fill="#fff" d="M84.528,60.889 C84.308,61.424 83.785,61.773 83.207,61.773 L37.430,61.773 C36.640,61.773 35.999,61.131 35.999,60.341 C35.999,59.550 36.640,58.909 37.430,58.909 L79.753,58.909 L59.307,38.444 C58.748,37.885 58.748,36.979 59.307,36.419 C59.866,35.860 60.771,35.860 61.330,36.419 L84.218,59.329 C84.627,59.738 84.750,60.354 84.528,60.889 ZM73.611,67.920 C74.170,67.360 75.075,67.360 75.634,67.920 C76.193,68.479 76.193,69.385 75.634,69.945 L61.330,84.263 C61.050,84.543 60.684,84.683 60.318,84.683 C59.952,84.683 59.586,84.543 59.307,84.263 C58.748,83.704 58.748,82.797 59.307,82.238 L73.611,67.920 Z"/>
+      </svg>
     </div>
   </div>
 </template>
@@ -236,6 +244,7 @@ export default class Login extends Vue {
       .login-btn {
         width: 122px;
         height: 122px;
+        border-radius: 50%;
       }
     }
   }
