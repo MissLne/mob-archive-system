@@ -1,19 +1,17 @@
 <template>
   <div id="des-btn">
-    <div class="pageBtns">
-      <div @click="prePageData(pageCur)" class="pagebtn">上一页</div>
-      <div class="container">
-        <p
-          v-for="item in arr"
-          :key="item"
-          :style="{ color: pageCur == item ? '#85b8fd' : '#999' }"
-          @click="changePageData(item)"
-        >
-          {{ item }}
-        </p>
-      </div>
-      <div @click="nextPageData(pageCur)" class="pagebtn">下一页</div>
+    <div @click="prePageData(pageCur)" class="pagebtn">上一页</div>
+    <div class="container">
+      <p
+        v-for="item in arr"
+        :key="item"
+        :style="{ color: pageCur == item ? '#85b8fd' : '#999' }"
+        @click="changePageData(item)"
+      >
+        {{ item }}
+      </p>
     </div>
+    <div @click="nextPageData(pageCur)" class="pagebtn">下一页</div>
   </div>
 </template>
 <script lang="ts">
@@ -118,34 +116,24 @@ export default class DesBtn extends Vue {
 </script>
 <style lang="scss">
 #des-btn {
-  margin: 50px 0 30px 0;
   display: flex;
   justify-content: center;
-  align-items: center;
-  .pageBtns {
-    .pagebtn {
-      height: 38px;
-      box-sizing: border-box;
-      padding: 8px;
-      border-radius: 8px;
-      background: #85b8fd;
-      color: #fff;
-      font-size: 16px !important;
-      box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
-    }
+  margin: 50px 0 30px 0;
+  font-size: 18px;
+  .pagebtn {
+    box-sizing: border-box;
+    padding: 10px 8px;
+    background: #85b8fd;
+    color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
+  }
+  .container {
     display: flex;
-    justify-content: center;
-    align-content: center;
-    .container {
-      font-size: 15px;
-      line-height: 38px;
-      height: 38px;
-      display: flex;
-      justify-content: space-between;
-      align-content: center;
-      p {
-        margin: 0 18px;
-      }
+    justify-content: space-between;
+    align-items: center;
+    p {
+      margin: 0 18px;
     }
   }
 }

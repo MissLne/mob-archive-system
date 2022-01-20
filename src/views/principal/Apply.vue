@@ -37,12 +37,10 @@
       </div>
     </transition> -->
 
-    <DesBtn
-      @changePage="changePage($event)"
-      :totalPage="pageData"
+    <PageBtn
+      :pageTotal="pageTotal"
       :pageCur="pageCur"
-      :pageTo="pageTo"
-      v-if="pageTo"
+      @changePage="changePage"
     />
     <Alerts
       :title="'确认删除'"
@@ -73,7 +71,7 @@ import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import DesBtn from "@/components/des-com/index/des-btn.vue";
+import PageBtn from "@/components/public-com/PageBtn.vue";
 import SideBar from "@/components/public-com/SideBar.vue";
 import store from "@/store";
 
@@ -83,7 +81,7 @@ import store from "@/store";
     DesHead,
     DesSearch,
     Alerts,
-    DesBtn,
+    PageBtn,
     SideBar,
     editApply
   },
@@ -107,7 +105,7 @@ export default class Apply extends Vue {
     time: "",
   };
   public pageCur: number = 1
-  public pageTo: number = 0
+  public pageTotal: number = 0
   private isFlag: boolean = false
   // @Watch("$route")
   // watchSlotRoute(to: any, from: any) {
@@ -187,8 +185,8 @@ export default class Apply extends Vue {
         //   this.$set(this.itemData, index, item);
         // });
         this.$set(this.pageData,'total',Math.ceil(res.data.data.total / 10))
-        this.pageTo = Math.ceil(res.data.data.total / 10)
-        console.log(this.pageTo,'total');
+        this.pageTotal = Math.ceil(res.data.data.total / 10)
+        console.log(this.pageTotal,'total');
         this.checkList = new Array(this.itemData.length).fill(false);
         this.idList = [];
         for (let i = 0; i < this.itemData.length; i++) {
@@ -196,31 +194,15 @@ export default class Apply extends Vue {
         }
       });
   }
-  changePage(event: any): void {
-    if (event && this.pageCur) {
-      if (event.type === "prePage" && this.pageCur > 1) {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.pageCur--;
-        this.getList();
-      } else if (
-        event.type === "nextPage" &&
-        this.pageCur < this.pageData.total
-      ) {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.pageCur++;
-        this.getList();
-      } else {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.pageCur = event.page;
-        this.getList();
-      }
-    }
+  changePage(page: number | null) {
+    if (page === null)
+      return;
+    // if (event && this.getListData.current)
+    this.$nextTick(() => {
+      window.scrollTo(0, 0);
+    });
+    this.pageCur = page;
+    this.getList();
   }
   toAddPage(addOrdel: boolean) {
     if(addOrdel) {

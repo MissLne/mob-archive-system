@@ -37,13 +37,10 @@
           </div>
         </div>
       </div>
-      <DesBtn
-        @changePage="changePage($event)"
-        :totalPage="pageData"
-        v-if="pageTo"
+      <PageBtn
+        :pageTotal="pageTotal"
         :pageCur="pageCur"
-        :pageTo="pageTo"
-        ref="desBtnvue"
+        @changePage="changePage"
       />
       <div class="roadUp" ref="roadUp"></div>
     </div>
@@ -52,7 +49,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import DesItem from "@/components/des-com/index/des-item.vue";
-import DesBtn from "@/components/des-com/index/des-btn.vue";
+import PageBtn from "@/components/public-com/PageBtn.vue";
 import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import { getArchiveList } from "@/services/archive";
@@ -79,13 +76,13 @@ type CheckItem = {
   name: "DesList",
   components: {
     DesItem,
-    DesBtn,
+    PageBtn,
     Alerts,
   },
 })
 export default class DesList extends Vue {
   public pageCur: number = 1;
-  public pageTo: number = 0;
+  public pageTotal: number = 0;
   private seletList: any[] = [
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
@@ -180,7 +177,7 @@ export default class DesList extends Vue {
       this.idList.push(result[i].id);
     }
     this.count = data.data.total;
-    this.pageTo = Math.ceil(this.count / 10);
+    this.pageTotal = Math.ceil(this.count / 10);
     console.log(result, "+_+++");
 
     this.desItem = result;
@@ -194,32 +191,16 @@ export default class DesList extends Vue {
     //   this.$set(this.renderItem, i, arr[i]);
     // }
   }
-  changePage(event: any): void {
-    (this.$refs.listContainer as any).scrollTop = 0;
-    if (event && this.getListData.current) {
-      if (event.type === "prePage" && this.getListData.current > 1) {
-        this.getListData.current--;
-        this.pageCur--;
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.getList();
-      } else if (event.type === "nextPage" && this.pageCur < this.pageTo) {
-        this.getListData.current++;
-        this.pageCur++;
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.getList();
-      } else {
-        this.$nextTick(() => {
-          window.scrollTo(0, 0);
-        });
-        this.getListData.current = event.page;
-        this.pageCur = event.page;
-        this.getList();
-      }
-    }
+  changePage(page: number | null) {
+    if (page === null)
+      return;
+    // if (event && this.getListData.current)
+    this.$nextTick(() => {
+      window.scrollTo(0, 0);
+    });
+    this.pageCur = page;
+    this.getListData.current = page;
+    this.getList();
   }
   deleteItem() {
     let deleteId: Array<number> = [];

@@ -72,7 +72,6 @@ export default class TempArchUpload extends Vue {
     const list = this.listData;
     let p1 = list.length, p2 = data.length;
     while (p1 || p2) {
-      console.log(p1, p2)
       // 1.如果list已经没了，data还有，就直接加到前面
       if (p1 === 0) {
         list.splice(0, 0, ...data.slice(0, p2));
@@ -88,7 +87,6 @@ export default class TempArchUpload extends Vue {
         // 如果两个fileId不等（说明被删了一部分），减list的指针，并把这个项移除
         // 合理是因为顺序肯定是一样的
         while (p1 && list[p1 - 1].fileId !== data[p2 - 1].fileId) {
-          console.log(p1, p2, 'in while2')
           list.splice(--p1, 1)
         }
         --p1, --p2;

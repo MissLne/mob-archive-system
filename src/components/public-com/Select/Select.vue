@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Model, Prop, Vue } from 'vue-property-decorator'
+import { Component, Model, Prop, Vue } from 'vue-property-decorator'
 import SelectInner from './SelectInner.vue';
 
 @Component({
@@ -64,11 +64,12 @@ export default class Select extends Vue {
     }
   }
   // 在冒泡的event里面加了个id...
-  @Emit('catchBubble')
   catchBubble({target, id}: {target: HTMLDivElement, id: number}) {
-    console.log(id)
-    this.isSpread = false;
-    return { name: target.innerText, id }
+    if (target.innerText) {
+      this.isSpread = false;
+      this.$emit('catchBubble', { name: target.innerText, id })
+    }
+    
   }
 }
 </script>
