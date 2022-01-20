@@ -112,15 +112,15 @@ export default class Me extends Vue {
     status: 2,
     topic: [],
   };
-  beforeRouteEnter(to: any, from: any, next: any) {
-    if (!store.state.isDetailPage) {
-      next((vm: any) => {
-        vm.doSth(vm);
-      });
-    } else {
-      next();
-    }
-  }
+  // beforeRouteEnter(to: any, from: any, next: any) {
+  //   if (!store.state.isDetailPage) {
+  //     next((vm: any) => {
+  //       vm.doSth(vm);
+  //     });
+  //   } else {
+  //     next();
+  //   }
+  // }
   doSth(vm: any) {
     vm.searchText = "请输入题名搜索";
     vm.getListData.type = 0;
