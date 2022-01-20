@@ -12,7 +12,7 @@
       v-else
       :src="picSrc"
       class="img"
-      @click="preview()"
+      @click="preview"
     />
     
     <VideoPrivew
@@ -68,7 +68,7 @@ export default class PreviewBox extends Vue {
       }
       else {
         // 先亮出来，免得用户觉得没反应
-        ImagePreview([])
+        ImagePreview([this.picSrc])
         this.clearPicSrc = await getSrcCertainly(this.fileType, this.fileToken) as string
         ImagePreview([this.clearPicSrc]);
       }

@@ -1,7 +1,10 @@
 <template>
   <div class="arch-item" @click="onClick">
-    <!-- <img :src="itemData.picSrc" alt="" class="pic"> -->
-    <van-image :src="itemData.picSrc" fit="cover" class="pic"/>
+    <IconWrapper v-if="isVideo">
+      <van-image :src="itemData.picSrc" fit="cover" class="pic"/>
+    </IconWrapper>
+    <van-image v-else :src="itemData.picSrc" fit="cover" class="pic"/>
+
     <h3 class="title">{{itemData.fileName}}</h3>
   </div>
 </template>
@@ -9,14 +12,25 @@
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import { downloadPicture, estimateFileType } from '@/utils/picture'
+import IconWrapper from "@/components/public-com/IconWrapper.vue"
+import { isVideo } from "@/utils/picture"
 
-@Component
-export default class ArchItem extends Vue {
+@Component({
+  components: {
+    IconWrapper
+  }
+})
+export default class ListItem extends Vue {
   @Prop() itemData!: ArchItemData;
 
   @Emit('onClick')
   onClick() {
   }
+
+  get isVideo() {
+    return isVideo(this.itemData.fileType)
+  }
+
   created() {
     const setPicture = async () => {
       const { thumbnailFileToken, fileType } = this.itemData
