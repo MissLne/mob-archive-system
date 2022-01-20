@@ -14,19 +14,19 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/views/Home.vue'),
     children: [
       {
-        meta: { keepAlive: true },
+        meta: { keepAlive: true, index: 0},
         path: 'description',
         name: 'description',
         component: () => import('@/views/principal/Description.vue')
       },
       {
-        meta: { keepAlive: true },
+        meta: { keepAlive: true, index: 1 },
         path: 'apply',
         name: 'apply',
         component: () => import('@/views/principal/Apply.vue')
       },
       {
-        meta: { keepAlive: true },
+        meta: { keepAlive: true, index: 2 },
         path: 'me',
         name: 'me',
         component: () => import('@/views/principal/Me.vue')

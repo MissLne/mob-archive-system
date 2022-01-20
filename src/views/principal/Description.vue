@@ -147,21 +147,21 @@ export default class Description extends Vue {
       this.$router.push({ name: 'tempArchUpload' })
     }
   }
-  beforeRouteEnter(to: any, from: any, next: any) {
-    if (!store.state.isDetailPage) {
-      next((vm: any) => {
-        vm.doSth(vm);
-      });
-    } else {
-      next();
-    }
-  }
+  // beforeRouteEnter(to: any, from: any, next: any) {
+  //   if (!store.state.isDetailPage) {
+  //     next((vm: any) => {
+  //       vm.doSth(vm);
+  //     });
+  //   } else {
+  //     next();
+  //   }
+  // }
   doSth(vm: any) {
     vm.searchText = "请输入题名搜索";
     vm.getListData.type = 0;
     vm.getListData.current = 1;
 
-    vm.getList();
+    // vm.getList();
   }
   selectHandle(event: any) {
     this.getListData.type = event.index == 0 ? 2 : event.index - 1;

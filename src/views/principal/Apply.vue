@@ -122,15 +122,15 @@ export default class Apply extends Vue {
   // activated() {
   //   console.log((this as any).$route.meta.isBack);
   // }
-  beforeRouteEnter(to: any, from: any, next: any) {
-    if (!store.state.isDetailPage) {
-      next((vm: any) => {
-        vm.doSth(vm)
-      });
-    } else {
-      next();
-    }
-  }
+  // beforeRouteEnter(to: any, from: any, next: any) {
+  //   if (!store.state.isDetailPage) {
+  //     next((vm: any) => {
+  //       vm.doSth(vm)
+  //     });
+  //   } else {
+  //     next();
+  //   }
+  // }
   doSth(vm: any) {
     vm.searchText = "";
     vm.pageData.time = vm.searchText;
