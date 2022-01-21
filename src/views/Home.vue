@@ -1,17 +1,15 @@
 <template>
   <div class="home">
-    <!-- <transition :name="transitionName"> -->
-      <keep-alive>
-        <router-view v-if="$route.meta.keepAlive"></router-view>
-      </keep-alive>
-      <router-view v-if="!$route.meta.keepAlive"></router-view>
-    <!-- </transition> -->
+    <keep-alive>
+      <router-view v-if="$route.meta.keepAlive"></router-view>
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive"></router-view>
     <Tabbar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import Tabbar from "@/components/tools/tabbar.vue";
 
 @Component({
@@ -20,8 +18,6 @@ import Tabbar from "@/components/tools/tabbar.vue";
   },
 })
 export default class Home extends Vue {
-  private transitionName: string = ""
-  
 }
 </script>
 <style lang="scss">

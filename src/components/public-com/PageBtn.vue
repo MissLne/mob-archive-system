@@ -9,7 +9,7 @@
     >上一页</div>
     <ul class="list">
       <li
-        v-for="item in arr"
+        v-for="item in indexArr"
         :key="item"
         :style="{ color: pageCur == item ? '#85b8fd' : '#999' }"
         class="item"
@@ -25,28 +25,17 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, Emit, Watch } from "vue-property-decorator";
+import { Component, Vue, Prop, Emit } from "vue-property-decorator";
 
 @Component
 export default class PageBtn extends Vue {
-  // 索引数组
-  private arr: number[] = [];
   // 总页数
   @Prop() pageTotal!: number;
   // 当前页数
   @Prop() pageCur!: number;
-
-  @Watch('pageTotal', { immediate: true })
-  pageTotalChange() {
-    this.changePage(this.pageCur)
-  }
-
-  @Emit('changePage')
-  changePage(page: number) {
-    // 如果跳转的页数不对劲，直接run了
-    if (page < 1 || page > this.pageTotal)
-      return null;
-
+  // 索引数组
+  get indexArr() {
+    const page = this.pageCur
     // 起始索引
     let startIndex = page - 2 < 1 ? 1 : page - 2;
     // 末尾索引
@@ -66,8 +55,15 @@ export default class PageBtn extends Vue {
     const newArr = [];
     for (let i = startIndex; i <= endIndex; ++i)
       newArr.push(i)
-    this.arr = newArr;
-    return page;
+    return newArr;
+  }
+
+  @Emit('changePage')
+  changePage(page: number) {
+    if (page < 1 || page > this.pageTotal)
+      return null;
+    else
+      return page;
   }
 }
 </script>
