@@ -191,9 +191,7 @@ export default class DesList extends Vue {
     //   this.$set(this.renderItem, i, arr[i]);
     // }
   }
-  changePage(page: number | null) {
-    if (page === null)
-      return;
+  changePage(page: number) {
     // if (event && this.getListData.current)
     this.$nextTick(() => {
       window.scrollTo(0, 0);

@@ -194,9 +194,7 @@ export default class Apply extends Vue {
         }
       });
   }
-  changePage(page: number | null) {
-    if (page === null)
-      return;
+  changePage(page: number) {
     // if (event && this.getListData.current)
     this.$nextTick(() => {
       window.scrollTo(0, 0);

@@ -80,9 +80,8 @@ export default class RecycleBin extends Vue {
 // 翻页相关
   private pageTotal: number = 0;
   private pageCur: number = 1;
-  changePage(page: number | null) {
-    if (page)
-      this.getPageData(page)
+  changePage(page: number) {
+    this.getPageData(page)
   }
 
 

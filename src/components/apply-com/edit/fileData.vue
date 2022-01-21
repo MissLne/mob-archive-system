@@ -60,9 +60,7 @@ export default class FileData extends Vue {
   // 页数控制相关
   public pageCur: number = 1
   public pageTotal: number = 0
-  changePage(page: number | null) {
-    if (page === null)
-      return;
+  changePage(page: number) {
     // if (event && this.getListData.current)
     this.$nextTick(() => {
       window.scrollTo(0, 0);

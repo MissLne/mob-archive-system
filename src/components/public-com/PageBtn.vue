@@ -5,22 +5,22 @@
   >
     <div
       class="btn"
-      @click="changePage(pageCur - 1)"
+      @click="pageCur > 1 && changePage(pageCur - 1)"
     >上一页</div>
     <ul class="list">
       <li
         v-for="item in indexArr"
         :key="item"
-        :style="{ color: pageCur == item ? '#85b8fd' : '#999' }"
+        :style="{ color: pageCur === item ? '#85b8fd' : '#999' }"
         class="item"
-        @click="changePage(item)"
+        @click="pageCur !== item && changePage(item)"
       >
         {{ item }}
       </li>
     </ul>
     <div
       class="btn"
-      @click="changePage(pageCur + 1)"
+      @click="pageCur < pageTotal && changePage(pageCur + 1)"
     >下一页</div>
   </div>
 </template>
@@ -60,10 +60,7 @@ export default class PageBtn extends Vue {
 
   @Emit('changePage')
   changePage(page: number) {
-    if (page < 1 || page > this.pageTotal)
-      return null;
-    else
-      return page;
+    return page;
   }
 }
 </script>

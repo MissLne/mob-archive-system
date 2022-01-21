@@ -243,9 +243,7 @@ export default class Description extends Vue {
     })
     this.desItem = result;
   }
-  changePage(page: number | null) {
-    if (page === null)
-      return;
+  changePage(page: number) {
     // if (event && this.getListData.current)
     this.$nextTick(() => {
       window.scrollTo(0, 0);

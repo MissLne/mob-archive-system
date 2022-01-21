@@ -24,7 +24,7 @@
     <PageBtn
       :pageTotal="pageTotal"
       :pageCur="pageCur"
-      @changePage="changePage($event)"
+      @changePage="changePage"
     />
     <div class="slots2"></div>
   </div>
@@ -171,9 +171,7 @@ export default class Me extends Vue {
         this.desItem = result;
       });
   }
-  changePage(page: number | null) {
-    if (page === null)
-      return;
+  changePage(page: number) {
     // if (event && this.getListData.current)
     this.$nextTick(() => {
       window.scrollTo(0, 0);
