@@ -172,7 +172,7 @@ export default class ArchDetail extends Vue {
   // header的数据和点击事件
   private headClick({clickType}: any) {
     if (clickType === 'left') {
-      this.$store.commit("setDetailPage")
+      // this.$store.commit("setDetailPage")
       if (this.isEditing)
         this.isEditing = false;
       else

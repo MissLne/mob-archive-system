@@ -72,7 +72,6 @@ import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue";
 import { getSrcCertainly } from "@/utils/picture";
-import store from "@/store";
 import { getPartDossierList } from "@/services/dossier";
 
 interface dataType {

@@ -106,7 +106,7 @@ export default class AddApply extends Vue {
     if (event.clickType === "left") {
       if(this.$route.query.type && this.$route.query.type == "add") {
         this.$router.go(-1)
-        this.$store.commit("setDetailPage")
+        // this.$store.commit("setDetailPage")
         return
       }
       this.$router.push({

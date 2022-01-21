@@ -194,7 +194,7 @@ export default class editApply extends Vue {
   handleClick(event: any) {
     let obj = {};
     if (event.clickType === "left") {
-      store.commit("setDetailPage");
+      // store.commit("setDetailPage");
       this.$router.push({ name: "apply" });
     }
   }

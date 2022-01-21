@@ -142,7 +142,7 @@ export default class DesList extends Vue {
       else
         this.isChecking = true
     } else {
-      this.$store.commit("setDetailPage");
+      // this.$store.commit("setDetailPage");
       // 如果当前是选择状态，而且在列表页，退出选择
       if(this.isChecking && event.index === 0)
         this.isChecking = false;

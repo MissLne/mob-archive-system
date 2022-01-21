@@ -12,7 +12,7 @@ export default new Vuex.Store({
     _permissionList: [] as Array<string>,
     includeList: [] as Array<string>,
     faceData: [] as Array<FaceData>,
-    isDetailPage: 0,
+    // isDetailPage: 0,
     applyIdList: [],
     applyIdIndex: 0
   },
@@ -38,12 +38,12 @@ export default new Vuex.Store({
     setFaceData: (state, array) => {
       state.faceData = array
     },
-    setDetailPage(state) {
+    /* setDetailPage(state) {
       state.isDetailPage = 1
       setTimeout(() => {
         state.isDetailPage = 0
       },1000)
-    }
+    } */
   },
   actions: {
   },

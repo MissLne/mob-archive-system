@@ -38,7 +38,6 @@ import DesItem from "@/components/des-com/index/des-item.vue";
 import PageBtn from "@/components/public-com/PageBtn.vue";
 import SideBar from "@/components/public-com/SideBar.vue";
 import { getSrcCertainly } from "@/utils/picture";
-import store from "@/store";
 
 interface dataType {
   size: number | undefined;

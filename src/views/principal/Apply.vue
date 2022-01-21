@@ -73,7 +73,6 @@ import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import PageBtn from "@/components/public-com/PageBtn.vue";
 import SideBar from "@/components/public-com/SideBar.vue";
-import store from "@/store";
 
 @Component({
   components: {
