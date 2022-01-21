@@ -14,12 +14,31 @@
       class="img"
       @click="preview"
     />
+
+    <van-image-preview
+      v-if="isImage"
+      v-model="isShow"
+      :images="images"
+      class="image-preview"
+    >
+      <template #cover>
+        <div
+          v-show="fileToken && !clearPicSrc"
+          class="bottom-bar"
+        >
+          <div
+            class="btn"
+            @click="getClearPicSrc"
+          >{{percentage === null ? '查看原图' : percentage}}</div>
+        </div>
+      </template>
+    </van-image-preview>
     
     <VideoPrivew
       v-if="isVideo"
+      v-model="isShow"
       :fileToken="fileToken"
       :fileType="fileType"
-      v-model="videoShow"
     />
   </div>
 </template>
@@ -35,6 +54,7 @@ import IconWrapper from '../IconWrapper.vue'
   components: {
     VideoPrivew,
     IconWrapper,
+    VanImagePreview: ImagePreview.Component
   }
 })
 export default class PreviewBox extends Vue {
@@ -42,37 +62,48 @@ export default class PreviewBox extends Vue {
   @Prop() fileToken!: string;
   @Prop() fileType!: string;
   
-  private clearPicSrc: string = ''; // 清晰图
-  private videoShow: boolean = false;
+  // 清晰图
+  private clearPicSrc: string | null = null;
+  // 加载清晰图的百分比
+  private percentage: string | null = null;
+  // 是否展示预览层
+  private v_isShow: boolean = false;
+  get isShow() {
+    return this.v_isShow
+  }
+  set isShow(newValue: boolean) {
+    this.v_isShow = newValue
+    // 如果要变成true了，说明即将展示预览层，调小头部的z-index
+    if (newValue) this.$store.dispatch('head/setZIndexAsync', 0)
+    // 如果要变成false，说明即将关闭预览层，还原头部的z-index
+    else this.$store.dispatch('head/setZIndexAsync')
+  }
   get isImage() {
     return isImage(this.fileType)
   }
   get isVideo() {
     return isVideo(this.fileType)
   }
+  get images() {
+    return [this.clearPicSrc ?? this.picSrc]
+  }
   
   // 摧毁之前，释放一下对象url的内存
   beforeDestroy() {
-    URL.revokeObjectURL(this.clearPicSrc)
+    if (this.clearPicSrc)
+      URL.revokeObjectURL(this.clearPicSrc)
   }
-  async preview() {
+  preview() {
     if (!this.isImage && !this.isVideo) return;
-    this.videoShow = true;
-
-    if (this.isImage) {
-      if (!this.fileToken) {
-        ImagePreview([this.picSrc])
-      }
-      else if (this.clearPicSrc) {
-        ImagePreview([this.clearPicSrc]);
-      }
-      else {
-        // 先亮出来，免得用户觉得没反应
-        ImagePreview([this.picSrc])
-        this.clearPicSrc = await getSrcCertainly(this.fileType, this.fileToken) as string
-        ImagePreview([this.clearPicSrc]);
-      }
-    }
+    this.isShow = true;
+  }
+  async getClearPicSrc() {
+    this.clearPicSrc = await getSrcCertainly(
+      this.fileType,
+      this.fileToken,
+      false, 
+      e => this.percentage = `${Math.floor(e.loaded / e.total * 100)}%`,
+    ) as string
   }
 }
 </script>
@@ -92,6 +123,20 @@ export default class PreviewBox extends Vue {
       width: 186px;
       height: $height;
     }
-    
+    .image-preview {
+      .bottom-bar {
+        position: absolute;
+        top: 94vh;
+        width: 100vw;
+        text-align: center;
+        .btn {
+          display: inline-block;
+          padding: 10px;
+          border: 2px solid #fff;
+          color: #fff;
+          cursor: pointer;
+        }
+      }
+    }
   }
 </style>

@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 // module
-import metaData from './modules/meta-data'
-import selectData from './modules/select-data'
+import metaData from './modules/metaData'
+import selectData from './modules/selectData'
+import head from './modules/head'
 
 Vue.use(Vuex)
 
@@ -49,5 +50,6 @@ export default new Vuex.Store({
   modules: {
     metaData,
     selectData,
+    head,
   }
 })

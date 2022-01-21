@@ -1,5 +1,5 @@
 <template>
-  <div id="des-head">
+  <div id="des-head" :style="{ zIndex: $store.state.head.zIndex }">
     <div class="des">
       <div class="sideBar" @click="leftClick">
         <slot name="left" :pics="pics">
@@ -58,7 +58,6 @@ export default class DesHead extends Vue {
 </script>
 <style lang="scss">
 #des-head {
-  z-index: 99;
   width: 100vw;
   height: 124px;
   position: fixed;

@@ -26,7 +26,17 @@ import Input from './Input.vue'
 export default class InputDate extends Vue {
   @Prop({default: false}) disabled!: boolean;
   @Model('onConfirm', {type: String}) inputData!: string;
-  private show: boolean = false;
+  private v_show: boolean = false;
+  get show() {
+    return this.v_show
+  }
+  set show(newValue: boolean) {
+    this.v_show = newValue
+    // 如果要变成true了，说明即将展示遮罩层，调小头部的z-index
+    if (newValue) this.$store.dispatch('head/setZIndexAsync', 0)
+    // 如果要变成false，说明即将关闭遮罩层，还原头部的z-index
+    else this.$store.dispatch('head/setZIndexAsync')
+  }
   private minDate: Date = new Date('1958/01/01');
   private maxDate: Date = new Date();
   @Emit('onConfirm')

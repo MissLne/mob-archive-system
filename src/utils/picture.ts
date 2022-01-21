@@ -57,8 +57,8 @@ export const isVideo = (contentType: string) => {
  * @param fileToken 文件token
  * @return 图片的base64编码
  */
-export const downloadPicture = async (fileToken: string) => {
-  const { data } = await download(fileToken, { responseType: 'blob' });
+export const downloadPicture = async (fileToken: string, onProgress?: (e: ProgressEvent) => void) => {
+  const { data } = await download(fileToken, { responseType: 'blob', onDownloadProgress: onProgress });
   return toObjectURL(data);
 }
 
@@ -68,9 +68,9 @@ export const downloadPicture = async (fileToken: string) => {
  * @param fileToken 文件token，可为空
  * @returns src可以使用的值
  */
-export const getSrcCertainly = async (fileType: string, fileToken?: string, canVideo?: boolean) => {
+export const getSrcCertainly = async (fileType: string, fileToken?: string, canVideo?: boolean, onProgress?: (e: ProgressEvent) => void) => {
   if (fileToken && (isImage(fileType) || (canVideo && isVideo(fileType))) )
-    return await downloadPicture(fileToken)
+    return await downloadPicture(fileToken, onProgress)
   else
     return estimateFileType(fileType)
 }
