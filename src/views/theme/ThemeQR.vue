@@ -4,9 +4,7 @@
     <div class="slots"></div>
     <ThemeSummary :theme="theme"/>
     <div class="img-box">
-      <div
-      v-if="src === ''"
-      >
+      <div v-if="src === ''">
         该主题暂时无二维码
         <button @click="createQR">创建</button>
       </div>
@@ -42,10 +40,10 @@ export default class ThemeQR extends Vue {
   }
 
   async getQR() {
+    // 这个data是一个blob对象
     const { data } = await getQRCoder({ themeId: this.theme.themeId })
-    if (data.type === 'application/json')
-      console.log('123')
-    else
+    // json是无二维码的信息，否则是二维码图片的blob对象
+    if (data.type !== 'application/json')
       this.src = toObjectURL(data)
   }
 

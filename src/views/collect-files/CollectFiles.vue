@@ -39,11 +39,30 @@ export default class CollectFiles extends Vue {
     this.initSelectData();
     this.$store.dispatch('selectData/setThemeListAsync', { needNull: true })
   }
-  private theme: any = {};
+
+  private v_theme: Partial<Theme> = { themeId: 0, topic: '暂不选择主题' };
+  get theme() {
+    const list: Theme[] = this.$store.state.selectData.themeList
+    const themeId = parseInt((this.$route.query as any).themeId)
+    if (list.length && themeId) {
+      // 把查询参数删掉
+      this.$router.replace(this.$route.path)
+      this.v_theme = list[themeId]
+    }
+    return this.v_theme;
+  }
+  set theme(newValue: Partial<Theme>) {
+    this.v_theme = newValue;
+  }
+
   passTheme(theme: Theme) {
     this.theme = theme
-    if (this.$route.name !== 'collectFilesUpload')
-      this.$router.push({ name: 'collectFilesUpload', params: { themeId: theme.themeId.toString() } })
+    // 如果是主题列表页
+    if (this.$route.name === 'collectFilesTheme')
+      this.$router.go(-1)
+    // 如果是其它页面
+    else
+      this.$router.push({ name: 'collectFilesUpload' })
   }
   private detailDataList: Array<any> = [];
   passDetailData(data: UploadFileData[]) {

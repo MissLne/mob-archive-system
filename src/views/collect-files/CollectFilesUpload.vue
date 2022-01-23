@@ -1,13 +1,14 @@
 <template>
   <div id="collect-files-upload">
     <des-head @handleClick="headClick">
-      {{theme.topic}}
+      {{theme.themeId ? theme.topic : '上传'}}
       <template #right>{{isChecking ? '全选' : '选择'}}</template>
     </des-head>
     <div class="slots"></div><!-- 占header的位置 -->
     <ThemeSummary
-      v-if="themeList.length && Object.keys(theme).length"
+      v-show="themeList.length && Object.keys(theme).length"
       :theme="theme"
+      :showBtn="true"
     />
     <ArchList
       ref="ArchList"

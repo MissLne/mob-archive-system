@@ -1,1 +1,1 @@
-export const QRURL = `${location.protocol}//${location.host}/#/collect-files/upload/`
+export const QRURL = `${location.protocol}//${location.host}/#/collect-files?themeId=`

@@ -3,10 +3,10 @@
     <li
       v-for="theme in themeList"
       :key="theme.themeId"
+      class="theme-item"
       @click="chooseTheme(theme)"
-      class="theme-box"
     >
-      <span>{{theme.topic}}</span>
+      <div class="title">{{theme.topic}}</div>
       <img :src="require('@/assets/index/nextpage.png')">
     </li>
   </ul>
@@ -34,13 +34,20 @@ export default class ThemeList extends Vue {
 
 <style lang="scss">
 .theme-list {
-  .theme-box {
+  .theme-item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     background-color: #fff;
     border-bottom: 3px solid #eee;
     padding: 30px 75px 30px 55px;
     margin-bottom: 2px;
+    .title {
+      max-width: 80%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
 }
 </style>

@@ -53,12 +53,12 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/views/collect-files/CollectFiles.vue'),
     children: [
       {
-        path: '/',
+        path: 'theme',
         name: 'collectFilesTheme',
         component: () => import('@/views/collect-files/CollectFilesTheme.vue'),
       },
       {
-        path: 'upload/:themeId',
+        path: '',
         name: 'collectFilesUpload',
         component: () => import('@/views/collect-files/CollectFilesUpload.vue'),
       },
