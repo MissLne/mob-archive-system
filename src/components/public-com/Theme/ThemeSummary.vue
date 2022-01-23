@@ -37,11 +37,14 @@ export default class ThemeSummary extends Vue {
   overflow-wrap: break-word;
   border: 4px solid #8ebefe;
   margin-bottom: 20px;
+  background-color: #8ebefe;
   line-height: 40px;
   border-radius: 20px;
   .main {
     padding: 20px;
+    background-color: #ebf2fe;
     font-size: 24px;
+    border-radius: 20px;
     .topic {
       margin-bottom: 10px;
       font-size: 34px;
@@ -53,17 +56,13 @@ export default class ThemeSummary extends Vue {
     .department {
       color: #5ca2ff;
     }
-    & ~ .btn {
-      border-radius: 0 0 20px 20px;
-    }
   }
   .btn {
-    background-color: #8ebefe;
+    // background-color: #8ebefe;
     color: #fff;
     font-size: 26px;
     line-height: 56px;
     text-align: center;
-    border-radius: 20px;
   }
 }
 </style>

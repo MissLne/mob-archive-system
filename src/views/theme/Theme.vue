@@ -1,9 +1,11 @@
 <template>
   <div>
-    <router-view
-      @passTheme="passTheme"
-      :theme="theme"
-    ></router-view>
+    <keep-alive include="ThemeList">
+      <router-view
+        @passTheme="passTheme"
+        :theme="theme"
+      ></router-view>
+    </keep-alive>
   </div>
 </template>
 
