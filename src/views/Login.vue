@@ -192,18 +192,18 @@ export default class Login extends Vue {
       .pw-input {
         width: 379px;
         font-size: 24px;
-        /deep/ .holder-box,
-        /deep/ .wrong-box {
+        ::v-deep .holder-box,
+        ::v-deep .wrong-box {
           left: 55px;
         }
-        /deep/ input {
+        ::v-deep input {
           color: #999;
           text-indent: 55px;
         }
-        /deep/ input[class~="active"] {
+        ::v-deep input[class~="active"] {
           color: rgba(0, 79, 255, 0.5);
         }
-        /deep/ .holder-box {
+        ::v-deep .holder-box {
           color: #999;
         }
         &::after {

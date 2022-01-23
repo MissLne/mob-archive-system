@@ -281,7 +281,7 @@ export default class ArchForm extends Vue {
         position: absolute;
         top: 19px;
         right: 0;
-        & + .input-wrap /deep/ input{
+        & + .input-wrap ::v-deep input{
           padding-right: 45px;
         }
       }
