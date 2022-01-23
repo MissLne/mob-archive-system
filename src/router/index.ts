@@ -14,7 +14,7 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/views/Home.vue'),
     children: [
       {
-        meta: { keepAlive: true, index: 0},
+        meta: { keepAlive: true, index: 0 },
         path: 'description',
         name: 'description',
         component: () => import('@/views/principal/Description.vue')
@@ -79,12 +79,12 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/views/temp-arch/TempArch.vue'),
     children: [
       {
-        path: '/',
+        path: '',
         name: 'tempArchUpload',
         component: () => import('@/views/temp-arch/TempArchUpload.vue'),
       },
       {
-        path: 'detail/x',
+        path: 'detail',
         name: 'tempArchDetail',
         component: () => import('@/views/temp-arch/TempArchDetail'),
       },
@@ -101,36 +101,36 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/other/archDetail/MyDes.vue'),
       },
       {
-        path: 'detail/x',
+        path: 'detail',
         name: 'archDetail',
         component: () => import('@/views/other/archDetail/ArchDetail.vue'),
       },
     ]
   },
   {
-    path: '/face-recognition/x/x',
+    path: '/face-recognition',
     component: () => import('@/views/face-recognition/FaceRecognition.vue'),
     children: [
       {
-        path: '/',
+        path: '',
         name: 'faceList',
         component: () => import('@/views/face-recognition/FaceList.vue'),
       },
       {
-        path: 'detail/x',
+        path: 'detail',
         name: 'faceDetail',
         component: () => import('@/views/face-recognition/FaceDetail.vue'),
       }
     ]
   },
   {
-    path: '/meta-data/x/x/x',
+    path: '/meta-data',
     name: 'metaData',
     component: () => import('@/views/meta-data/MetaData.vue'),
     props: true,
   },
   {
-    path: '/recycle-bin/x',
+    path: '/recycle-bin',
     name: 'recycleBin',
     component: () => import('@/views/recycle-bin/RecycleBin.vue'),
   },
@@ -139,7 +139,7 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/views/theme/Theme.vue'),
     children: [
       {
-        path: '/',
+        path: '',
         name: 'themeList',
         component: () => import('@/views/theme/ThemeList.vue'),
       },
