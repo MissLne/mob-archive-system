@@ -23,6 +23,7 @@ export default class App extends Vue {
   #app {
     min-height: 100vh;
     background-image: linear-gradient(180deg, #ECF2FE, #E9F1FE);
+    overflow-wrap: break-word;
     .slots {
       height: 124px;
     }

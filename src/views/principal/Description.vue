@@ -1,11 +1,6 @@
 <template>
   <div id="description">
     <SideBar :sideBarShow="sideBarShow" />
-    <Alerts
-      :title="'确认删除'"
-      v-if="alertShow"
-      @sureDelete="sureDelete($event)"
-    />
     <des-head
       :popArr="popArr"
       @handleClick="handleClick($event)"
@@ -68,9 +63,9 @@ import DesSearch from "@/components/des-com/index/des-search.vue";
 import myTool from "@/components/des-com/index/myTool.vue";
 import DesItem from "@/components/des-com/index/des-item.vue";
 import PageBtn from "@/components/public-com/PageBtn.vue";
-import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import SideBar from "@/components/public-com/SideBar.vue";
+import { Dialog } from "vant"
 import { getSrcCertainly } from "@/utils/picture";
 import { getPartDossierList } from "@/services/dossier";
 
@@ -104,7 +99,6 @@ interface Item {
     myTool,
     DesItem,
     PageBtn,
-    Alerts,
     SideBar,
   },
 })
@@ -119,7 +113,6 @@ export default class Description extends Vue {
     list: ["显示全部", "显示案卷", "显示文件"],
   };
   public sideBarShow: boolean = false;
-  private alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<Id> = [];
   // 正在选择
@@ -141,7 +134,9 @@ export default class Description extends Vue {
   };
   toAddPage(addOrdel: boolean) {
     if(addOrdel) {
-      this.alertShow = true
+      Dialog.confirm({ title: '确认删除' })
+        .then(() => this.sureDelete())
+        .catch(() => {})
     } else {
       this.$router.push({ name: 'tempArchUpload' })
     }
@@ -269,46 +264,42 @@ export default class Description extends Vue {
     });
     return { desId, fileId };
   }
-  sureDelete(event: any) {
+  // 确认删除后的操作
+  sureDelete() {
     let { desId, fileId } = this.deleteItem();
 
-    if (event.type === "not") {
-      this.alertShow = false;
-    } else {
-      this.alertShow = false;
-      if (desId.length) {
-        this.$request
-          .post("/api/api/dossier/userDeleteDossier", { ids: [...desId] })
-          .then((res: any) => {
-            if (res.data.success === true) {
-              MsgBox.success("删除成功");
-              this.cancelSelect();
-              this.getList();
-              return;
-            }
-            throw new Error();
-          })
-          .catch((err: any) => {
+    if (desId.length) {
+      this.$request
+        .post("/api/api/dossier/userDeleteDossier", { ids: [...desId] })
+        .then((res: any) => {
+          if (res.data.success === true) {
+            MsgBox.success("删除成功");
             this.cancelSelect();
-            MsgBox.error("删除失败");
-          });
-      } else if (fileId.length) {
-        this.$request
-          .post("/api/api/archive/userDeleteArchive", { ids: fileId })
-          .then((res: any) => {
-            if (res.data.success === true) {
-              if (!desId.length) MsgBox.success("删除成功");
-              this.cancelSelect();
-              this.getList();
-              return;
-            }
-            throw new Error();
-          })
-          .catch((err: any) => {
+            this.getList();
+            return;
+          }
+          throw new Error();
+        })
+        .catch((err: any) => {
+          this.cancelSelect();
+          MsgBox.error("删除失败");
+        });
+    } else if (fileId.length) {
+      this.$request
+        .post("/api/api/archive/userDeleteArchive", { ids: fileId })
+        .then((res: any) => {
+          if (res.data.success === true) {
+            if (!desId.length) MsgBox.success("删除成功");
             this.cancelSelect();
-            MsgBox.error("删除失败");
-          });
-      }
+            this.getList();
+            return;
+          }
+          throw new Error();
+        })
+        .catch((err: any) => {
+          this.cancelSelect();
+          MsgBox.error("删除失败");
+        });
     }
   }
   created() {

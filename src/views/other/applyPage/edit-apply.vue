@@ -1,10 +1,5 @@
 <template>
   <div id="editApply">
-    <Alerts
-      :title="alertTitle"
-      v-if="alertShow"
-      @sureDelete="sureDelete($event)"
-    />
     <des-head @handleClick="handleClick($event)">详情</des-head>
     <div class="slots"></div>
     <!-- <Details
@@ -50,25 +45,21 @@ import SlideWrapper from "@/components/public-com/Slide/SlideWrapper.vue";
 import Details from "@/components/apply-com/edit/details.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import FileData from "@/components/apply-com/edit/fileData.vue";
-import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
-import store from "@/store";
 import { getSrcCertainly } from "@/utils/picture";
+import { Dialog } from 'vant'
 
 @Component({
   components: {
     Details,
     DesHead,
     FileData,
-    Alerts,
     SlideWrapper,
   },
 })
 export default class editApply extends Vue {
   public detailData: any = "";
-  private alertTitle: string = "";
   private showId: Array<number> = [];
-  private alertShow: boolean = false;
   private count: number = 1;
   public justCount: number = 0;
   public fileData: any[] = [];
@@ -134,62 +125,63 @@ export default class editApply extends Vue {
     this.$set(this.componentData, num, [details, detailFile]);
     // });
   }
-  sureDelete(event: any) {
-    if (event.type === "not") {
-      this.alertShow = false;
-    } else {
-      this.alertShow = false;
-      let todo = new Map([
-        [
-          "撤回",
-          () => {
-            (this as any).$request
-              .post(
-                "/api/api/use/recallUseApply",
-                // id: [`${this.$route.query.id}`]
-                [`${this.handleDetailId}`]
-              )
-              .then((res: any) => {
-                if (res.data.success === true) {
-                  this.$router.go(-1);
-                  MsgBox.success("撤回成功");
-                  return;
-                }
-                throw new Error();
-              })
-              .catch((err: any) => {
-                MsgBox.error("撤回失败");
-              });
-          },
-        ],
-        [
-          "删除",
-          () => {
-            (this as any).$request
-              .post("/api/api/use/deleteUseApply", [`${this.handleDetailId}`])
-              .then((res: any) => {
-                if (res.data.success === true) {
-                  this.$router.go(-1);
-                  MsgBox.success("删除成功");
-                  return;
-                }
-                throw new Error();
-              })
-              .catch((err: any) => {
-                MsgBox.error("删除失败");
-              });
-          },
-        ],
-      ]);
-      let action: any = todo.get(this.alertTitle.slice(2));
-      action.call(this);
-    }
+  /**
+   * 确认删除后的操作
+   * @param event 操作的名称
+   */
+  sureDelete(event: "撤回" | "删除") {
+    let todo = new Map([
+      [
+        "撤回",
+        () => {
+          (this as any).$request
+            .post(
+              "/api/api/use/recallUseApply",
+              // id: [`${this.$route.query.id}`]
+              [`${this.handleDetailId}`]
+            )
+            .then((res: any) => {
+              if (res.data.success === true) {
+                this.$router.go(-1);
+                MsgBox.success("撤回成功");
+                return;
+              }
+              throw new Error();
+            })
+            .catch((err: any) => {
+              MsgBox.error("撤回失败");
+            });
+        },
+      ],
+      [
+        "删除",
+        () => {
+          (this as any).$request
+            .post("/api/api/use/deleteUseApply", [`${this.handleDetailId}`])
+            .then((res: any) => {
+              if (res.data.success === true) {
+                this.$router.go(-1);
+                MsgBox.success("删除成功");
+                return;
+              }
+              throw new Error();
+            })
+            .catch((err: any) => {
+              MsgBox.error("删除失败");
+            });
+        },
+      ],
+    ]);
+    let action: any = todo.get(event);
+    action.call(this);
   }
   private handleDetailId: number = 0;
   btnClick(event: any) {
-    this.alertTitle = `确认${event.type}`;
     this.handleDetailId = event.id;
-    this.alertShow = true;
+    // 弹出Dialog，确认就触发sureDelte函数
+    Dialog.confirm({ title: `确认${event.type}` })
+      .then(() => this.sureDelete(event.type))
+      .catch(() => {})
   }
   handleClick(event: any) {
     let obj = {};

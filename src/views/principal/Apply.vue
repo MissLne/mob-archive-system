@@ -42,11 +42,6 @@
       :pageCur="pageCur"
       @changePage="changePage"
     />
-    <Alerts
-      :title="'确认删除'"
-      v-if="alertShow"
-      @sureDelete="sureDelete($event)"
-    />
     <img
       v-show="!sideBarShow"
       :src="isChecking? btnUrl[1] : btnUrl[0]"
@@ -69,17 +64,16 @@ import editApply from "@/views/other/applyPage/edit-apply.vue"
 import ApplyItem from "@/components/apply-com/index/apply-item.vue";
 import DesHead from "@/components/des-com/index/des-head.vue";
 import DesSearch from "@/components/des-com/index/des-search.vue";
-import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
 import PageBtn from "@/components/public-com/PageBtn.vue";
 import SideBar from "@/components/public-com/SideBar.vue";
+import { Dialog } from 'vant'
 
 @Component({
   components: {
     ApplyItem,
     DesHead,
     DesSearch,
-    Alerts,
     PageBtn,
     SideBar,
     editApply
@@ -89,7 +83,6 @@ export default class Apply extends Vue {
   private btnUrl = [require("@/assets/button/add-application.png"),require("@/assets/button/delete.png")]
   public sideBarShow: boolean = false;
   private idList: Array<number> = [];
-  private alertShow: boolean = false;
   private searchText: string = "";
   private itemData: any[] = [];
   private checkList: Array<boolean> = [];
@@ -203,7 +196,9 @@ export default class Apply extends Vue {
   }
   toAddPage(addOrdel: boolean) {
     if(addOrdel) {
-      this.alertShow = true
+      Dialog.confirm({ title: '确认删除' })
+        .then(() => this.sureDelete())
+        .catch(() => {})
     } else {
       this.$router.push({ name: "addApply",query: {type: 'add'} });
     }
@@ -230,29 +225,24 @@ export default class Apply extends Vue {
     });
     return deleteId;
   }
-  sureDelete(event: any) {
-    if (event.type === "not") {
-      this.alertShow = false;
-    } else {
-      this.alertShow = false;
-      let list: Array<number> = this.deleteItem();
-      console.log(list);
-      this.$request
-        .post("/api/api/use/deleteUseApply", [...list])
-        .then((res: any) => {
-          if (res.data.success === true) {
-            MsgBox.success("删除成功");
-            this.cancelSelect();
-            this.getList();
-            return;
-          }
-          throw new Error();
-        })
-        .catch((err: any) => {
+  sureDelete() {
+    let list: Array<number> = this.deleteItem();
+    console.log(list);
+    this.$request
+      .post("/api/api/use/deleteUseApply", [...list])
+      .then((res: any) => {
+        if (res.data.success === true) {
+          MsgBox.success("删除成功");
           this.cancelSelect();
-          MsgBox.error("删除失败");
-        });
-    }
+          this.getList();
+          return;
+        }
+        throw new Error();
+      })
+      .catch((err: any) => {
+        this.cancelSelect();
+        MsgBox.error("删除失败");
+      });
   }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index])

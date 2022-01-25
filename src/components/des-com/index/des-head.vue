@@ -52,7 +52,7 @@ export default class DesHead extends Vue {
           this.isClose = false;
         }, 400)
       } */
-    this.$emit("handleClick", { clickType: "right"});
+    this.$emit("handleClick", { clickType: "right" });
   }
 }
 </script>

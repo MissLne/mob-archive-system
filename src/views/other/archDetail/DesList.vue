@@ -1,11 +1,6 @@
 <template>
   <div id="des-list">
     <div>
-      <Alerts
-        :title="'确认删除'"
-        v-if="alertShow"
-        @sureDelete="sureDelete($event)"
-      />
       <div class="trybox" ref="trybox">
         <div
           class="listContainer"
@@ -47,11 +42,11 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue, Emit } from "vue-property-decorator";
 import DesItem from "@/components/des-com/index/des-item.vue";
 import PageBtn from "@/components/public-com/PageBtn.vue";
-import Alerts from "@/components/tools/alerts.vue";
 import MsgBox from "@/components/public-com/MsgBox/Msg";
+import { Dialog } from "vant";
 import { getArchiveList } from "@/services/archive";
 import { getSrcCertainly } from "@/utils/picture";
 
@@ -77,7 +72,6 @@ type CheckItem = {
   components: {
     DesItem,
     PageBtn,
-    Alerts,
   },
 })
 export default class DesList extends Vue {
@@ -87,7 +81,6 @@ export default class DesList extends Vue {
     require("@/assets/index/unselect.png"),
     require("@/assets/index/doselect.png"),
   ];
-  public alertShow: boolean = false;
   private checkList: Array<boolean> = [];
   private idList: Array<number> = [];
   private desItem: any[] = [];
@@ -106,43 +99,56 @@ export default class DesList extends Vue {
   //   this.getList();
   // }
 
-
+  // 更新选择状态时，调用该函数
+  @Emit('updateChoice')
+  updateChoice(event: any) {
+    return event
+  }
+  // 初始化选择
+  initSelect(type: boolean) {
+    this.checkList.forEach((value, index) => {
+      this.$set(this.checkList, index, type);
+    });
+  }
   // 是否处于选择状态
   private v_isChecking: boolean = false;
-  get isChecking() {
+  get isChecking(): boolean {
     return this.v_isChecking
   }
-  set isChecking(newValue) {
+  set isChecking(newValue: boolean) {
+    // 如果newValue为false，意为关闭选择，直接emit
+    if (!newValue) this.updateChoice({ isChecking: newValue })
+    // 如果newValue为true
+    else {
+      const oldVal = this.v_isChecking
+      const isAllSelect = this.isAllSelect
+      // oldVal为true，已经在选择状态
+        // isAllSelect为true，取消全选
+        // isAllSelect为false，全选
+      // oldVal为false，未在选择，相当于取消全选
+      this.initSelect(oldVal && !isAllSelect)
+      this.updateChoice({
+        isChecking: newValue,
+        isAllSelect
+      })
+    }
     this.v_isChecking = newValue
-    // 选择状态更改时，自动emit
-    this.$emit('updateChoice', { isChecking: newValue })
   }
   // 是否全选
   get isAllSelect() {
     return !this.checkList.includes(false)
   }
-
-  initSelect(type: boolean) {
-    this.checkList.forEach((value, index) => {
-      this.$set(this.checkList, index, type);
-    });
-    this.$emit('updateChoice', { isChecking: true, isAllSelect: type })
-  }
   public handleClick(event: any) {
-    console.log("_+_+",event)
+    // 右边
     if (event.clickType === "right") {
-      if (this.$route.params.type === "我的档案" && event.isChoice) {
+      if (this.$route.params.type === "我的档案")
         MsgBox.error("无法操作已入库档案");
-        return;
-      }
-      // 如果当前是选择状态，全选/取消全选
-      if (this.isChecking)
-        this.initSelect(!this.isAllSelect) // 当前全选就变false，当前未全选就全true
-      // 如果不是，进入选择状态
+      // 开始选择 || 全选 || 取消全选
       else
         this.isChecking = true
-    } else {
-      // this.$store.commit("setDetailPage");
+    }
+    // 左边
+    else {
       // 如果当前是选择状态，而且在列表页，退出选择
       if(this.isChecking && event.index === 0)
         this.isChecking = false;
@@ -151,13 +157,13 @@ export default class DesList extends Vue {
         this.$router.go(-1);
     }
   }
-  cancelSelect() {
-    this.isChecking = false;
-  }
   checkItem(index: number) {
     this.$set(this.checkList, index, !this.checkList[index])
-    // 每次选都判断一下是否全选
-    this.$emit('updateChoice', { isChecking: true, isAllSelect: this.isAllSelect })
+    // 每次选都emit，更新全选状态
+    this.updateChoice({
+      isChecking: this.isChecking,
+      isAllSelect: this.isAllSelect
+    })
   }
   
   async getList() {
@@ -207,32 +213,32 @@ export default class DesList extends Vue {
     });
     return deleteId;
   }
-  sureDelete(event: any) {
-    if (event.type === "not") {
-      this.alertShow = false;
-    } else {
-      this.alertShow = false;
-      let list: Array<number> = this.deleteItem();
-      console.log(list);
-      this.$request
-        .post("/api/api/archive/userDeleteArchive", { ids: list })
-        .then((res: any) => {
-          if (res.data.success === true) {
-            MsgBox.success("删除成功");
-            this.$emit("updateChoice",{ isChecking: false })
-            this.cancelSelect();
-            this.getList();
-            return;
-          }
+  /**
+   * 弹出Dialog，询问是否确认删除
+   */
+  public confirmDelete() {
+    Dialog.confirm({ title: '确认删除' })
+      .then(() => this.sureDelete())
+      .catch(() => {})
+  }
+  private sureDelete() {
+    let list: Array<number> = this.deleteItem();
+    console.log(list);
+    this.$request
+      .post("/api/api/archive/userDeleteArchive", { ids: list })
+      .then((res: any) => {
+        if (res.data.success === true) {
+          MsgBox.success("删除成功");
+          this.getList();
+        }
+        else
           throw new Error();
-        })
-        .catch((err: any) => {
-          this.cancelSelect();
-          this.$emit("updateChoice",{ isChecking: false })
-          MsgBox.error("删除失败");
-        });
-    }
-    this.$emit("deleteDo")
+      })
+      .catch((err: any) => {
+        MsgBox.error("删除失败");
+      });
+    // 无论删除成功与否，取消选择状态
+    this.isChecking = false;
   }
 
   private menuKey: number = 0;

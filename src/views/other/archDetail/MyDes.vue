@@ -4,12 +4,6 @@
       {{$route.params.name}}
       <template #right>{{index ? '' : (isChecking ? isAllSelect ? '取消' : '全选' : '选择')}}</template>
     </des-head>
-    <!-- <Alerts
-      :title="'确认删除'"
-      v-if="alertShow"
-      @sureDelete="sureDelete($event)"
-    /> -->
-    <div class="alertCover" v-if="alertShow"></div>
     <div class="slots"></div>
     <ul class="tabbar">
       <li :class="{ active: index === 0 }">档案</li>
@@ -19,7 +13,6 @@
       <DesList
         ref="des-list"
         @updateChoice="updateChoice($event)"
-        @deleteDo="deleteDo"
       ></DesList>
       <DesDetail></DesDetail>
     </SlideWrapper>
@@ -49,21 +42,13 @@ import DesList from "./DesList.vue";
 })
 export default class MyDes extends Vue {
   private index: number = 0;
-  lalal() {
-    console.log((this.$refs.ouo as any).style.height);
-  }
-  private alertShow: boolean = false;
   deleteItem() {
-    (this.$refs["des-list"] as DesList).alertShow = true;
-    this.alertShow = true;
-  }
-  deleteDo() {
-    this.alertShow = (this.$refs["des-list"] as DesList).alertShow;
+    (this.$refs["des-list"] as DesList).confirmDelete()
   }
   handleClick({ clickType }: any) {
     // 在详情页点右边，忽略
     if (this.index === 1 && clickType === 'right') return;
-    // 在列表页点右边
+    // 在列表页点头部
     (this.$refs["des-list"] as DesList).handleClick({ clickType, index: this.index });
   }
   private isChecking: boolean = false
@@ -123,17 +108,6 @@ export default class MyDes extends Vue {
         transform: translateY(12px);
       }
     }
-  }
-  .alertCover {
-    font-size: 34px;
-    z-index: 1000;
-    width: 100vw;
-    height: 74px;
-    position: fixed;
-    top: 124px;
-    // top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
   }
   .upload {
     width: 82px;

@@ -60,7 +60,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Prop, Vue, Emit } from "vue-property-decorator";
 
 interface ItemTyle {
   text: string;
@@ -183,8 +183,9 @@ export default class Details extends Vue {
       }
     }
   }
+  @Emit('btnClick')
   btnClick(str: string) {
-    this.$emit("btnClick", { type: str, id: this.iditem });
+    return { type: str, id: this.iditem }
   }
   // actived() {
   //   this.initData();

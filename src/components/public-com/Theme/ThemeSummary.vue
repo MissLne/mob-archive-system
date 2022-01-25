@@ -34,7 +34,6 @@ export default class ThemeSummary extends Vue {
 .theme-summary {
   display: flex;
   flex-direction: column;
-  overflow-wrap: break-word;
   border: 4px solid #8ebefe;
   margin-bottom: 20px;
   background-color: #8ebefe;
