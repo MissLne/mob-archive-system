@@ -28,12 +28,18 @@
         />
       </form>
       <div class="collect-files-box">
-        <img
+        <!-- <img
           :src="require('@/assets/login/scan.png')"
           class="scan"
           @click="$router.push({ name: 'collectFilesScan' })"
         >
-        <router-link to="/collect-files" class="link">校史征集>></router-link>
+        <router-link to="/collect-files" class="link">校史征集>></router-link> -->
+        <van-swipe class="all-themes" autoplay=3000 :show-indicators="false">
+          <van-swipe-item class="theme-item">主题一</van-swipe-item>
+          <van-swipe-item class="theme-item">主题二主题二</van-swipe-item>
+          <van-swipe-item class="theme-item">主题三主题三主题三</van-swipe-item>
+        </van-swipe>
+
       </div>
       <svg 
         xmlns="http://www.w3.org/2000/svg"
@@ -63,10 +69,14 @@ import {
   getDossierType,
   getDepartmentTree
 } from '@/services/login'
+import { getAllTheme } from '@/services/theme';
+import { Swipe, SwipeItem } from 'vant';
 
 @Component({
   components: {
-    Input
+    Input,
+    "van-swipe":Swipe,
+    "van-swipe-item":SwipeItem,
   }
 })
 export default class Login extends Vue {
@@ -89,6 +99,7 @@ export default class Login extends Vue {
     // console.log(window.innerHeight, window.outerHeight)
     this.initInnerHeight = window.innerHeight || 1334;
     // console.log(this.$el);
+    
   }
 
   // 登录按钮
@@ -226,7 +237,27 @@ export default class Login extends Vue {
         background-image: url(../assets/login/password.svg);
       }
       .collect-files-box {
+        width: 150px;
         align-self: flex-end;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 31px 119px 50px 0;
+        .all-themes{
+          width: 100%;
+          height: 28px;
+          .theme-item{
+          text-align: center;
+          color: #8EBEFE;
+          font-size: 20px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          }
+
+        }
+        /* align-self: flex-end;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -239,7 +270,7 @@ export default class Login extends Vue {
         .link {
           color: #8EBEFE;
           font-size: 20px;
-        }
+        } */
       }
       .login-btn {
         width: 122px;
