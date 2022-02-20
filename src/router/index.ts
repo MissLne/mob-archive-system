@@ -50,7 +50,8 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/collect-files',
-    component: () => import('@/views/collect-files/CollectFiles.vue'),
+    // component: () => import('@/views/collect-files/CollectFiles.vue'),
+    component: () => import('@/views/collect-files/CollectFilesMsg.vue'),
     children: [
       {
         path: 'theme',
@@ -71,7 +72,12 @@ const routes: Array<RouteConfig> = [
         path: 'scan',
         name: 'collectFilesScan',
         component: () => import('@/views/collect-files/CollectFilesScan.vue'),
-      }
+      },
+      // {
+      //   path: 'msg',
+      //   name: 'collectFilesMsg',
+      //   component: () => import('@/views/collect-files/CollectFilesMsg.vue'),
+      // }
     ]
   },
   {

@@ -1,4 +1,4 @@
-import { getAllTheme } from "@/services/theme";
+import { getAllTheme,getThemeDetail } from "@/services/theme";
 import { Toast } from "vant";
 import { Module } from "vuex";
 
@@ -20,7 +20,10 @@ const selectData: Module<any, any> = {
       {name: '秘密', id: 4}
     ],
     retentionPeriodArray: ['永久', '30年', '10年'],
-    themeList: []
+    themeList: [],
+    //改版后用的，用于确定点击跑马灯进来后确定的主题
+    selectedThemeId: '',
+    selectedThemeDetail:{}
   },
   getters: {
     fondsIdentifier: state => {
@@ -52,6 +55,9 @@ const selectData: Module<any, any> = {
   mutations: {
     setThemeList: (state, payload) => {
       state.themeList = payload
+    },
+    setSelectedThemeId: (state, payload) => {
+      state.selectedThemeId = payload
     }
   },
   actions: {
@@ -71,6 +77,12 @@ const selectData: Module<any, any> = {
       console.log(data)
       Toast.clear()
       return data.data
+    },
+    setSelectedThemeDetail: async (context, payload:string) => {
+      const res = await getThemeDetail(payload)
+      console.log(res);
+      context.state.selectedThemeDetail = res.data?.data
+      
     }
   }
 }

@@ -26,3 +26,12 @@ export const createQRCoder = (data: { url: string, themeId: number }) => {
     data
   })
 }
+
+// 获取主题相关详情
+export const getThemeDetail = (themeId:string) => {
+  return service({
+    url: '/api/api/collectedFile/getThemeDetail',
+    method: 'GET',
+    params:{themeId}
+  })
+}

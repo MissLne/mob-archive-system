@@ -28,18 +28,16 @@
         />
       </form>
       <div class="collect-files-box">
-        <!-- <img
+        <img
           :src="require('@/assets/login/scan.png')"
           class="scan"
           @click="$router.push({ name: 'collectFilesScan' })"
         >
-        <router-link to="/collect-files" class="link">校史征集>></router-link> -->
+        <!-- 改了，改成轮播显示所有主题，点击跳转征集页面 -->
+        <!-- <router-link to="/collect-files" class="link">校史征集>></router-link> -->
         <van-swipe class="all-themes" autoplay=3000 :show-indicators="false">
-          <van-swipe-item class="theme-item">主题一</van-swipe-item>
-          <van-swipe-item class="theme-item">主题二主题二</van-swipe-item>
-          <van-swipe-item class="theme-item">主题三主题三主题三</van-swipe-item>
+          <van-swipe-item v-for="item in allTheme" :key="item.themeId" class="theme-item" @click="$router.push({ path: '/collect-files',query:{themeId:item.themeId} })">{{item.topic}}</van-swipe-item>
         </van-swipe>
-
       </div>
       <svg 
         xmlns="http://www.w3.org/2000/svg"
@@ -71,6 +69,7 @@ import {
 } from '@/services/login'
 import { getAllTheme } from '@/services/theme';
 import { Swipe, SwipeItem } from 'vant';
+import Msg from '@/components/public-com/MsgBox/Msg';
 
 @Component({
   components: {
@@ -95,11 +94,31 @@ export default class Login extends Vue {
   }
   // 按照用户进入页面时的窗口高度，设置页面高度，防止滑动时
   private initInnerHeight: number = 1334;
+  private allTheme = []
   created() {
     // console.log(window.innerHeight, window.outerHeight)
     this.initInnerHeight = window.innerHeight || 1334;
     // console.log(this.$el);
-    
+    this.setAllTheme();
+  }
+
+  private async setAllTheme() {
+    try {
+      let sessTheme = sessionStorage.getItem('allTheme')
+      if(sessTheme)
+        this.allTheme = JSON.parse(sessTheme)
+      else
+      {
+        const { data } = await getAllTheme();
+        if (data.success) 
+        {
+          this.allTheme = data.data
+          sessionStorage.setItem('allTheme',JSON.stringify(data.data))
+        }
+      }
+    } catch (error) {
+      Msg.error('加载失败，请刷新')
+    }
   }
 
   // 登录按钮
@@ -248,6 +267,7 @@ export default class Login extends Vue {
           width: 100%;
           height: 28px;
           .theme-item{
+          line-height: 28px;
           text-align: center;
           color: #8EBEFE;
           font-size: 20px;
