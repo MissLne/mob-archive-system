@@ -9,19 +9,18 @@
         <van-dropdown-item
           @change="themeChange"
           v-model="themeNow"
-          :options="themeList"
+          :options="menuList"
         />
       </van-dropdown-menu>
     </div>
     <div v-html="$xss(msgDetail.content)" class="msgBox"></div>
     <div class="toDetail"><img :src="src" alt="" /></div>
-    <button @click="wxShare">分享</button>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import { getQRCoder } from "@/services/theme";
+import { getQRCoder, getAllTheme } from "@/services/theme";
 import { toObjectURL } from "@/utils/picture";
 
 import { DropdownMenu, DropdownItem, Toast } from "vant";
@@ -39,6 +38,7 @@ export default class CollectFilesMsg extends Vue {
   };
   private src = {};
   private themeList = [];
+  private menuList = [];
   private themeNow = 1;
 
   async themeChange(value: number) {
@@ -48,23 +48,22 @@ export default class CollectFilesMsg extends Vue {
         forbidClick: true,
         message: "加载主题中",
       });
+      this.themeNow = value;
       this.$store.commit("selectData/setSelectedThemeId", value);
+      this.getQR(value);
       await this.$store
         .dispatch("selectData/setSelectedThemeDetail", value)
-        .then(() => {
-          this.msgDetail = this.$store.state.selectData.selectedThemeDetail;
+        .then((res) => {
+          this.msgDetail = res;
         });
-      await this.getQR(value);
-      Toast.clear();
     } catch (error) {
-      Msg.error('主题加载失败')
+      Msg.error((error as string) || "主题加载失败");
+    } finally {
+      Toast.clear();
     }
   }
   createdTime() {
     return this.msgDetail?.createdTime?.replace("T", " ");
-  }
-  wxShare() {
-    console.log("wxShare");
   }
   async getQR(themeId: number) {
     // 这个data是一个blob对象
@@ -72,15 +71,35 @@ export default class CollectFilesMsg extends Vue {
     // json是无二维码的信息，否则是二维码图片的blob对象
     if (data.type !== "application/json") this.src = toObjectURL(data);
   }
-  created() {
-    this.themeNow = Number.parseInt(this.$route.query.themeId as string);
-    this.themeList = JSON.parse(
-      sessionStorage
-        .getItem("allTheme")
-        ?.replaceAll("topic", "text")
-        ?.replaceAll("themeId", "value") || ""
-    );
-    this.themeChange(this.themeNow);
+  async getThemeList() {
+    const { data } = await getAllTheme();
+    if (data.data) {
+      this.themeList = data.data;
+      this.$store.commit("selectData/setThemeList", data.data);
+      this.menuList = JSON.parse(
+        JSON.stringify(data.data)
+          ?.replaceAll("topic", "text")
+          ?.replaceAll("themeId", "value") || ""
+      );
+      console.log(this.menuList);
+    }
+  }
+  async created() {
+    try {
+      this.themeNow = Number.parseInt(this.$route.query.themeId as string);
+      let allTheme = this.$store.state.selectData.themeList;
+      if (allTheme.length) {
+        this.themeList = allTheme;
+        this.menuList = JSON.parse(
+          JSON.stringify(allTheme)
+            ?.replaceAll("topic", "text")
+            ?.replaceAll("themeId", "value") || ""
+        );
+      } else await this.getThemeList();
+      this.themeChange(this.themeNow);
+    } catch (error) {
+      Msg.error("主题列表加载失败");
+    }
   }
 }
 </script>
@@ -117,8 +136,11 @@ export default class CollectFilesMsg extends Vue {
     }
   }
   .msgBox {
+    margin: 20px 0;
+    padding: 5px;
     width: 100%;
     overflow: hidden;
+    box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
     * {
       background-image: linear-gradient(180deg, #ecf2fe, #e9f1fe);
     }

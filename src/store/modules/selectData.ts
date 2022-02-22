@@ -1,4 +1,4 @@
-import { getAllTheme,getThemeDetail } from "@/services/theme";
+import { getAllTheme, getThemeDetail } from "@/services/theme";
 import { Toast } from "vant";
 import { Module } from "vuex";
 
@@ -13,17 +13,17 @@ const selectData: Module<any, any> = {
     _dossierType: [],
     _departmentNameTree: [],
     confidentialLevelArray: [
-      {name: '公开', id: 0},
-      {name: '内部', id: 1},
-      {name: '绝密', id: 2},
-      {name: '机密', id: 3},
-      {name: '秘密', id: 4}
+      { name: '公开', id: 0 },
+      { name: '内部', id: 1 },
+      { name: '绝密', id: 2 },
+      { name: '机密', id: 3 },
+      { name: '秘密', id: 4 }
     ],
     retentionPeriodArray: ['永久', '30年', '10年'],
     themeList: [],
     //改版后用的，用于确定点击跑马灯进来后确定的主题
     selectedThemeId: '',
-    selectedThemeDetail:{}
+    selectedThemeDetail: {}
   },
   getters: {
     fondsIdentifier: state => {
@@ -78,11 +78,15 @@ const selectData: Module<any, any> = {
       Toast.clear()
       return data.data
     },
-    setSelectedThemeDetail: async (context, payload:string) => {
+    setSelectedThemeDetail: async (context, payload: string) => {
       const res = await getThemeDetail(payload)
       console.log(res);
+      if (!res.data.data) {
+        // console.log('没有该主题的详情');
+        throw new Error("没有该主题的详情");
+      }
       context.state.selectedThemeDetail = res.data?.data
-      
+      return res.data?.data
     }
   }
 }
