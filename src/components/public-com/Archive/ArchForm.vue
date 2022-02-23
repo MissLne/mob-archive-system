@@ -5,7 +5,7 @@
       <li v-for="item in inputsProps" :key="item.title" class="item">
         <!-- 标题 -->
         <span class="item-title" :class="{ required: item.required }">
-          {{item.title}}
+          {{ item.title }}
           <!-- {{item.value}}{{typeof item.value}} -->
         </span>
         <!-- 人脸识别图标，为了选择器能选到input才写到上面 -->
@@ -26,7 +26,7 @@
           :disabled="disabled"
         />
         <!-- 大量文本输入textarea -->
-        <Textarea 
+        <Textarea
           v-else-if="item.type === 'textarea'"
           v-model="item.value"
           :required="item.required"
@@ -97,7 +97,10 @@
           />
         </div>
         <!-- 多选框radio -->
-        <div v-else-if="item.type === 'radio'" class="item-input all-radio-boxes">
+        <div
+          v-else-if="item.type === 'radio'"
+          class="item-input all-radio-boxes"
+        >
           <!-- 虽然用index绑定不好，但是这是不会变的 -->
           <label
             v-for="(labelItem, labelIndex) in retentionPeriodArray"
@@ -112,7 +115,11 @@
               :disabled="disabled"
             />
             <i class="check-circle">✓</i>
-            <span class="disabled-color-transition" :class="{'disabled-color': disabled}">{{ labelItem }}</span>
+            <span
+              class="disabled-color-transition"
+              :class="{ 'disabled-color': disabled }"
+              >{{ labelItem }}</span
+            >
           </label>
         </div>
         <!-- 混合输入框 -->
@@ -124,11 +131,8 @@
             :msg="item.msg"
             :disabled="disabled"
           />
-        <!-- 日期输入date -->
-          <InputDate
-            v-model="item.value[1]"
-            :disabled="disabled"
-          />
+          <!-- 日期输入date -->
+          <InputDate v-model="item.value[1]" :disabled="disabled" />
         </div>
         <!-- 防止输入的遮罩层，写到下面才能挡住 -->
         <!-- <transition name="van-fade">
@@ -140,13 +144,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
-import Input from "@/components/public-com/Input/Input.vue";
-import InputDate from "@/components/public-com/Input/InputDate.vue";
-import Select from "@/components/public-com/Select/Select.vue";
-import FaceRecognitionIcon from "@/views/face-recognition/FaceRecognitionIcon.vue";
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import Input from '@/components/public-com/Input/Input.vue'
+import InputDate from '@/components/public-com/Input/InputDate.vue'
+import Select from '@/components/public-com/Select/Select.vue'
+import FaceRecognitionIcon from '@/views/face-recognition/FaceRecognitionIcon.vue'
 import Textarea from '@/components/public-com/Input/Textarea.vue'
-import crypto from "@/utils/crypto"
+import crypto from '@/utils/crypto'
 
 @Component({
   components: {
@@ -154,43 +158,53 @@ import crypto from "@/utils/crypto"
     InputDate,
     Select,
     FaceRecognitionIcon,
-    Textarea
+    Textarea,
   },
 })
 export default class ArchForm extends Vue {
-  test = '';
+  test = ''
   @Watch('test') watching() {
     console.log(this.test)
   }
   // 数据
-  @Prop() inputsProps: any;
-    // select/radio的数据
-  get fondsIdentifier() { return this.$store.getters['selectData/fondsIdentifier'] }
-  get dossierType() { return this.$store.getters['selectData/dossierType'] }
+  @Prop() inputsProps: any
+  // select/radio的数据
+  get fondsIdentifier() {
+    return this.$store.getters['selectData/fondsIdentifier']
+  }
+  get dossierType() {
+    return this.$store.getters['selectData/dossierType']
+  }
   get departmentNameTree() {
-    if (localStorage.getItem("token") === null)
+    if (localStorage.getItem('token') === null)
       return this.$store.getters['selectData/allDepartmentNameTree']
-    else
-      return this.$store.getters['selectData/departmentNameTree']
+    else return this.$store.getters['selectData/departmentNameTree']
   }
   // 密级列表
-  get confidentialLevelArray() { return this.$store.state.selectData.confidentialLevelArray };
+  get confidentialLevelArray() {
+    return this.$store.state.selectData.confidentialLevelArray
+  }
   // 保密期限列表
-  get retentionPeriodArray() { return this.$store.state.selectData.retentionPeriodArray };
+  get retentionPeriodArray() {
+    return this.$store.state.selectData.retentionPeriodArray
+  }
 
-  get collectFilesType() { return this.$store.getters['selectData/collectFilesType'] };
-  get themeList() { return this.$store.state.selectData.themeList }
+  get collectFilesType() {
+    return this.$store.getters['selectData/collectFilesType']
+  }
+  get themeList() {
+    return this.$store.state.selectData.themeList
+  }
 
   // 功能
-  @Prop({default: false}) disabled!: boolean;
-  @Prop({default: false}) canRecognize!: boolean;
+  @Prop({ default: false }) disabled!: boolean
+  @Prop({ default: false }) canRecognize!: boolean
   // 人脸识别用
-  @Prop() fileId!: number;
+  @Prop() fileId!: number
 
   setFaceDataName(nameString: string) {
     console.log('receive!', nameString)
-    if (this.inputsProps.people)
-      this.inputsProps.people.value = nameString;
+    if (this.inputsProps.people) this.inputsProps.people.value = nameString
   }
 }
 </script>
@@ -213,7 +227,7 @@ export default class ArchForm extends Vue {
       }
       .required::after {
         // 用于显示必填红星
-        content: "*";
+        content: '*';
         color: #ff0000;
       }
       .item-input {
@@ -235,7 +249,6 @@ export default class ArchForm extends Vue {
         display: flex;
         justify-content: space-between;
         width: 430px;
-        
       }
       .all-radio-boxes {
         display: flex;
@@ -243,12 +256,12 @@ export default class ArchForm extends Vue {
         justify-content: space-between;
         align-items: center;
         .radio-box {
-          input[type="radio"] {
+          input[type='radio'] {
             width: 0;
             height: 0;
             margin: 0;
           }
-          input[type="radio"] + .check-circle {
+          input[type='radio'] + .check-circle {
             /* position: absolute;
                 top: 10px;
                 right: 10px; */
@@ -265,7 +278,7 @@ export default class ArchForm extends Vue {
             border-radius: 50%;
             transition: all 0.15s ease-out;
           }
-          input[type="radio"]:checked + .check-circle {
+          input[type='radio']:checked + .check-circle {
             border-color: #89bcfe;
             color: #89bcfe;
           }
@@ -281,7 +294,7 @@ export default class ArchForm extends Vue {
         position: absolute;
         top: 19px;
         right: 0;
-        & + .input-wrap ::v-deep input{
+        & + .input-wrap ::v-deep input {
           padding-right: 45px;
         }
       }
