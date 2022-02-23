@@ -66,7 +66,7 @@ const routes: Array<RouteConfig> = [
       {
         path: 'detail',
         name: 'collectFilesDetail',
-        component: () => import('@/views/collect-files/CollectFilesDetail'),
+        component: () => import('@/views/collect-files/CollectFileDetail.vue'),
       },
       {
         path: 'scan',

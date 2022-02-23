@@ -96,10 +96,6 @@ export default class CollectFilesMsg extends Vue {
     // 正在上传不给点头部
     if (clickType === 'left') {
       this.$router.go(-1)
-      //   this.$router.push({
-      //     name: 'collectFilesDetail',
-      //     query: { themeId: '29' },
-      //   })
     }
   }
 
@@ -113,12 +109,15 @@ export default class CollectFilesMsg extends Vue {
           ?.replaceAll('topic', 'text')
           ?.replaceAll('themeId', 'value') || ''
       )
-      console.log(this.menuList)
     }
   }
   async created() {
     try {
-      this.themeNow = Number.parseInt(this.$route.query.themeId as string)
+      if (this.$route.params.id) {
+        this.themeNow = Number.parseInt(this.$route.params.id as string)
+      } else if (this.$route.query.themeId) {
+        this.themeNow = Number.parseInt(this.$route.query.themeId as string)
+      } else this.themeNow = 29
       let allTheme = this.$store.state.selectData.themeList
       if (allTheme.length) {
         this.themeList = allTheme
