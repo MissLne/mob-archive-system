@@ -1,8 +1,14 @@
 <template>
   <div id="collect-files-msg">
     <h1 class="msgTopic">{{ msgDetail.topic }}</h1>
-    <p class="create">{{ createdTime() }}</p>
+    <p class="create">{{ getDate(msgDetail.createdTime) }}</p>
     <p class="department">创建部门：{{ msgDetail.department }}</p>
+    <p class="object">征集对象：{{ msgDetail.collectedObject }}</p>
+    <p class="date">
+      征集时间：{{
+        getDate(msgDetail.begin, true) + "至" + getDate(msgDetail.end, true)
+      }}
+    </p>
     <div class="change">
       <div>更换主题:</div>
       <van-dropdown-menu active-color="#327CD7" class="themeList">
@@ -14,7 +20,10 @@
       </van-dropdown-menu>
     </div>
     <div v-html="$xss(msgDetail.content)" class="msgBox"></div>
-    <div class="toDetail"><img :src="src" alt="" /></div>
+    <div class="toDetail">
+      <p>征集资料请扫描下方二维码</p>
+      <img :src="src" alt="" />
+    </div>
   </div>
 </template>
 
@@ -64,8 +73,8 @@ export default class CollectFilesMsg extends Vue {
       Toast.clear();
     }
   }
-  createdTime() {
-    return this.msgDetail?.createdTime?.replace("T", " ");
+  getDate(date: string, delTime: boolean = false) {
+    return delTime ? date?.split("T")[0] : date.replace("T", " ");
   }
   async getQR(themeId: number) {
     // 这个data是一个blob对象
@@ -116,15 +125,21 @@ export default class CollectFilesMsg extends Vue {
     text-align: center;
     margin-bottom: 18px;
   }
-  .create {
+  /* .create {
     font-size: 25px;
     color: #aaa;
     margin-bottom: 18px;
+  } */
+  .create,
+  .department,
+  .object,
+  .date {
+    margin-bottom: 18px;
+    font-size: 28px;
+    color: #777;
   }
   .department {
-    font-size: 28px;
     color: green;
-    margin-bottom: 18px;
   }
   .change {
     display: flex;
@@ -154,6 +169,9 @@ export default class CollectFilesMsg extends Vue {
   }
   .toDetail {
     text-align: center;
+    p {
+      padding: 15px;
+    }
     img {
       width: 250px;
     }
