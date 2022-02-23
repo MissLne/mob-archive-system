@@ -23,18 +23,20 @@ import { Vue, Component } from "vue-property-decorator";
 import { getQRCoder, getAllTheme } from "@/services/theme";
 import { toObjectURL } from "@/utils/picture";
 
-import { DropdownMenu, DropdownItem, Toast } from "vant";
+import { DropdownMenu, DropdownItem, Toast, Image } from "vant";
 import Msg from "@/components/public-com/MsgBox/Msg";
 @Component({
   name: "CollectFilesMsg",
   components: {
     "van-dropdown-menu": DropdownMenu,
     "van-dropdown-item": DropdownItem,
+    "van-image": Image,
   },
 })
 export default class CollectFilesMsg extends Vue {
   private msgDetail = {
     createdTime: "",
+    content: "",
   };
   private src = {};
   private themeList = [];
@@ -106,23 +108,23 @@ export default class CollectFilesMsg extends Vue {
 
 <style lang="scss">
 #collect-files-msg {
-  width: 100vw;
+  /* width: 100vw; */
   min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
   .msgTopic {
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 18px;
   }
   .create {
-    font-size: 15px;
+    font-size: 25px;
     color: #aaa;
-    margin-bottom: 8px;
+    margin-bottom: 18px;
   }
   .department {
-    font-size: 17px;
+    font-size: 28px;
     color: green;
-    margin-bottom: 8px;
+    margin-bottom: 18px;
   }
   .change {
     display: flex;
@@ -137,12 +139,17 @@ export default class CollectFilesMsg extends Vue {
   }
   .msgBox {
     margin: 20px 0;
-    padding: 5px;
-    width: 100%;
+    padding: 15px;
+    /* width: 100%; */
     overflow: hidden;
     box-shadow: 0px 3px 7px 0px rgba(74, 135, 218, 0.35);
     * {
       background-image: linear-gradient(180deg, #ecf2fe, #e9f1fe);
+    }
+    img {
+      max-width: 100% !important;
+      object-fit: contain;
+      /* object-fit: cover; */
     }
   }
   .toDetail {
